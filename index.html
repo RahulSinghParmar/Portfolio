@@ -27,16 +27,22 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav">
 					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-						<a class="nav-link" href="#">home</a>
+						<a class="nav-link" href="#">Home</a>
 					</li>
 					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-						<a class="nav-link" href="#about">about</a>
+						<a class="nav-link" href="#about">About</a>
 					</li>
 					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-						<a class="nav-link" href="#projects">projects</a>
+						<a class="nav-link" href="#projects">Projects</a>
 					</li>
 					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-						<a class="nav-link" href="#background">background</a>
+						<a class="nav-link" href="#background">Background</a>
+					</li>
+					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+						<a class="nav-link" href="https://rahulsinghparmar.hashnode.dev/">Blogs</a>
+					</li>
+					<li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+						<a class="nav-link" href="#other">Others</a>
 					</li>
 				</ul>
 			</div>
@@ -57,10 +63,10 @@
 				<div class="carousel">
 					<div class="change_outer">
 						<div class="change_inner">
-							<h1 class="element" style="color: #EF5350"><b>Rahul</b></h1>
+							<h1 class="element" style="color: #EF5350"><b>Rahul Singh Parmar</b></h1>
 							<h1 class="element"><b>Developer</b></h1>
-							<h1 class="element"><b>Consultant</b></h1>
 							<h1 class="element"><b>Coder</b></h1>
+							<h1 class="element"><b>Tech-Savvy</b></h1>
 						</div>
 					</div>
 				</div>
@@ -88,7 +94,7 @@
 
 		<div class="row">
 			<div class="col-md">
-				<img style="height: 20rem" src="./assets/rahul.PNG" class="img mx-auto d-block" alt="Rahul">
+				<img id="myimg" style="height: 20rem" src="./assets/rahul.png" class="img mx-auto d-block" alt="Rahul">
 			</div>
 
 			<div class="col-md d-flex justify-content-center padding-on-md">
@@ -104,6 +110,10 @@
 			</div>
 		</div>
 
+
+
+		<!-- Projects start -->
+
 		<div id="projects" class="row padding-top">
 			<h2>Projects</h2>
 		</div>
@@ -112,13 +122,17 @@
 			<!-- GitHub Projects from scripts.js goes here -->
 		</div>
 
+
+
+
+		<!-- Background start  -->
 		<div id="background" class="row padding-top">
 			<h2>Background</h2>
 		</div>
 
 		<div class="row">
-
-			<!--<h3>Experience</h3>
+			<!--
+			<h3>Experience</h3>
 
 			<ul class="timeline">
 				<li class="event" data-date="Oct 2020 - Present">
@@ -129,7 +143,7 @@
 					<h3>Dual Student, Business Informatics</h3>
 					<p class="text-muted">Bürkert Werke GmbH & Co. KG</p>
 				</li>
-			</ul>-->
+			</ul> -->
 
 			<h3>Education</h3>
 
@@ -150,6 +164,7 @@
 
 		<div class="flex-col-2">
 
+			<!--
 			<div class="flex-card">
 				<a href="https://docs.google.com/feeds/download/presentations/Export?id=1h7XXvDFhDbsJqY-tsXq0Q1-Etdam6sNmsoZiIQfVWhc&exportFormat=pdf"
 					target="_blank" rel="noopener">
@@ -164,7 +179,7 @@
 			</div>
 
 			<div class="flex-card">
-				<a href="https://www.freecodecamp.org/certification/schmelto/responsive-web-design" target="_blank"
+				<a href="https://www.freecodecamp.org/certification/rahulsinghparmar/responsive-web-design" target="_blank"
 					rel="noopener">
 					<div class="card">
 						<div class="card-body">
@@ -199,6 +214,20 @@
 					</div>
 				</div>
 			</div>
+			-->
+			<div class="flex-card">
+				<a href="https://udemy-certificate.s3.amazonaws.com/pdf/UC-0debc1c1-78fd-4fc3-8a08-c97beeeac9a4.pdf"
+				   target="_blank" rel="noopener">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">iOS & Swift - The Complete iOS App Development Bootcamp</h5>
+							<h6 class="card-subtitle mb-2 text-muted">Udemy.</h6>
+							<p class="card-text">Issued Oct 2021 | No Expiration Date</p>
+						</div>
+					</div>
+				</a>
+			</div>
+
 
 		</div>
 
@@ -208,15 +237,15 @@
 			<div class="flex-card">
 				<pre class="text">
 <span class="highlight-red">let</span> languages = [
-	<span class="highlight-blue">'ABAP'</span>,
+	<span class="highlight-blue">'Swift'</span>,
 	<span class="highlight-blue">'HTML'</span>,
 	<span class="highlight-blue">'TypeScript'</span>,
 	<span class="highlight-blue">'CSS'</span>,
 	<span class="highlight-blue">'JavaScript'</span>,
-	<span class="highlight-blue">'Java'</span>,
-	<span class="highlight-blue">'PHP'</span>,
+	<span class="highlight-blue">'Java SE'</span>,
+	<span class="highlight-blue">'SQL'</span>,
 	<span class="highlight-blue">'Python'</span>,
-	<span class="highlight-blue">'Dart'</span>,]
+	<span class="highlight-blue">'JAVA EE'</span>,]
 </pre>
 			</div>
 			<div class="flex-card">
@@ -224,19 +253,32 @@
 <span class="highlight-red">let</span> frameworks = [
 	<span class="highlight-blue">'Bootstrap'</span>,
 	<span class="highlight-blue">'Angular'</span>,
-	<span class="highlight-blue">'Ionic'</span>,
+	<span class="highlight-blue">'Spring'</span>,
 	<span class="highlight-blue">'Flutter'</span>,
-	<span class="highlight-blue">'SAP UI5'</span>]
+	<span class="highlight-blue">'Django'</span>]
 </pre>
 				<div class="flex-card">
 					<pre class="text">
-<span class="highlight-red">let</span> other = [<span class="highlight-blue">'git'</span>]
+<span class="highlight-red">let</span> other = [<span class="highlight-blue">'git'</span>,<span class="highlight-blue">'Unix/Linux'</span>]
 </pre>
 				</div>
 			</div>
 		</div>
 
-		<div id="projects" class="row padding-top">
+
+
+		<!--
+		<div id="blogs" class="row padding-top">
+			<h2>Blogs</h2>
+		</div>
+		-->
+
+
+
+
+
+
+		<div id="other" class="row padding-top">
 			<h2>Other</h2>
 		</div>
 
@@ -272,14 +314,14 @@
 						src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
 						alt="linkedin"></a>
 			</div>
-			<!--<div class="col-6 col-md-4">
-				<a href="https://dev.to/user" target="_blank" rel="noopener"><img
+			<div class="col-6 col-md-4">
+				<a href="https://dev.to/rahulsinghparmar" target="_blank" rel="noopener"><img
 						class="img mx-auto d-block socials"
 						src="https://img.shields.io/badge/dev.to-0A0A0A?style=for-the-badge&logo=dev.to&logoColor=white"
 						alt="dev.to"></a>
 			</div>
 			<div class="col-6 col-md-4">
-				<a href="https://people.sap.com/user" target="_blank" rel="noopener"><img
+				<a href="https://people.sap.com/rahulsinghparmar" target="_blank" rel="noopener"><img
 						class="img mx-auto d-block socials"
 						src="https://img.shields.io/badge/SAP-0FAAFF?style=for-the-badge&logo=sap&logoColor=white"
 						alt="sap"></a>
@@ -289,7 +331,7 @@
 						class="img mx-auto d-block socials"
 						src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
 						alt="instagram"></a>
-			</div>-->
+			</div>
 			<div class="col-6 col-md-4">
 				<a href="https://twitter.com/Rahulsingh474" target="_blank" rel="noopener"><img
 						class="img mx-auto d-block socials"

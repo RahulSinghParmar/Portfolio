@@ -87,11 +87,11 @@ var githubprojectsdomelement = document.getElementById('githubprojects');
 // using https://fonts.google.com/icons
 let githubprojects = [
   {
-    name: 'RahulSinghParmar/100-days-of-code',
+    name: 'RahulSinghParmar/resume',
     icon: 'description',
   },
   {
-    name: 'RahulSinghParmar/NewsApp',
+    name: 'RahulSinghParmar/JAVA-Core',
     icon: 'article',
   },
   {
@@ -99,7 +99,7 @@ let githubprojects = [
     icon: 'person',
   },
   {
-    name: 'RahulSinghParmar/ImpactHackathon',
+    name: 'RahulSinghParmar/CustomPCBuild',
     icon: 'home',
   },
 ];
