@@ -67,5 +67,6 @@ All notable changes to this project are documented here. The format follows [Kee
 - Documented the Traefik HTTP origin and Cloudflare-managed public TLS boundary.
 - Documented the Cloudflare authoritative-DNS cutover and explicit Null MX, SPF and DMARC no-mail policy.
 - Preserved the final static portfolio source as the `legacy-static-final` GitHub release.
+- Pinned the release workflow to immutable, Node.js 24-based GitHub Action revisions.
 
 [1.0.0]: https://github.com/RahulSinghParmar/Portfolio/releases/tag/v1.0.0

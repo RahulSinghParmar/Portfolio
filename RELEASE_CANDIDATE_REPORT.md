@@ -230,7 +230,6 @@ Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, stops off-scree
 
 - CSP requires `'unsafe-inline'` for current Next.js script/style output. Nonce-based CSP would force dynamic rendering and a different caching model; evaluate it as a deliberate security architecture change.
 - HSTS is intentionally owned by Cloudflare and cannot be confirmed until the hostname cutover is repaired.
-- GitHub Actions use official mutable major tags such as `@v4`. Pinning them to reviewed commit SHAs would further reduce supply-chain risk.
 - Docker installation emits a deprecation notice for ESLint 9.39.5. It is a development dependency, not a runtime vulnerability, but should be addressed with the next supported Next.js lint-toolchain update.
 
 ## 7. Accessibility audit
