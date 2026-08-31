@@ -1,2 +1,8 @@
-assets/*
-*.html
+.next
+node_modules
+public/images
+package-lock.json
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+LICENSE

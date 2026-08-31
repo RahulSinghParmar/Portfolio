@@ -1,0 +1,330 @@
+# Release candidate audit
+
+**Candidate:** `v1.0.0`
+
+**Audit date:** 31 August 2026
+
+**Scope:** Phases 1–11, repository-wide release readiness
+
+**Public target:** [rahulsinghparmar.site](https://rahulsinghparmar.site)
+
+## Executive assessment
+
+The application, documentation and container form a coherent local release candidate. Static quality checks pass, the production image runs as a non-root user, the deployment contract passes locally, and Lighthouse records full accessibility, best-practice and SEO scores on both audited profiles.
+
+The public release is not ready. A strict HTTPS request to `rahulsinghparmar.site` fails hostname validation, while an insecure request still receives the legacy GitHub Pages response. The reviewed container therefore is not the artifact currently presented by the production hostname.
+
+No new product features were introduced during this audit. Changes were limited to copy, consistency, cleanup, documentation, validation and release controls.
+
+### Post-audit deployment update — 31 August 2026
+
+- GitHub Pages is unpublished and its custom-domain binding is removed.
+- Cloudflare is authoritative, Universal SSL is Active, and the domain's explicit Null MX, SPF and DMARC no-mail policy resolves publicly.
+- The final static source is preserved as release `legacy-static-final` at commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c`.
+- The release remains blocked because no apex or `www` web route points to the Coolify candidate, and the external 29-check contract has not run.
+
+## What was audited
+
+- Every visible section: hero, introduction, projects, infrastructure map, experience, automation workflow, certifications, engineering stack, Under the Hood, about content, contact and footer.
+- All public copy and typed content modules.
+- Raster, vector and generated metadata-image paths.
+- `app/`, `components/`, `data/`, `lib/`, `styles` represented by `app/globals.css`, scripts, configuration and dependencies.
+- Production build output, route budgets, responsive layouts, client enhancement and runtime behavior.
+- Security headers, CSP, status-provider boundary, Docker runtime and tracked environment files.
+- Keyboard navigation, focus handling, reduced motion, semantics, live regions and contrast.
+- README, contribution policy, security policy, changelog, deployment guide, health checks, metadata, sitemap, robots and structured data.
+
+## 1. Design audit
+
+### Hero
+
+**Assessment:** Strong release composition. The name, role and infrastructure diagram establish the discipline immediately, and the grid remains legible without animation. Desktop and mobile have no horizontal overflow.
+
+**Fixed:** Copy was shortened, stale status language was removed, and the interface no longer implies that an unconnected data source is live. The generated brand icon replaces the malformed legacy favicon.
+
+**Recommendation:** Keep the hero free of a synthetic portrait. If a new portrait is commissioned, use an authentic transparent source with clean hair edges and test it independently against light and dark social surfaces before changing the composition.
+
+### Introduction
+
+**Assessment:** The introduction now reads as an operator's summary rather than a résumé abstract. It connects network leadership, weekend development and homelab work without listing the entire stack.
+
+**Fixed:** Generic claims about innovation and passion were replaced with concrete references to operating networks, PowerShell, Python and self-hosted systems.
+
+**Recommendation:** The generous negative space is intentional on desktop but extends the mobile page. Reduce it only as part of a future design-system revision, not as an isolated patch.
+
+### Projects
+
+**Assessment:** The three projects tell a connected operating story: visibility, failure communication and control-plane access. Their diagrams and incident-oriented fields give more evidence than conventional logo cards.
+
+**Fixed:** Section language was made direct, unverified metrics were excluded, and links are shown only for destinations that can be verified.
+
+**Recommendation:** Project case studies are the densest part of the page. A future minor release may combine the five detail fields into three editorial groups or move deep technical narratives to separate routes. Do not add accordions solely to shorten the page; they would hide recruiter-critical evidence.
+
+### Infrastructure map
+
+**Assessment:** The seven-layer model distinguishes the portfolio from a generic technology badge wall. Labels, descriptions and the static fallback remain understandable when motion is unavailable.
+
+**Fixed:** Interaction is keyboard accessible and no longer depends on hover, color or Canvas animation.
+
+**Recommendation:** Revalidate label wrapping whenever a capability description changes; the current copy fits the tested 1280 px and 390 px viewports.
+
+### Experience
+
+**Assessment:** The current role and engineering practice are clear, but the public record is intentionally incomplete because exact dates and previous roles have not been verified.
+
+**Fixed:** The heading now uses direct operational language and avoids unsupported outcome claims.
+
+**Recommendation:** Add dates, prior roles and measurable operational outcomes only after Rahul confirms they are safe to publish. These are content gaps, not reasons to invent chronology.
+
+### Automation workflow
+
+**Assessment:** The observe, decide, automate and verify sequence supports the operator/developer narrative and has a clear reading order.
+
+**Fixed:** Repetitive “verified” labels and phase-oriented implementation copy were removed.
+
+**Recommendation:** Preserve the current four-stage flow. Add a real runbook or repository link only when one can be public without exposing environment details.
+
+### Certifications
+
+**Assessment:** The section is visually consistent but currently represents only the verified iOS/Swift certificate. This creates a mismatch with the infrastructure-first positioning.
+
+**Fixed:** The certificate is presented as supporting evidence for development rather than being overstated as an infrastructure credential.
+
+**Recommendation:** Infrastructure, network, security or cloud certifications should take priority when verified URLs and dates are available. Until then, one accurate credential is preferable to placeholder badges.
+
+### Engineering stack
+
+**Assessment:** The capability model explains how tools are used instead of presenting an oversized logo cloud. It supports both infrastructure and development audiences.
+
+**Fixed:** Copy duplication and unused content-status metadata were removed.
+
+**Recommendation:** Review the capability data quarterly. GitHub language volume alone should not overwrite real production expertise, but obsolete or unused tools should be removed from the public narrative.
+
+### Under the Hood
+
+**Assessment:** Deployment architecture, pipeline and status boundary make the portfolio itself part of the engineering evidence. The disconnected state is now honest and explicit.
+
+**Fixed:** Removed the stale “Phase 11 not deployed” message, changed prototype `mock` language to `disconnected`, and documented the server-only status adapter.
+
+**Recommendation:** Do not populate uptime or latency with demonstration values. Connect a read-only provider only after the public telemetry and retention policy are decided.
+
+### About
+
+**Assessment:** About content is integrated into the introduction and professional record rather than repeated in a separate biography card. This avoids another generic section and keeps the profile engineering-led.
+
+**Fixed:** Dead About-section CSS from an earlier composition was removed.
+
+**Recommendation:** Keep personal narrative concise. A future authentic portrait could support this area, but only if its visual quality exceeds the current text-led design.
+
+### Contact
+
+**Assessment:** Email, LinkedIn, GitHub, Hashnode and the homelab destination provide clear next actions without a lead-capture form or unnecessary data collection.
+
+**Fixed:** The heading now states the preferred contact route in plain language. No availability claim is made without confirmation.
+
+**Recommendation:** Manually verify LinkedIn after deployment because automated HEAD requests receive LinkedIn's bot-protection response. Confirm the public email before tagging the release.
+
+### Footer
+
+**Assessment:** The footer closes the network motif without introducing another promotional block.
+
+**Fixed:** Duplicate footer CSS and direct-child paragraph selectors left by the previous composition were removed.
+
+**Recommendation:** Keep the footer static and brief. More badges, counters or animated widgets would dilute the release design.
+
+### Cross-section consistency
+
+Typography, linework, status colors and spacing are consistent at the audited breakpoints. The main residual design cost is page length: approximately 16,977 px at 1280 × 720 and 20,798 px at 390 × 844. The desktop reading experience is intentionally prioritized; mobile remains functional but necessarily stacks the editorial layouts. The repeated large-heading-plus-grid pattern is coherent, though a later redesign could vary one or two section openings after content is reduced.
+
+## 2. Content audit
+
+### Findings corrected
+
+- Replaced generic marketing language with operational statements about availability, recovery, network operations and automation.
+- Removed repeated “verified” and phase-status language from the public interface.
+- Removed unused `contentStatus` and credential metadata that created maintenance noise without helping readers.
+- Kept qualitative project outcomes where no safe measurements exist; no uptime, alert-volume or recovery claims were fabricated.
+- Centralized public identity and portfolio content in typed data modules.
+
+### Verified content still needed
+
+`CONTENT_TODO.md` records the remaining evidence Rahul must supply: employment dates and previous roles, measurable outcomes, infrastructure certifications, public résumé choice, public email confirmation and monitoring-policy decisions. None blocks the software artifact, but incomplete experience and certification evidence limits recruiter depth.
+
+## 3. Image audit
+
+### Runtime and archived assets
+
+| Asset                               |  Dimensions |      Size | Decision                                                                                                                                    |
+| ----------------------------------- | ----------: | --------: | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `public/images/rahul.webp`          | 1914 × 1914 | 176,778 B | Retained as the authentic, optimized identity image used by metadata; extraction edges remain imperfect, so it is not forced into the hero. |
+| Generated Open Graph/Twitter card   |  1200 × 630 | generated | Retained; consistent network-grid brand, readable title and no synthetic likeness.                                                          |
+| Generated browser icon              |     64 × 64 | generated | Retained; appropriate at small sizes.                                                                                                       |
+| Generated Apple icon                |   180 × 180 | generated | Retained.                                                                                                                                   |
+| `docs/assets/legacy-favicon.ico`    |   217 × 256 | 229,438 B | Removed from runtime and archived; malformed aspect ratio and excessive size.                                                               |
+| `docs/assets/legacy-portfolio.webp` | 1920 × 1080 |  53,032 B | Removed from runtime and archived; historical screenshot only.                                                                              |
+
+### Source portrait review
+
+Six high-resolution PNG files under the ignored `myphotos/` directory were inspected. Three are 1086 × 1448 and three are 1023 × 1537; file sizes range from 1,877,715 B to 2,262,954 B. The strongest composition is `ChatGPT Image Jun 30, 2026, 03_32_47 PM.png` because it has the closest crop and most direct eye contact.
+
+None was promoted to a public asset. The images have a visibly synthetic, studio-generated treatment and would conflict with the release goal of removing AI-generated presentation cues. The existing authentic WebP is a better identity source even with imperfect hair-edge extraction. A real high-resolution source photo is the correct future replacement for the hero, About and social card; a face is not an appropriate favicon at 16–64 px.
+
+## 4. Architecture audit
+
+### Findings corrected
+
+- Removed obsolete About, Contact and stack-index CSS selectors plus duplicate footer rules; `app/globals.css` fell from 3,007 to 2,832 lines.
+- Removed unused typed content fields and stale state terminology.
+- Moved legacy assets out of runtime paths.
+- Confirmed that all six runtime dependencies are imported and used.
+- Confirmed no unused component could be removed without deleting a rendered section or progressive enhancement path.
+- Added one composite `quality:check` command and a matching GitHub workflow rather than duplicating build logic.
+
+### Residual maintainability items
+
+- `app/globals.css` is a 2,832-line monolith. It is stable and tokenized, but section-level CSS modules would make ownership easier in a future refactor.
+- `InfrastructureNetwork` and `MotionRuntime` are the largest components. Both are cohesive and purpose-specific; splitting them now would add indirection without reducing runtime cost.
+- The four client boundaries are justified by navigation, capability interaction, motion enhancement and read-only status. The rest of the page remains server-rendered.
+- The local installation contains two extraneous optional imaging packages, but they are not declared in the lockfile; a clean `npm ci` in Docker does not reproduce the issue.
+
+## 5. Performance audit
+
+### Enforced route budgets
+
+| Metric                     | Measurement |  Budget | Result |
+| -------------------------- | ----------: | ------: | ------ |
+| Home HTML, raw             |   138.8 KiB | 160 KiB | Pass   |
+| Initial JavaScript, raw    |   582.6 KiB | 620 KiB | Pass   |
+| Initial JavaScript, Brotli |   156.0 KiB | 190 KiB | Pass   |
+| Initial CSS, raw           |    48.1 KiB |  64 KiB | Pass   |
+| Critical route, Brotli     |   178.6 KiB | 225 KiB | Pass   |
+| Public raster assets       |   172.6 KiB | 350 KiB | Pass   |
+| Largest public raster      |   172.6 KiB | 200 KiB | Pass   |
+
+The raw HTML budget was raised from 140 KiB to 160 KiB because the candidate was consuming 99% of the former limit. The compressed route budget was not loosened.
+
+### Lighthouse
+
+| Profile | Performance | Accessibility | Best practices | SEO |   FCP |   LCP |   TBT | CLS | Speed index |
+| ------- | ----------: | ------------: | -------------: | --: | ----: | ----: | ----: | --: | ----------: |
+| Desktop |         100 |           100 |            100 | 100 | 0.3 s | 0.7 s |  0 ms |   0 |       0.5 s |
+| Mobile  |          94 |           100 |            100 | 100 | 1.0 s | 3.1 s | 50 ms |   0 |       1.7 s |
+
+The remaining mobile opportunity is approximately 55 KiB of unused JavaScript in shared Next.js/React chunks. Application motion libraries are capability-gated and are not part of the initial mobile route. Replacing the framework or compromising the static-first architecture is not justified for this release.
+
+Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, stops off-screen and is omitted for reduced-motion, coarse-pointer, low-power and data-saving clients. Status fetching is deferred until its section approaches the viewport and pauses when it leaves.
+
+## 6. Security audit
+
+### Passed controls
+
+- Repository scan found no API keys, bearer tokens, passwords or private-key material.
+- Environment files are ignored; only `.env.example` is tracked.
+- The status token remains server-only and the production provider URL must use HTTPS.
+- `npm audit --omit=dev --audit-level=high` found zero vulnerabilities.
+- Docker uses deterministic `npm ci`, a multi-stage standalone build and UID/GID `1001` at runtime.
+- CSP, frame denial, MIME sniffing protection, referrer, permissions, cross-origin opener and cross-origin resource policy headers are present.
+- The application exposes only shallow read-only health/status routes and no database, authentication flow or write endpoint.
+
+### Residual risks
+
+- CSP requires `'unsafe-inline'` for current Next.js script/style output. Nonce-based CSP would force dynamic rendering and a different caching model; evaluate it as a deliberate security architecture change.
+- HSTS is intentionally owned by Cloudflare and cannot be confirmed until the hostname cutover is repaired.
+- GitHub Actions use official mutable major tags such as `@v4`. Pinning them to reviewed commit SHAs would further reduce supply-chain risk.
+- Docker installation emits a deprecation notice for ESLint 9.39.5. It is a development dependency, not a runtime vulnerability, but should be addressed with the next supported Next.js lint-toolchain update.
+
+## 7. Accessibility audit
+
+- Lighthouse accessibility: 100/100 desktop and mobile, zero scored failures.
+- One ordered heading hierarchy and semantic header, navigation, main, section and footer landmarks.
+- Skip link targets a programmatically focusable main element.
+- Mobile navigation contains focus, supports Escape, restores focus and makes the background inert.
+- Capability controls and links are keyboard operable with visible two-pixel focus indicators.
+- Diagrams have accessible names; live status uses a polite atomic region.
+- Reduced-motion users receive the complete static SVG composition without Canvas or scroll animation.
+- No horizontal overflow was observed at 1280 × 720 or 390 × 844.
+- Audited text token contrast ranges from 6.97:1 to 16.72:1 against the primary background and meets WCAG AA.
+
+Outstanding: perform one NVDA plus Chrome or Firefox smoke test before changing navigation, live regions or heading structure. When Apple hardware is available, add VoiceOver plus Safari to the release checklist.
+
+## 8. Release readiness audit
+
+### Contributor path
+
+A new contributor can clone, run `npm ci`, optionally copy `.env.example`, start development, execute the composite quality gate, build Docker and follow the Coolify/Cloudflare guide. README commands and environment-variable scope now match the implementation.
+
+### Verified artifacts
+
+- `README.md`: complete architecture, operation, deployment, versioning and licensing guide.
+- `CHANGELOG.md`: `v1.0.0` entry using Keep a Changelog categories.
+- `.env.example`: safe disconnected defaults and documented optional provider values.
+- `Dockerfile`: standalone non-root runtime with native health check.
+- `docs/DEPLOYMENT.md`: Coolify, Traefik, Cloudflare, validation and rollback contract.
+- `/api/health`: independent of optional telemetry.
+- Metadata routes: canonical, robots, sitemap, manifest, icons and generated social images.
+- Structured data: Person, WebSite, ProfilePage and selected work from typed source data.
+- GitHub workflow: formatting, lint, typecheck, build, budgets, SEO, server smoke test and Docker build.
+
+### Local release evidence
+
+- `npm run quality:check`: pass.
+- SEO release contract: 35/35 checks pass.
+- Docker image `rahul-portfolio:rc`: 83,561,202 B, healthy, zero restarts during audit.
+- Local deployment contract: 29/29 checks pass.
+- Production browser console: no errors or warnings during audited routes and interactions.
+- External project, GitHub, Hashnode, homelab and certificate destinations returned HTTP 200. LinkedIn returned its bot-protection status and requires manual confirmation.
+
+### Public release blocker
+
+A strict request to `https://rahulsinghparmar.site` failed certificate hostname validation (`SEC_E_WRONG_PRINCIPAL`). An insecure request returned HTTP 200 from `Server: GitHub.com`, confirming that the old GitHub Pages deployment still owns the public response. The Coolify candidate and its headers, health endpoint and content cannot be verified externally until DNS/TLS routing is corrected.
+
+Required resolution:
+
+1. Authorize the repository in Coolify and deploy the reviewed commit on a temporary hostname.
+2. Route apex and `www` through Cloudflare Tunnel to the Traefik HTTP origin.
+3. Configure the canonical redirect and HTTPS enforcement.
+4. Verify strict HTTPS from outside the host.
+5. Run `npm run deployment:check -- https://rahulsinghparmar.site` and require all checks to pass.
+6. Tag the unchanged reviewed commit as `v1.0.0` only after the external gate passes.
+
+## Issues fixed in Phase 12
+
+- Humanized generic and repetitive copy across the page.
+- Removed stale phase/deployment statements and dishonest prototype status language.
+- Removed dead CSS, typed fields and runtime legacy assets.
+- Corrected the browser-icon path and retained appropriate generated social assets.
+- Added missing cross-origin security headers and deployment assertions.
+- Added a composite local quality gate and pull-request/main GitHub workflow.
+- Rebuilt README, contribution, conduct, security and deployment documentation.
+- Added semantic versioning and a production changelog.
+- Recalibrated the raw-HTML budget to preserve regression headroom without relaxing the compressed route limit.
+
+## Outstanding items
+
+### Blocking
+
+- Repair the public hostname's DNS, TLS and deployment binding, then pass the external 29-check deployment contract.
+
+### Non-blocking release-content decisions
+
+- Confirm public email and manually verify LinkedIn.
+- Supply safe employment dates, prior roles and measurable outcomes.
+- Add verified infrastructure/security/cloud certifications.
+- Decide whether a read-only monitoring source and its retention policy are safe to publish.
+
+### Future maintenance
+
+- Consider section-level CSS modules when a real design revision justifies the migration.
+- Pin GitHub Actions to reviewed commit SHAs.
+- Add authentic high-resolution photography if a suitable source becomes available.
+- Re-evaluate nonce-based CSP only with an explicit dynamic-rendering and cache plan.
+
+## Release recommendation
+
+The repository and Docker artifact are ready to be deployed as the final candidate. They should not be tagged or announced as the production release while the canonical hostname has no web route to that artifact. No additional product feature work is required to clear this decision.
+
+# RELEASE STATUS
+
+## NOT READY FOR RELEASE
+
+**Justification:** the reviewed code and container pass local release gates, and the legacy Pages binding has been removed. The canonical hostname intentionally has no production web route until the Coolify candidate is deployed and verified. After the tunnel routes, redirects and external 29-check contract pass, the unchanged candidate can be released as `v1.0.0` without further feature work.

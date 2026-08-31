@@ -1,17 +1,32 @@
+# Dependencies
+/node_modules
+
+# Next.js output
+/.next
+/out
+
+# Production output
+/build
+
+# Local environment files
+.env*
+!.env.example
+
+# Tooling
+.eslintcache
+.lighthouse/
+*.tsbuildinfo
 .vscode/
-node_modules/
 
-# misc
+# Operating systems
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+Thumbs.db
 
+# Local source portraits (not release assets)
+/myphotos/
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# cypress
-cypress/screenshots
-cypress/videos
+/pnpm-debug.log*

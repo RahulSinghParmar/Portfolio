@@ -1,21 +1,36 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Security fixes are applied to the current production release line.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Version | Supported |
+| --- | --- |
+| `1.x` | Yes |
+| `< 1.0` | No |
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-Use this section to tell people how to report a vulnerability.
+Do not disclose a vulnerability, token, private endpoint or infrastructure detail in a public issue.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Report concerns privately through GitHub's **Report a vulnerability** form when private vulnerability reporting is enabled for the repository. If that channel is unavailable, contact Rahul through the email address published on [rahulsinghparmar.site](https://rahulsinghparmar.site) with the subject `Portfolio security report`.
+
+Include:
+
+- the affected route, component or release;
+- reproduction steps with the minimum necessary data;
+- the expected and observed behavior;
+- likely impact;
+- any safe mitigation already tested.
+
+Do not include live credentials or attempt destructive testing. Acknowledgement and remediation timing depend on severity and reproducibility; no fixed bounty or disclosure window is promised.
+
+## Scope
+
+In scope:
+
+- this repository and its production container;
+- `rahulsinghparmar.site` application behavior;
+- accidental exposure of application secrets or private monitoring data.
+
+Provider dashboards, unrelated `parmar.homes` services, social accounts and denial-of-service testing are out of scope unless Rahul explicitly authorizes them.

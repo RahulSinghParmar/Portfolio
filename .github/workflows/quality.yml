@@ -1,0 +1,66 @@
+name: Release quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  application:
+    name: Application contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run static and build checks
+        run: npm run quality:check
+
+      - name: Start production server
+        run: npm start > /tmp/portfolio-server.log 2>&1 &
+
+      - name: Wait for health endpoint
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/portfolio-server.log
+          exit 1
+
+      - name: Verify deployment contract
+        run: npm run deployment:check -- http://127.0.0.1:3000
+
+  container:
+    name: Container build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build release image
+        run: docker build --tag rahul-portfolio:ci .
