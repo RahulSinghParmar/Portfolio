@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-09-01
 
 ### Added
 
@@ -78,5 +78,9 @@ All notable changes to this project are documented here. The format follows [Kee
 - Replaced the unsupported standalone `next start` path with the generated minimal server used by local, CI, Docker and Coolify runtimes.
 - Assembled public and hashed static assets into one self-contained standalone directory and reduced the Docker runner to one artifact copy.
 - Documented Coolify UUID/deployment naming, the current temporary candidate, safe cleanup boundaries and the single-deployment operating workflow.
+- Promoted the reviewed release candidate through Coolify, Traefik and the existing Cloudflare Tunnel to the canonical production domain.
+- Added proxied apex and `www` tunnel routes, a path/query-preserving `www` to apex 308 redirect and zone-wide HTTP-to-HTTPS enforcement.
+- Removed the obsolete `http://localhost` Coolify diagnostic domain while retaining the temporary RC hostname for the stabilization window.
+- Retired the active GitHub Pages deployment while preserving the final static portfolio as the `legacy-static-final` release.
 
 [1.0.0]: https://github.com/RahulSinghParmar/Portfolio/releases/tag/v1.0.0

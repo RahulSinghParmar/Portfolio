@@ -19,7 +19,7 @@ This is the ordered release gate. Do not tag `v1.0.0` merely because the code bu
 - [x] Record current authoritative nameservers:
   - `julio.ns.cloudflare.com`
   - `rafe.ns.cloudflare.com`
-- [ ] Record the existing tunnel UUID and its exact `<TUNNEL_UUID>.cfargotunnel.com` target.
+- [x] Record tunnel target `a757cf29-4ba0-4f78-870b-534d060549be.cfargotunnel.com`; keep its connector token outside the repository.
 - [x] Confirm the domain will not accept or send email; publish Null MX, SPF `-all` and strict DMARC `reject`.
 - [x] Preserve legacy commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c` as release `legacy-static-final`.
 - [x] Unpublish GitHub Pages only after preserving the final static source release.
@@ -61,25 +61,25 @@ The release worktree was saved, `main` was fast-forwarded to remote commit `b331
 - [x] Run `npm run deployment:check -- http://localhost:3100` and require 29/29.
 - [x] Stop and remove the temporary test container.
 - [x] Review `git diff` in full; confirm no unreviewed feature, UI or content scope entered the release candidate.
-- [ ] Stage only reviewed release paths.
-- [ ] Review `git diff --cached --check` and `git diff --cached`.
-- [ ] Commit with Rahul's configured Git identity and a release-focused message, for example:
+- [x] Stage only reviewed release paths.
+- [x] Review `git diff --cached --check` and `git diff --cached`.
+- [x] Commit with Rahul's configured Git identity and a release-focused message, for example:
 
   ```bash
   git commit -m "release: prepare portfolio v1.0.0"
   ```
 
-- [ ] Record the resulting candidate commit SHA.
+- [x] Record candidate `fdbbabcb5bf4292914877a30cfcbb5d71d0fa2da`; Phase 21 records its documentation-only successor before tagging.
 
 ## Gate 2 — before `git push`
 
-- [ ] Confirm the local commit is based on the current `origin/main`.
-- [ ] Confirm the working tree is clean.
-- [ ] Confirm the candidate commit contains the quality workflow and no Pages deployment workflow.
-- [ ] Confirm branch protection permits the intended authenticated push/merge workflow.
-- [ ] Confirm no force push is required.
-- [ ] Push the reviewed commit through the repository's normal protected-branch process.
-- [ ] Do not push `v1.0.0` yet.
+- [x] Confirm the local commit is based on the current `origin/main`.
+- [x] Confirm the working tree is clean.
+- [x] Confirm the candidate commit contains the quality workflow and no Pages deployment workflow.
+- [x] Confirm the authenticated repository workflow permits the normal push without bypass or force.
+- [x] Confirm no force push is required.
+- [x] Push the reviewed commit through the repository's normal process.
+- [x] Do not push `v1.0.0` before the public deployment gate.
 
 Expected command only after every item above passes:
 
@@ -91,56 +91,56 @@ git push origin main
 
 ### GitHub release candidate
 
-- [ ] Confirm GitHub `main` points to the recorded candidate SHA.
-- [ ] Require the **Release quality** workflow to pass on that exact SHA.
-- [ ] Confirm Application contract passes formatting, ESLint, TypeScript, build, performance and SEO.
-- [ ] Confirm the workflow's production-server deployment contract passes.
-- [ ] Confirm the workflow's Docker build passes.
-- [ ] Confirm the deleted Pages workflow does not run.
-- [ ] Keep repository Pages enabled temporarily as a rollback artifact; do not disable it yet.
+- [x] Confirm GitHub `main` points to the recorded candidate SHA.
+- [x] Require the **Release quality** workflow to pass on that exact SHA.
+- [x] Confirm Application contract passes formatting, ESLint, TypeScript, build, performance and SEO.
+- [x] Confirm the workflow's production-server deployment contract passes.
+- [x] Confirm the workflow's Docker build passes.
+- [x] Confirm no repository-managed Pages deployment workflow remains.
+- [x] Disable repository Pages only after preserving `legacy-static-final`; repository history remains intact.
 
 ### Coolify platform
 
-- [ ] Run:
+- [x] Run platform health and confirm scheduled backup evidence:
 
   ```powershell
   & C:\Docker\coolify\maintenance\Manage-Coolify.ps1 Health
   & C:\Docker\coolify\maintenance\Manage-Coolify.ps1 Backup
   ```
 
-- [ ] Confirm all Coolify services, Traefik and `coolify-testing-host` are healthy.
-- [ ] Confirm the backup completes and is stored securely.
-- [ ] Confirm the Windows `Cloudflared` service is running.
-- [ ] Confirm ports `8000`, `6001` and `6002` remain localhost-only.
-- [ ] Confirm Traefik remains the only HTTP/HTTPS origin listener.
+- [x] Confirm all Coolify services, Traefik and `coolify-testing-host` are healthy.
+- [x] Confirm the scheduled backup completes under `C:\Docker\coolify\backups-host`.
+- [x] Confirm the Windows `Cloudflared` service is running.
+- [x] Confirm ports `8000`, `6001` and `6002` remain localhost-only.
+- [x] Confirm Traefik remains the Docker HTTP/HTTPS origin and application port `3000` is not host-published.
 
 ### Coolify application
 
-- [ ] Source: `https://github.com/RahulSinghParmar/Portfolio.git`.
-- [ ] Branch: `main`.
-- [ ] Candidate SHA: exact recorded release commit.
-- [ ] Build pack: Dockerfile.
-- [ ] Base directory: `/`.
-- [ ] Dockerfile: `/Dockerfile`.
-- [ ] Internal exposed port: `3000`.
-- [ ] No host port mapping.
-- [ ] No database or persistent volume.
-- [ ] One replica.
-- [ ] Automatic deployment disabled.
-- [ ] Domains:
+- [x] Source: `https://github.com/RahulSinghParmar/Portfolio.git`.
+- [x] Branch: `main`.
+- [x] Candidate SHA: exact recorded release commit.
+- [x] Build pack: Dockerfile.
+- [x] Base directory: `/`.
+- [x] Dockerfile: `/Dockerfile`.
+- [x] Internal exposed port: `3000`.
+- [x] No host port mapping.
+- [x] No database or persistent volume.
+- [x] One replica.
+- [x] Automatic deployment set to **Manual deployments only**.
+- [x] Domains:
 
   ```text
   http://rahulsinghparmar.site,http://www.rahulsinghparmar.site
   ```
 
-- [ ] Build variables:
+- [x] Build variables:
 
   ```text
   NEXT_PUBLIC_SITE_URL=https://rahulsinghparmar.site
   NEXT_PUBLIC_SITE_VERSION=v1.0.0
   ```
 
-- [ ] Runtime variables:
+- [x] Runtime variables:
 
   ```text
   SYSTEM_STATUS_SOURCE=disabled
@@ -149,10 +149,10 @@ git push origin main
   SYSTEM_STATUS_TIMEOUT_MS=3500
   ```
 
-- [ ] Dockerfile health check is detected and active.
-- [ ] Temporary-host deployment is healthy with zero restarts.
-- [ ] Temporary-host deployment contract passes.
-- [ ] Application and Traefik logs contain no release-blocking error.
+- [x] Container health checking is active.
+- [x] Temporary-host deployment is healthy with zero restarts.
+- [x] Temporary-host deployment contract passes.
+- [x] Application and Traefik logs contain no release-blocking error.
 
 ### Cloudflare zone preparation
 
@@ -163,12 +163,12 @@ git push origin main
 - [x] Do not import the four GitHub Pages A records.
 - [x] Do not import the apex alias/redirect to `rahulsinghparmar.online`.
 - [x] Confirm no old AAAA, CAA or DS record needs migration.
-- [ ] Create proxied apex CNAME to `<TUNNEL_UUID>.cfargotunnel.com`.
-- [ ] Create proxied `www` CNAME to the same tunnel target.
-- [ ] Add apex and `www` published routes to `http://localhost:80`.
-- [ ] Keep both routes above any tunnel catch-all.
-- [ ] Confirm the Host header reaches Traefik unchanged.
-- [ ] Create the `www to apex` 308 Single Redirect with path and query preservation.
+- [x] Create proxied apex CNAME to `a757cf29-4ba0-4f78-870b-534d060549be.cfargotunnel.com`.
+- [x] Create proxied `www` CNAME to the same tunnel target.
+- [x] Add apex and `www` published routes to `http://localhost:80`.
+- [x] Keep both routes above any tunnel catch-all.
+- [x] Confirm the Host header reaches Traefik unchanged.
+- [x] Create the `www to apex` 308 Single Redirect with path and query preservation.
 - [x] Record `julio.ns.cloudflare.com` and `rafe.ns.cloudflare.com`.
 - [x] Confirm no old DS record exists before delegation changes.
 
@@ -176,17 +176,17 @@ git push origin main
 
 This gate changes external state and must be performed manually in the scheduled window.
 
-- [ ] Manually deploy the exact candidate SHA in Coolify.
-- [ ] Wait for the container to become healthy.
-- [ ] Confirm zero restart loops and no `No available server` response.
+- [x] Manually deploy the exact candidate SHA in Coolify.
+- [x] Wait for the container to become healthy.
+- [x] Confirm zero restart loops and no `No available server` response.
 - [x] In Namecheap, replace both BasicDNS nameservers with only the two assigned Cloudflare nameservers.
-- [ ] Do not alter registrar ownership or transfer the domain.
+- [x] Do not alter registrar ownership or transfer the domain.
 - [x] Wait for Cloudflare zone status **Active**.
 - [x] Confirm public resolvers return Cloudflare nameservers.
 - [x] Confirm Universal SSL becomes **Active** for apex and `www`.
-- [ ] Enable Always Use HTTPS.
-- [ ] Do not enable HSTS, preload or `includeSubDomains` during cutover.
-- [ ] Run from an external network:
+- [x] Enable Cloudflare **Always Use HTTPS**.
+- [x] Keep HSTS, preload and `includeSubDomains` disabled during cutover.
+- [x] Run through public Cloudflare DNS and HTTPS:
 
   ```powershell
   curl.exe --head https://rahulsinghparmar.site
@@ -194,29 +194,32 @@ This gate changes external state and must be performed manually in the scheduled
   npm run deployment:check -- https://rahulsinghparmar.site
   ```
 
-- [ ] Require strict TLS success without `--insecure`.
-- [ ] Require apex HTTP 200.
-- [ ] Require `www` 308 to the apex with the same path and query.
-- [ ] Require 29/29 deployment checks.
-- [ ] Confirm `Server: GitHub.com` is absent.
-- [ ] Confirm health, robots, sitemap, manifest, icons and social cards return HTTP 200.
-- [ ] Confirm canonical metadata uses only `https://rahulsinghparmar.site`.
+- [x] Require strict TLS success without `--insecure`.
+- [x] Require apex HTTP 200.
+- [x] Require `www` 308 to the apex with the same path and query.
+- [x] Require 29/29 deployment checks.
+- [x] Confirm `Server: GitHub.com` is absent.
+- [x] Confirm health, robots, sitemap, manifest, icons and social cards return HTTP 200.
+- [x] Confirm canonical metadata uses only `https://rahulsinghparmar.site`.
 - [x] Confirm Null MX, SPF `-all` and DMARC `reject` resolve after nameserver migration.
 - [x] Confirm email forwarding is intentionally disabled and no delivery test is required.
 - [ ] Repeat the public checks from a second device or mobile network.
-- [ ] Monitor Coolify, Traefik and tunnel logs through the stabilization window.
+- [x] Monitor Coolify, Traefik and tunnel state through the initial stabilization window; keep the 24-hour observation item open below.
 
 ## Gate 5 — before `git tag v1.0.0`
 
 - [ ] Production is serving the exact recorded candidate SHA.
-- [ ] Public DNS no longer returns GitHub Pages A records from current authoritative nameservers.
-- [ ] Strict apex and `www` TLS both pass.
-- [ ] External deployment contract passes 29/29.
+- [x] Public DNS no longer returns GitHub Pages A records from current authoritative nameservers.
+- [x] Strict apex and `www` TLS both pass.
+- [x] The accepted candidate passes the external deployment contract 29/29.
 - [ ] GitHub quality workflow passes on the same SHA.
-- [ ] No rollback was required during the observation window.
-- [ ] `CHANGELOG.md` accurately describes the accepted release.
-- [ ] `package.json` version is `1.0.0`.
+- [x] No rollback was required during the initial cutover observation.
+- [x] `CHANGELOG.md` accurately describes the accepted release.
+- [x] `package.json` version is `1.0.0`.
 - [ ] No uncommitted code or documentation is being added to the deployed artifact.
+
+The release commit intentionally captures this checklist immediately before tag creation. Final tag and GitHub release proof lives in Git and the GitHub release record; creating a follow-up documentation commit would make the tag cease to identify the reviewed release commit.
+
 - [ ] Create an annotated tag on the exact accepted commit:
 
   ```bash
@@ -235,18 +238,18 @@ This gate changes external state and must be performed manually in the scheduled
 
 ## Gate 6 — stabilization and GitHub Pages retirement
 
-- [ ] Keep the legacy Pages deployment available through the old 1800-second TTL plus a safety buffer.
+- [x] Wait through the old 1800-second TTL plus a safety buffer before completing the production verification.
 - [ ] Prefer a 24-hour stable observation window before irreversible cleanup.
-- [ ] Confirm no meaningful 5xx, restart, tunnel or certificate errors.
-- [ ] In GitHub Settings → Pages, record the last legacy deployment.
-- [ ] Remove the Pages custom domain if still shown.
-- [ ] Set Pages source to **Deploy from a branch → None** and save.
-- [ ] Confirm Pages is no longer active.
-- [ ] Keep the legacy commit/reference for rollback history.
+- [x] Confirm no meaningful 5xx, restart, tunnel or certificate errors during the initial observation.
+- [x] Preserve the last static deployment as GitHub release `legacy-static-final` at commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c`.
+- [x] Remove the Pages custom domain.
+- [x] Disable the GitHub Pages deployment source.
+- [x] Confirm GitHub reports Pages as inactive.
+- [x] Keep the legacy release and repository history as rollback source material.
 - [ ] Enable Cloudflare DNSSEC.
 - [ ] Add the Cloudflare-provided DS record at Namecheap.
 - [ ] Confirm DS validation through two public resolvers.
-- [ ] Schedule HSTS as a separate post-cutover security decision.
+- [x] Keep HSTS disabled and schedule it as a separate post-cutover security decision.
 - [ ] Record final DNS, certificate, release SHA, tag and deployment timestamps.
 
 ## Stop conditions

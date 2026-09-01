@@ -2,7 +2,7 @@
 
 **Candidate:** `v1.0.0`
 
-**Audit date:** 31 August 2026
+**Audit date:** 31 August–1 September 2026
 
 **Scope:** Phases 1–11, repository-wide release readiness
 
@@ -10,9 +10,9 @@
 
 ## Executive assessment
 
-The application, documentation and container form a coherent local release candidate. Static quality checks pass, the production image runs as a non-root user, the deployment contract passes locally, and Lighthouse records full accessibility, best-practice and SEO scores on both audited profiles.
+The application, documentation and container form a coherent production release. Static quality checks pass, the production image runs as a non-root user, the deployment contract passes locally and publicly, and Lighthouse records full accessibility, best-practice and SEO scores on both audited profiles.
 
-The public release is not ready. GitHub Pages has been removed and a healthy Coolify application exists on a temporary Traefik route, but that application still serves base revision `0e0f28d`. The uncommitted Phase 14–18 candidate is not yet the artifact presented by the production hostname.
+The canonical domain now serves the reviewed Coolify deployment through Traefik and the existing Cloudflare Tunnel. GitHub Pages is disabled, the legacy static source remains preserved as a release, and the production container is healthy with zero restarts and no OOM termination.
 
 No new product features were introduced during this audit. Changes were limited to copy, consistency, cleanup, documentation, validation and release controls.
 
@@ -21,7 +21,7 @@ No new product features were introduced during this audit. Changes were limited 
 - GitHub Pages is unpublished and its custom-domain binding is removed.
 - Cloudflare is authoritative, Universal SSL is Active, and the domain's explicit Null MX, SPF and DMARC no-mail policy resolves publicly.
 - The final static source is preserved as release `legacy-static-final` at commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c`.
-- The release remains blocked because no apex or `www` web route points to the Coolify candidate, and the external 29-check contract has not run.
+- This was the last pre-cutover snapshot; Phases 19–20 below record the completed release deployment.
 
 ### Phase 17 visual regression update — 1 September 2026
 
@@ -49,6 +49,24 @@ No new product features were introduced during this audit. Changes were limited 
 - Built image `rahul-portfolio:1.0.0` as `sha256:5918c5475425ea1e8f7885138556e5946bbcf9ff3fc5e45b07716a1c87c99dad` (83,563,353 bytes).
 - Verified UID/GID `1001`, healthy state, zero restarts, localhost-only audit binding and the 29/29 deployment contract, then removed the test container.
 - Retained the named release image for inspection; no temporary Phase 18 audit image or container remains.
+
+### Phase 19 release-candidate deployment — 1 September 2026
+
+- Committed and pushed candidate `fdbbabcb5bf4292914877a30cfcbb5d71d0fa2da` from `RahulSinghParmar <rahulsinghparmar4@protonmail.com>`.
+- Required the GitHub **Release quality** workflow to pass for that exact commit and disabled the unintended legacy Pages publishing configuration without deleting repository history.
+- Built `rahul-portfolio:rc`, passed the local 29/29 deployment contract, and verified desktop, tablet and mobile production rendering across light, dark, full-motion and reduced-motion paths.
+- Deployed the exact commit to the existing `rahul-portfolio-rc` Coolify application; the replacement container became healthy as user `nextjs` with zero restarts.
+- Passed the external 29/29 deployment contract on `portfolio-rc.parmar.homes`.
+
+### Phase 20 production cutover — 1 September 2026
+
+- Added the apex and `www` Coolify Host rules while keeping the application origin on HTTP behind Traefik.
+- Added Cloudflare Tunnel routes for both hostnames to `http://localhost:80`; both proxied records target `a757cf29-4ba0-4f78-870b-534d060549be.cfargotunnel.com`.
+- Deployed the active `Canonical www to apex` rule as HTTP 308 with path and query preservation and enabled zone-wide **Always Use HTTPS**.
+- Verified Cloudflare-authoritative DNS, strict TLS, apex HTTP 200, absence of GitHub response headers and a one-hop HTTPS `www` redirect.
+- Passed the production 29/29 deployment contract at `https://rahulsinghparmar.site` and repeated responsive, theme and motion validation against the canonical hostname.
+- Observed the production container healthy with zero restarts and no OOM events; all seven Coolify platform components and the Windows `Cloudflared` service passed health checks.
+- Removed the obsolete `http://localhost` diagnostic domain from the Coolify application and retained the RC hostname for the 24-hour stabilization window.
 
 ## What was audited
 
@@ -301,18 +319,11 @@ A new contributor can clone, run `npm ci`, optionally copy `.env.example`, start
 - Production browser console: no errors or warnings during audited routes and interactions.
 - External project, GitHub, Hashnode, homelab and certificate destinations returned HTTP 200. LinkedIn returned its bot-protection status and requires manual confirmation.
 
-### Public release blocker
+### Public release evidence
 
-The Coolify application currently runs an older revision on `portfolio-rc.parmar.homes`; the reviewed Phase 14–18 tree is not committed, pushed or deployed. The apex and `www` production host rules and the external HTTPS contract remain unfinished. The old GitHub Pages binding has already been removed and is no longer the rollback runtime.
+The canonical deployment now satisfies the public release contract. The apex serves the reviewed application through Cloudflare, `www` redirects with HTTP 308 while preserving the request path and query string, plain HTTP upgrades at the edge, and all 29 automated deployment checks pass without certificate bypass.
 
-Required resolution:
-
-1. Commit and push the reviewed tree, then deploy that exact commit to the existing Coolify application.
-2. Route apex and `www` through Cloudflare Tunnel to the Traefik HTTP origin.
-3. Configure the canonical redirect and HTTPS enforcement.
-4. Verify strict HTTPS from outside the host.
-5. Run `npm run deployment:check -- https://rahulsinghparmar.site` and require all checks to pass.
-6. Tag the unchanged reviewed commit as `v1.0.0` only after the external gate passes.
+The Phase 21 documentation-only release commit must pass the same GitHub and Coolify gates before its exact SHA is tagged `v1.0.0`. The application content and runtime architecture are unchanged from accepted candidate `fdbbabc`.
 
 ## Issues fixed in Phase 12
 
@@ -346,7 +357,7 @@ Required resolution:
 
 ### Blocking
 
-- Repair the public hostname's DNS, TLS and deployment binding, then pass the external 29-check deployment contract.
+- None.
 
 ### Non-blocking release-content decisions
 
@@ -364,10 +375,10 @@ Required resolution:
 
 ## Release recommendation
 
-The repository and Docker artifact are ready to be deployed as the final candidate. They should not be tagged or announced as the production release while the canonical hostname has no web route to that artifact. No additional product feature work is required to clear this decision.
+The repository, container and production route satisfy the release contract. Proceed with the documentation-only final commit, require CI and Coolify to accept that exact SHA, then create the annotated `v1.0.0` tag and GitHub release. No additional product feature work is required.
 
 # RELEASE STATUS
 
-## NOT READY FOR RELEASE
+## READY FOR RELEASE
 
-**Justification:** the reviewed code and simplified standalone container pass local release gates, and the legacy Pages binding has been removed. The currently running Coolify application is an older healthy candidate, not the reviewed Phase 14–18 tree. After the final commit is deployed, the production host rules, redirects and external 29-check contract must pass before the unchanged candidate can be released as `v1.0.0`.
+**Justification:** the reviewed code, simplified standalone container, canonical Cloudflare/Tunnel route and Coolify runtime pass the local, CI and public release gates. The production contract is 29/29, the container is healthy with zero restarts, and the only remaining release operation is to tag and publish the exact Phase 21 commit after its final CI and deployment verification.

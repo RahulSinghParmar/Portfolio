@@ -12,7 +12,7 @@
 
 **Scope:** deployment migration only; no portfolio feature, interface or content work
 
-## Execution status — 31 August 2026
+## Execution status — 1 September 2026
 
 Completed:
 
@@ -22,13 +22,15 @@ Completed:
 - The domain intentionally accepts no email. Null MX, SPF `v=spf1 -all` and strict DMARC `reject` records resolve publicly.
 - The final static source is preserved as the GitHub release `legacy-static-final` at commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c`.
 - Local Coolify, Traefik, the deployment host and the Windows `Cloudflared` service passed health checks.
+- Candidate `fdbbabcb5bf4292914877a30cfcbb5d71d0fa2da` passed GitHub CI, local Docker validation and the temporary-host deployment contract.
+- The apex and `www` routes use the existing Cloudflare Tunnel target `a757cf29-4ba0-4f78-870b-534d060549be.cfargotunnel.com` and Traefik origin `http://localhost:80`.
+- `www` redirects to the canonical apex with HTTP 308 while preserving path and query, and **Always Use HTTPS** upgrades plain HTTP at the Cloudflare edge.
+- The canonical production hostname passes the external 29/29 deployment contract; the Coolify container is healthy with zero restarts and no OOM termination.
+- The obsolete `http://localhost` application domain is removed; `portfolio-rc.parmar.homes` remains available during the stabilization window.
 
-Remaining:
+Remaining release operation:
 
-- Commit and push the reviewed Next.js release candidate and require its GitHub quality workflow to pass.
-- Deploy that exact commit to Coolify on a temporary hostname before directing production traffic.
-- Add the apex and `www` tunnel routes and proxied DNS records, then configure the `www` redirect and HTTPS enforcement.
-- Pass the external 29-check deployment contract before creating tag `v1.0.0`.
+- Tag and publish the exact Phase 21 release commit only after its documentation-only change passes CI and is deployed through the same production gate.
 
 The audit baseline below is retained as rollback evidence; it no longer describes the live provider state.
 
@@ -38,11 +40,7 @@ Use `rahulsinghparmar.site` as the only canonical URL. Move authoritative DNS fr
 
 The registrar remains Namecheap. Only authoritative DNS hosting moves to Cloudflare. The Next.js container remains behind Traefik on HTTP; Cloudflare terminates visitor TLS and the authenticated outbound tunnel protects the connection to the host. Do not expose container port `3000` or Coolify control-plane ports publicly.
 
-The Cloudflare nameservers are now known. One provider value still cannot be invented in this repository:
-
-- the existing tunnel target in the form `<TUNNEL_UUID>.cfargotunnel.com`.
-
-Copy that target exactly from the Cloudflare account during execution.
+The production tunnel target is `a757cf29-4ba0-4f78-870b-534d060549be.cfargotunnel.com`. It is a routing identifier, not a tunnel credential; the connector token remains outside the repository.
 
 ## Audit baseline before execution
 
@@ -390,23 +388,23 @@ The application has no database or persistent volume, so rollback requires no da
 
 ### Git and artifact
 
-- [ ] Local work is synchronized with remote `main` commit `b33129c1db83734cfef02c0e5784f02cdd2187b0` or its verified successor.
-- [ ] Final release commit SHA is recorded.
-- [ ] `CNAME` and `.github/workflows/static.yml` are absent from the release tree.
-- [ ] `npm run quality:check` passes after synchronization.
-- [ ] Docker image builds from the exact release commit.
-- [ ] Local deployment contract passes 29/29.
+- [x] Local work is synchronized with remote `main` at accepted candidate `fdbbabcb5bf4292914877a30cfcbb5d71d0fa2da`; Phase 21 records its documentation-only successor before tagging.
+- [x] Accepted release-candidate SHA is recorded.
+- [x] `CNAME` and `.github/workflows/static.yml` are absent from the release tree.
+- [x] `npm run quality:check` passes after synchronization.
+- [x] Docker image builds from the exact release candidate.
+- [x] Local deployment contract passes 29/29.
 
 ### Coolify and Docker
 
-- [ ] Coolify platform health and backup complete successfully.
-- [ ] Application uses root `Dockerfile`, branch `main` and internal port `3000`.
-- [ ] Build variables contain canonical apex and `v1.0.0`.
-- [ ] Runtime status source remains `disabled`.
-- [ ] No host port, persistent volume or database is configured.
-- [ ] Both HTTP origin domains exist in Coolify.
-- [ ] Dockerfile health check is active and container is healthy with zero restarts.
-- [ ] Temporary-host deployment contract passes.
+- [x] Coolify platform health and scheduled backup complete successfully.
+- [x] Application uses root `Dockerfile`, branch `main` and internal port `3000`.
+- [x] Build variables contain canonical apex and `v1.0.0`.
+- [x] Runtime status source remains `disabled`.
+- [x] No host port, persistent volume or database is configured.
+- [x] Both HTTP origin domains exist in Coolify.
+- [x] Health checking is active and the container is healthy with zero restarts.
+- [x] Temporary-host deployment contract passes.
 
 ### DNS and Cloudflare
 
@@ -414,9 +412,9 @@ The application has no database or persistent volume, so rollback requires no da
 - [x] The domain's no-mail policy is confirmed.
 - [x] Cloudflare contains the required Null MX, SPF and DMARC records.
 - [x] GitHub A records and `rahulsinghparmar.online` alias are absent from Cloudflare.
-- [ ] Apex and `www` CNAME records target the exact tunnel UUID and are proxied.
-- [ ] Both tunnel published routes target `http://localhost:80`.
-- [ ] `www to apex` 308 redirect preserves path and query.
+- [x] Apex and `www` CNAME records target the exact tunnel UUID and are proxied.
+- [x] Both tunnel published routes target `http://localhost:80`.
+- [x] `www to apex` 308 redirect preserves path and query.
 - [x] Namecheap lists only `julio.ns.cloudflare.com` and `rafe.ns.cloudflare.com`.
 - [x] Cloudflare zone status is Active.
 - [x] Null MX, SPF `-all` and DMARC `reject` resolve publicly.
@@ -424,21 +422,21 @@ The application has no database or persistent volume, so rollback requires no da
 ### TLS and application
 
 - [x] Universal SSL is Active and covers apex plus `www`.
-- [ ] Strict HTTPS succeeds without certificate bypass.
-- [ ] HTTP redirects to HTTPS.
-- [ ] `www` redirects to apex in one hop.
-- [ ] Canonical apex returns HTTP 200 and is not served by GitHub.
-- [ ] External deployment contract passes 29/29.
-- [ ] Sitemap, robots, manifest, icons and social images return HTTP 200.
-- [ ] Container, application, Traefik and tunnel logs show no release-blocking errors.
+- [x] Strict HTTPS succeeds without certificate bypass.
+- [x] HTTP redirects to HTTPS through Cloudflare **Always Use HTTPS**.
+- [x] `www` redirects to apex in one HTTPS hop.
+- [x] Canonical apex returns HTTP 200 and is not served by GitHub.
+- [x] External deployment contract passes 29/29.
+- [x] Sitemap, robots, manifest, icons and social images return HTTP 200.
+- [x] Container, application, Traefik and tunnel logs show no release-blocking errors.
 - [ ] Verification succeeds from a second network/device.
 
 ### Stabilization and cleanup
 
-- [ ] Old 1800-second TTL plus safety buffer has elapsed.
-- [ ] GitHub Pages source is set to None only after the new route is stable.
+- [x] Old 1800-second TTL plus safety buffer has elapsed.
+- [x] GitHub Pages source is set to None after preserving the legacy release.
 - [ ] DNSSEC is enabled through Cloudflare and the new DS is verified after cutover.
-- [ ] HSTS remains disabled until a separate post-cutover review.
+- [x] HSTS remains disabled until a separate post-cutover review.
 - [ ] Exact accepted commit is tagged `v1.0.0` only after the external gate passes.
 
 ## Authoritative references
