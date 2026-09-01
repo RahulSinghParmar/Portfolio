@@ -15,6 +15,20 @@ type NetworkNode = {
 
 type Point = { x: number; y: number };
 
+type NetworkPalette = {
+  accent: string;
+  caption: string;
+  grid: string;
+  label: string;
+  labelActive: string;
+  nodeActiveBorder: string;
+  nodeBackground: string;
+  nodeBorder: string;
+  nodeCore: string;
+  route: string;
+  routeActive: string;
+};
+
 const networkNodes: readonly NetworkNode[] = [
   { id: "edge", label: "EDGE", x: 0.12, y: 0.23, depth: -0.35, phase: 0.4 },
   { id: "network", label: "NETWORK", x: 0.44, y: 0.13, depth: 0.5, phase: 1.1 },
@@ -50,6 +64,26 @@ type NetworkConnection = Navigator & {
   connection?: { saveData?: boolean };
 };
 
+function readNetworkPalette(): NetworkPalette {
+  const styles = window.getComputedStyle(document.documentElement);
+  const read = (property: string, fallback: string) =>
+    styles.getPropertyValue(property).trim() || fallback;
+
+  return {
+    accent: read("--accent", "#c7e85b"),
+    caption: read("--network-caption", "rgba(153, 155, 149, 0.58)"),
+    grid: read("--network-grid", "rgba(239, 237, 230, 0.052)"),
+    label: read("--network-label", "rgba(153, 155, 149, 0.9)"),
+    labelActive: read("--network-label-active", "rgba(239, 237, 230, 0.96)"),
+    nodeActiveBorder: read("--network-node-active-border", "rgba(199, 232, 91, 0.72)"),
+    nodeBackground: read("--network-node-background", "rgba(11, 12, 12, 0.92)"),
+    nodeBorder: read("--network-node-border", "rgba(239, 237, 230, 0.4)"),
+    nodeCore: read("--network-node-core", "#efede6"),
+    route: read("--network-route", "rgba(239, 237, 230, 0.26)"),
+    routeActive: read("--network-route-active", "rgba(199, 232, 91, 0.28)"),
+  };
+}
+
 export function InfrastructureNetwork() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -61,16 +95,11 @@ export function InfrastructureNetwork() {
     if (!canvas || !frame) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const coarsePointer = window.matchMedia("(pointer: coarse)");
     const networkConnection = navigator as NetworkConnection;
-    const forceMotionPreview =
-      process.env.NODE_ENV === "development" &&
-      new URLSearchParams(window.location.search).get("motion") === "full";
+    const forceMotion = new URLSearchParams(window.location.search).get("motion") === "full";
     const shouldUseFallback =
-      !forceMotionPreview &&
+      !forceMotion &&
       (reducedMotion.matches ||
-        coarsePointer.matches ||
-        window.innerWidth < 768 ||
         (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2) ||
         networkConnection.connection?.saveData === true);
 
@@ -87,6 +116,7 @@ export function InfrastructureNetwork() {
     let isVisible = true;
     let pointerInside = false;
     let scrollProgress = 0;
+    let palette = readNetworkPalette();
     const pointer = { x: 0, y: 0 };
     const pointerTarget = { x: 0, y: 0 };
 
@@ -127,7 +157,7 @@ export function InfrastructureNetwork() {
         context.moveTo(0, y);
         context.lineTo(width, y);
       }
-      context.strokeStyle = "rgba(239, 237, 230, 0.052)";
+      context.strokeStyle = palette.grid;
       context.lineWidth = 1;
       context.stroke();
     };
@@ -150,7 +180,7 @@ export function InfrastructureNetwork() {
         context.beginPath();
         context.moveTo(from.x, from.y);
         context.lineTo(to.x, to.y);
-        context.strokeStyle = active ? "rgba(199, 232, 91, 0.28)" : "rgba(239, 237, 230, 0.26)";
+        context.strokeStyle = active ? palette.routeActive : palette.route;
         context.stroke();
       });
 
@@ -164,7 +194,7 @@ export function InfrastructureNetwork() {
 
         context.beginPath();
         context.arc(signalX, signalY, 2.4, 0, Math.PI * 2);
-        context.fillStyle = "#c7e85b";
+        context.fillStyle = palette.accent;
         context.fill();
       });
 
@@ -179,28 +209,24 @@ export function InfrastructureNetwork() {
 
         context.beginPath();
         context.arc(point.x, point.y, outerRadius, 0, Math.PI * 2);
-        context.fillStyle = "rgba(11, 12, 12, 0.92)";
+        context.fillStyle = palette.nodeBackground;
         context.fill();
-        context.strokeStyle = isNearPointer
-          ? "rgba(199, 232, 91, 0.72)"
-          : "rgba(239, 237, 230, 0.4)";
+        context.strokeStyle = isNearPointer ? palette.nodeActiveBorder : palette.nodeBorder;
         context.lineWidth = 0.8;
         context.stroke();
 
         context.beginPath();
         context.arc(point.x, point.y, isNearPointer ? 3.8 : 2.8, 0, Math.PI * 2);
-        context.fillStyle = isNearPointer ? "#c7e85b" : "#efede6";
+        context.fillStyle = isNearPointer ? palette.accent : palette.nodeCore;
         context.fill();
 
-        context.fillStyle = isNearPointer
-          ? "rgba(239, 237, 230, 0.96)"
-          : "rgba(153, 155, 149, 0.9)";
+        context.fillStyle = isNearPointer ? palette.labelActive : palette.label;
         context.font = "9px var(--font-geist-mono), monospace";
         context.letterSpacing = "0.8px";
         context.fillText(node.label, point.x + 17, point.y + 3);
       });
 
-      context.fillStyle = "rgba(153, 155, 149, 0.58)";
+      context.fillStyle = palette.caption;
       context.font = "8px var(--font-geist-mono), monospace";
       context.letterSpacing = "0.7px";
       context.fillText("SYS / 07", 12, 18);
@@ -250,9 +276,17 @@ export function InfrastructureNetwork() {
       },
       { rootMargin: "120px" },
     );
+    const themeObserver = new MutationObserver(() => {
+      palette = readNetworkPalette();
+      if (isVisible) draw(window.performance.now());
+    });
 
     resizeObserver.observe(frame);
     visibilityObserver.observe(frame);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
     frame.addEventListener("pointermove", handlePointerMove, { passive: true });
     frame.addEventListener("pointerleave", handlePointerLeave);
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -266,6 +300,7 @@ export function InfrastructureNetwork() {
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
+      themeObserver.disconnect();
       frame.removeEventListener("pointermove", handlePointerMove);
       frame.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("scroll", handleScroll);

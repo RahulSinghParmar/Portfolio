@@ -14,7 +14,9 @@ const files = {
 
 const expected = {
   canonical: "https://rahulsinghparmar.site",
-  title: "Rahul Singh Parmar — Team Lead Network Engineer",
+  title: "Rahul Singh Parmar — DCO Tech 3",
+  role: "DCO Tech 3",
+  email: "rahulsinghparmar4@protonmail.com",
   language: "en-IN",
   twitterCreator: "@rahulsingh474",
 };
@@ -126,6 +128,8 @@ for (const type of ["Person", "WebSite", "ProfilePage", "ItemList"]) {
 const person = graph.find((entry) => entry["@type"] === "Person");
 const work = graph.find((entry) => entry["@type"] === "ItemList");
 check("verified social identities", Array.isArray(person?.sameAs) && person.sameAs.length === 4);
+check("current professional role", person?.jobTitle === expected.role);
+check("confirmed public email", person?.email === expected.email);
 check("three selected projects", work?.numberOfItems === 3 && work?.itemListElement?.length === 3);
 
 check("robots allows portfolio", robots.includes("Allow: /"));

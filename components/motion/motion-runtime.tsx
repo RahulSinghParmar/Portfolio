@@ -9,16 +9,11 @@ type NetworkConnection = Navigator & {
 export function MotionRuntime() {
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const coarsePointer = window.matchMedia("(pointer: coarse)");
     const networkConnection = navigator as NetworkConnection;
-    const forceMotionPreview =
-      process.env.NODE_ENV === "development" &&
-      new URLSearchParams(window.location.search).get("motion") === "full";
+    const forceMotion = new URLSearchParams(window.location.search).get("motion") === "full";
     const useReducedMotion =
-      !forceMotionPreview &&
+      !forceMotion &&
       (reducedMotion.matches ||
-        coarsePointer.matches ||
-        window.innerWidth < 768 ||
         (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2) ||
         networkConnection.connection?.saveData === true);
     document.documentElement.dataset.motion = useReducedMotion ? "reduced" : "full";

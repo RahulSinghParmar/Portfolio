@@ -20,8 +20,8 @@ The root `Dockerfile` uses four deliberate stages:
 
 1. `base` — Node.js 22 Alpine and shared build settings.
 2. `dependencies` — deterministic `npm ci` from the committed lockfile.
-3. `builder` — Next.js production build with public values frozen at build time.
-4. `runner` — standalone output, public/static assets and no development dependencies.
+3. `builder` — Next.js production build with public values frozen at build time; `postbuild` assembles public and static assets into one standalone directory.
+4. `runner` — one copy of the self-contained standalone output and no development dependencies.
 
 The runtime:
 
@@ -34,6 +34,8 @@ The runtime:
 - contains OCI source, license, description and version labels.
 
 The health endpoint is intentionally shallow. It verifies that the process and HTTP router are ready without coupling container availability to an optional monitoring provider.
+
+The same runtime is used outside Docker: `npm start` launches `.next/standalone/server.js` directly. The project no longer uses the unsupported `next start` path with standalone output.
 
 ## Environment contract
 
@@ -67,6 +69,20 @@ Coolify or the image supplies `NODE_ENV=production`, `HOSTNAME=0.0.0.0`, `PORT=3
 8. Enable automatic deployment only after the first manual deployment passes the release gate below.
 
 The Cloudflare Tunnel public-hostname route should target the existing Traefik origin at `http://localhost:80`. Do not point the tunnel directly to port 3000, request a second Coolify ACME certificate through the tunnel, or expose the container port to the LAN.
+
+The application lifecycle, generated container names and safe cleanup rules are documented in [COOLIFY_OPERATIONS.md](./COOLIFY_OPERATIONS.md).
+
+## Local standalone verification
+
+Build and run the exact artifact copied into the container:
+
+```powershell
+npm run build
+npm start
+npm run deployment:check -- http://127.0.0.1:3000
+```
+
+The build lifecycle copies `public/` and `.next/static/` into `.next/standalone/` before startup. Verify at least one hashed stylesheet and `/images/rahul.webp` when changing that assembly script.
 
 ## Local image verification
 

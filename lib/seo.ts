@@ -7,18 +7,19 @@ import { skillLayers } from "@/data/skills";
 export const siteMetadata = {
   title: `${profile.name} — ${profile.role}`,
   description:
-    "Rahul Singh Parmar is a Team Lead Network Engineer in Mumbai building secure networks, cloud infrastructure, automation, and reliable homelab systems.",
+    "Rahul Singh Parmar is a DCO Tech 3 in Mumbai working across data center operations, secure networks, infrastructure automation, and reliable systems.",
   socialDescription:
-    "Network engineering, infrastructure operations, security, AWS, automation, and self-hosted systems.",
+    "Data center operations, network engineering, security, AWS, automation, and self-hosted systems.",
   locale: "en_IN",
   language: "en-IN",
   twitterHandle: "@rahulsingh474",
-  contentUpdated: "2026-08-31",
+  contentUpdated: "2026-09-01",
   socialImageAlt:
-    "Rahul Singh Parmar — Team Lead Network Engineer, infrastructure operator, and automation builder",
+    "Rahul Singh Parmar — DCO Tech 3, infrastructure operator, and automation builder",
   keywords: [
     "Rahul Singh Parmar",
-    "Team Lead Network Engineer",
+    "DCO Tech 3",
+    "Data Center Operations",
     "Network Engineer Mumbai",
     "Infrastructure Engineer",
     "Network Security",
@@ -53,6 +54,7 @@ export function buildStructuredData() {
     new Set([
       ...profile.disciplines,
       ...skillLayers.map((layer) => layer.label),
+      "Data Center Operations",
       "AWS",
       "PowerShell",
       "Python",
@@ -76,6 +78,7 @@ export function buildStructuredData() {
         url: profile.siteUrl,
         image: absoluteUrl("/images/rahul.webp"),
         jobTitle: profile.role,
+        email: profile.email,
         address: "Mumbai, India",
         sameAs: profile.links.map((link) => link.href),
         knowsAbout,

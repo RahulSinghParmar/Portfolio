@@ -162,8 +162,8 @@ Require all Coolify components, the `coolify-testing-host` server target and Tra
 
 Perform these steps before changing production DNS:
 
-1. In Coolify, create an **Application** in the production project.
-2. Select the public Git repository `https://github.com/RahulSinghParmar/Portfolio.git`. A GitHub App is optional for a public repository; it is required only for private access, commit-status integration or authenticated automatic deployment.
+1. Reuse the existing `rahul-portfolio-rc` **Application** in `My first project / production`; do not create a second portfolio resource.
+2. Confirm its source remains the public Git repository `https://github.com/RahulSinghParmar/Portfolio.git`. A GitHub App is optional for a public repository; it is required only for private access, commit-status integration or authenticated automatic deployment.
 3. Select branch `main` and pin/record the accepted release commit SHA.
 4. Choose the **Dockerfile** build pack.
 5. Set base directory to `/` and Dockerfile location to `/Dockerfile`.
@@ -197,7 +197,7 @@ Perform these steps before changing production DNS:
 12. Keep automatic deployment disabled for the first release.
 13. Deploy manually and require the container to become healthy with zero restart loops.
 14. Inspect application and Traefik logs for bind errors, `404 No available server`, repeated 5xx responses or OOM termination.
-15. Validate the exact container through a temporary non-production hostname before production DNS changes. Use an existing controlled `*.parmar.homes` route or a Coolify test hostname; do not change the production canonical environment variable.
+15. Validate the exact container through the existing `portfolio-rc.parmar.homes` route before production DNS changes; do not change the production canonical environment variable.
 
 ## Exact Cloudflare and DNS changes
 

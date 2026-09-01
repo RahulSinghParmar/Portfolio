@@ -5,8 +5,9 @@ Performance is treated as a release constraint rather than a one-time score. The
 ## Critical-path strategy
 
 - The page remains a statically prerendered Server Component route.
-- GSAP, ScrollTrigger and Lenis are imported after hydration and only on fine-pointer devices with sufficient viewport, hardware and network capacity.
-- Mobile, coarse-pointer, reduced-motion, low-power and data-saving clients keep the static SVG composition and do not request the motion libraries.
+- GSAP, ScrollTrigger and Lenis are imported after hydration when motion preferences, hardware and network capacity permit.
+- A dependency-free inline initializer applies the stored or system color theme before first paint.
+- Reduced-motion, low-power and data-saving clients keep the static SVG composition and do not request the motion libraries. Touch and mobile devices are not classified as low-power solely by pointer type or viewport width.
 - The Canvas network renders at 30 FPS, caps its pixel ratio and pauses outside the viewport.
 - The system-status request and polling interval activate only when the status interface is within 600 px of the viewport, and polling stops again when it leaves that range.
 - Raster source assets use WebP with transparency preserved where required.
@@ -24,11 +25,11 @@ The budget script profiles the prerendered home route from `.next/server/app/ind
 
 | Metric                      | RC measurement |  Budget |
 | --------------------------- | -------------: | ------: |
-| Home HTML, raw              |      138.8 KiB | 160 KiB |
-| Initial JavaScript, raw     |      582.6 KiB | 620 KiB |
-| Initial JavaScript, Brotli  |      156.0 KiB | 190 KiB |
-| Initial CSS, raw            |       48.1 KiB |  64 KiB |
-| Critical home route, Brotli |      178.6 KiB | 225 KiB |
+| Home HTML, raw              |      140.6 KiB | 160 KiB |
+| Initial JavaScript, raw     |      585.3 KiB | 620 KiB |
+| Initial JavaScript, Brotli  |      156.7 KiB | 190 KiB |
+| Initial CSS, raw            |       50.9 KiB |  64 KiB |
+| Critical home route, Brotli |      180.3 KiB | 225 KiB |
 | Public raster assets, total |      172.6 KiB | 350 KiB |
 | Largest public raster asset |      172.6 KiB | 200 KiB |
 
@@ -53,4 +54,4 @@ For every release:
 2. Run `npm run performance:check` and treat a failed budget as a release blocker.
 3. Run desktop and mobile Lighthouse against a production server when dependencies, layouts or animation behavior change materially.
 4. Confirm the initial home view does not request `/api/system-status`; the request should appear only when approaching the Under the Hood section.
-5. Confirm mobile reports `data-motion="reduced"`, uses the static topology and has no horizontal overflow.
+5. Confirm mobile uses progressive motion by default, `?motion=full` forces the enhanced runtime, and an explicit reduced-motion preference retains the static topology without horizontal overflow.

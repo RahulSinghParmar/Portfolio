@@ -1,6 +1,6 @@
 # Rahul Singh Parmar — Engineering Portfolio
 
-Production portfolio for Rahul Singh Parmar, a Team Lead Network Engineer focused on network operations, systems administration, security, AWS, homelab engineering and practical automation.
+Production portfolio for Rahul Singh Parmar, a DCO Tech 3 focused on data center operations, network reliability, systems administration, security, AWS, homelab engineering and practical automation.
 
 - Public site: [rahulsinghparmar.site](https://rahulsinghparmar.site)
 - Release target: `v1.0.0`
@@ -10,7 +10,7 @@ Production portfolio for Rahul Singh Parmar, a Team Lead Network Engineer focuse
 
 This repository replaces an earlier static portfolio with a typed, data-driven Next.js application. The site presents selected infrastructure work as operational case studies: what failed, how the system responds, which controls protect it and how recovery is observed.
 
-Most content is rendered on the server. JavaScript is reserved for navigation, optional motion, the capability map and a read-only status view. The public site has no database, authentication flow or write-capable API.
+Most content is rendered on the server. JavaScript is reserved for navigation, persistent color-theme control, optional motion, the capability map and a read-only status view. The public site has no database, authentication flow or write-capable API.
 
 ## Architecture
 
@@ -49,7 +49,7 @@ The status adapter is the only optional external data path. It runs server-side,
 - Generated Open Graph, Twitter/X, browser and Apple assets.
 - Person, WebSite, ProfilePage and selected-work structured data.
 - Custom crawl directives, sitemap, manifest, 404 page and health endpoint.
-- Responsive 12/8/4-column layout with keyboard and reduced-motion support.
+- Responsive 12/8/4-column layout with keyboard, reduced-motion and persistent system/light/dark theme support.
 
 ## Design philosophy
 
@@ -79,7 +79,7 @@ Local source portraits in `myphotos/` are intentionally ignored. They are refere
 
 ## Performance
 
-The home route is static-first and isolates client boundaries to four focused components. Motion libraries are dynamically imported only on capable devices. Mobile, coarse-pointer, reduced-motion, low-power and data-saving clients receive the static route-map fallback.
+The home route is static-first and isolates client boundaries to four focused components. Motion libraries are dynamically imported after hydration unless the visitor requests reduced motion or the device reports a low-power or data-saving constraint. Touch and mobile clients retain motion support, while the semantic route map remains available as the fallback. The `?motion=full` diagnostic override works in both local and production builds.
 
 Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, and pauses outside the viewport. Status polling starts only near the status section and stops while it is out of view. Repository budgets cover compressed HTML, JavaScript, CSS and public images.
 
@@ -98,12 +98,13 @@ The recorded baseline and budget rationale are in [docs/PERFORMANCE.md](./docs/P
 - Skip link and programmatic main-content focus target.
 - Keyboard-operable navigation, capability controls and external links.
 - Mobile-menu focus containment, Escape handling, focus restoration and inert background content.
+- Keyboard-operable system/light/dark theme control with pre-paint initialization.
 - Visible two-pixel focus indicators.
 - `prefers-reduced-motion` support plus static SVG fallbacks.
 - Polite, atomic announcements for status changes.
 - Explicit context for links that open a new tab.
 
-The manual and automated verification record is in [docs/ACCESSIBILITY.md](./docs/ACCESSIBILITY.md).
+The manual and automated verification record is in [docs/ACCESSIBILITY.md](./docs/ACCESSIBILITY.md). The production viewport, theme and motion matrix is in [docs/VISUAL_REGRESSION.md](./docs/VISUAL_REGRESSION.md).
 
 ## SEO
 
@@ -167,19 +168,19 @@ The workflow and contribution standards are documented in [CONTRIBUTING.md](./CO
 
 ## Build commands
 
-| Command                             | Purpose                                         |
-| ----------------------------------- | ----------------------------------------------- |
-| `npm run dev`                       | Start the local development server              |
-| `npm run build`                     | Create the production and standalone output     |
-| `npm start`                         | Serve the production build on port 3000         |
-| `npm run format`                    | Format repository text files                    |
-| `npm run format:check`              | Verify formatting without writes                |
-| `npm run lint`                      | Run ESLint with zero warnings allowed           |
-| `npm run typecheck`                 | Run TypeScript without emitting files           |
-| `npm run performance:check`         | Enforce route asset budgets                     |
-| `npm run seo:check`                 | Verify prerendered metadata and crawl contracts |
-| `npm run deployment:check -- <url>` | Smoke-test a running deployment                 |
-| `npm run quality:check`             | Run the complete static and build gate          |
+| Command                             | Purpose                                          |
+| ----------------------------------- | ------------------------------------------------ |
+| `npm run dev`                       | Start the local development server               |
+| `npm run build`                     | Create a self-contained standalone output        |
+| `npm start`                         | Run the supported standalone server on port 3000 |
+| `npm run format`                    | Format repository text files                     |
+| `npm run format:check`              | Verify formatting without writes                 |
+| `npm run lint`                      | Run ESLint with zero warnings allowed            |
+| `npm run typecheck`                 | Run TypeScript without emitting files            |
+| `npm run performance:check`         | Enforce route asset budgets                      |
+| `npm run seo:check`                 | Verify prerendered metadata and crawl contracts  |
+| `npm run deployment:check -- <url>` | Smoke-test a running deployment                  |
+| `npm run quality:check`             | Run the complete static and build gate           |
 
 ## Docker usage
 
@@ -205,7 +206,7 @@ The runtime image listens on port `3000`, runs as UID/GID `1001`, and checks `/a
 6. Point the Cloudflare Tunnel hostname to the existing Traefik origin at `http://localhost:80`.
 7. Keep automatic deployment disabled until the first manual release passes the external deployment contract.
 
-Detailed setup, verification and rollback instructions are in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md).
+Detailed setup, verification and rollback instructions are in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md). Coolify's generated names, deployment lifecycle and cleanup policy are explained in [docs/COOLIFY_OPERATIONS.md](./docs/COOLIFY_OPERATIONS.md).
 
 ## Deployment
 

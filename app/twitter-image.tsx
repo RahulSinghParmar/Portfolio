@@ -1,7 +1,7 @@
 import { createSocialImage, socialImageSize } from "@/lib/social-image";
 
 export const alt =
-  "Rahul Singh Parmar — Team Lead Network Engineer, infrastructure operator, and automation builder";
+  "Rahul Singh Parmar — DCO Tech 3, infrastructure operator, and automation builder";
 export const size = socialImageSize;
 export const contentType = "image/png";
 

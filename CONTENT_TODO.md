@@ -12,9 +12,9 @@ The project narratives were derived from public implementations and Rahul's conf
 
 ## Experience
 
-- Exact start/end dates for the current role.
-- Previous employers, roles, locations and dates to include publicly.
-- Confirm which responsibilities or outcomes may be published.
+- Public employer, start date, responsibilities and safe outcomes for the current DCO Tech 3 role.
+- Exact start/end dates for the previous Team Lead Network Engineer role.
+- Additional previous employers, roles, locations and dates to include publicly.
 - Any measurable reliability, incident, delivery or automation improvements.
 
 ## Certifications
@@ -27,7 +27,6 @@ The verified iOS/Swift certificate remains visible because it supports the devel
 ## Contact and identity
 
 - Public resume URL or PDF.
-- Confirm whether the public email should remain `rahulsinghparmar4@gmail.com`.
 - A formal availability or open-to-work statement, if desired. The current contact copy does not make an availability claim.
 
 ## Deployment telemetry
@@ -45,6 +44,7 @@ The adapter and public API boundary are implemented in disconnected mode. Live v
 - Completed: activated Cloudflare authoritative DNS with `julio.ns.cloudflare.com` and `rafe.ns.cloudflare.com`; removed the legacy GitHub web records.
 - Completed: verified Universal SSL for the apex and wildcard plus an explicit no-mail policy using Null MX, SPF `-all` and DMARC `reject`.
 - Completed: archived the final static source as the GitHub release `legacy-static-final` at commit `e9caf773`.
-- Remaining: authorize the repository in Coolify and validate the exact candidate on a temporary hostname.
+- Completed: created the Coolify `rahul-portfolio-rc` application and verified its temporary Traefik route, non-root container, healthy state and zero restarts at revision `0e0f28d`.
+- Remaining: commit and push the Phase 14–18 candidate, deploy that exact revision to the existing Coolify application and pass the temporary-host contract.
 - Remaining: create apex and `www` tunnel routes, proxied DNS records, the `www` redirect and the HTTPS enforcement rule.
 - Remaining: run the 29-check external release gate and tag `v1.0.0` only after it passes.

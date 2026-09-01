@@ -4,9 +4,9 @@ Phase 10 turns the portfolio into a consistent machine-readable profile without 
 
 ## Search positioning
 
-The primary entity is **Rahul Singh Parmar, Team Lead Network Engineer in Mumbai**. Supporting vocabulary covers the actual work represented on the page:
+The primary entity is **Rahul Singh Parmar, DCO Tech 3 in Mumbai**. Supporting vocabulary covers the actual work represented on the page:
 
-- network engineering, infrastructure operations and network security;
+- data center operations, network engineering, infrastructure operations and network security;
 - AWS, cloud infrastructure, Linux and Windows administration;
 - PowerShell, Python, GitHub Actions and operational automation;
 - Docker, Cloudflare Workers, homelab engineering and self-hosting.

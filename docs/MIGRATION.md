@@ -54,7 +54,7 @@ The repository started as a multi-page static site built with HTML, global CSS, 
 
 ## Performance implications
 
-The site ships no icon library or WebGL runtime. Fonts are bundled, GSAP/ScrollTrigger/Lenis load after the critical route on capable devices only, and the status request waits until its interface approaches the viewport. The portrait and legacy reference have been converted from 3.0 MB of PNG source assets to approximately 225 KiB of WebP assets. The Canvas network draws at 30 FPS, caps device-pixel ratio, pauses outside the viewport and falls back to semantic SVG for mobile, coarse pointers, reduced motion, low-power hardware and data-saving connections.
+The site ships no icon library or WebGL runtime. Fonts are bundled, GSAP/ScrollTrigger/Lenis load after the critical route on capable devices only, and the status request waits until its interface approaches the viewport. The portrait and legacy reference have been converted from 3.0 MB of PNG source assets to approximately 225 KiB of WebP assets. The Canvas network draws at 30 FPS, caps device-pixel ratio, pauses outside the viewport and falls back to semantic SVG for reduced motion, low-power hardware and data-saving connections. Touch and mobile devices retain the progressive motion layer unless one of those constraints applies.
 
 ## Migration plan
 

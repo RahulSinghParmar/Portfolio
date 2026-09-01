@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { profile } from "@/data/profile";
+import { ThemeControl } from "@/components/theme/theme-control";
 
 const navigationItems = [
   { label: "Index", href: "#index" },
@@ -48,6 +49,10 @@ export function SiteNavigation() {
     const links = mobileNavigation
       ? Array.from(mobileNavigation.querySelectorAll<HTMLAnchorElement>("a[href]"))
       : [];
+    const themeControl = document.querySelector<HTMLButtonElement>(".theme-control");
+    const focusableControls = [themeControl, toggleRef.current, ...links].filter(
+      (control): control is HTMLButtonElement | HTMLAnchorElement => control !== null,
+    );
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -55,10 +60,10 @@ export function SiteNavigation() {
         return;
       }
 
-      if (event.key !== "Tab" || links.length === 0) return;
+      if (event.key !== "Tab" || focusableControls.length === 0) return;
 
-      const firstControl = toggleRef.current;
-      const lastControl = links.at(-1);
+      const firstControl = focusableControls[0];
+      const lastControl = focusableControls.at(-1);
       if (event.shiftKey && document.activeElement === firstControl) {
         event.preventDefault();
         lastControl?.focus();
@@ -98,20 +103,23 @@ export function SiteNavigation() {
         ))}
       </nav>
 
-      <button
-        className="menu-toggle focus-ring"
-        type="button"
-        ref={toggleRef}
-        aria-expanded={isOpen}
-        aria-controls="mobile-navigation"
-        onClick={() => (isOpen ? closeMenu(true) : setIsOpen(true))}
-      >
-        <span>{isOpen ? "Close" : "Menu"}</span>
-        <span className="menu-toggle__glyph" aria-hidden="true">
-          <i />
-          <i />
-        </span>
-      </button>
+      <div className="site-header__actions">
+        <ThemeControl />
+        <button
+          className="menu-toggle focus-ring"
+          type="button"
+          ref={toggleRef}
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => (isOpen ? closeMenu(true) : setIsOpen(true))}
+        >
+          <span>{isOpen ? "Close" : "Menu"}</span>
+          <span className="menu-toggle__glyph" aria-hidden="true">
+            <i />
+            <i />
+          </span>
+        </button>
+      </div>
 
       <div
         className="mobile-navigation"

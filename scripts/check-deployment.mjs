@@ -1,5 +1,5 @@
 const baseUrl = new URL(process.argv[2] ?? process.env.DEPLOYMENT_URL ?? "http://localhost:3100");
-const expectedTitle = "Rahul Singh Parmar — Team Lead Network Engineer";
+const expectedTitle = "Rahul Singh Parmar — DCO Tech 3";
 
 const checks = [];
 const failures = [];

@@ -10,8 +10,8 @@ export function ProfessionalSection() {
       <SectionLabel index="04">Professional practice</SectionLabel>
 
       <div className="professional-section__heading" data-reveal>
-        <p className="mono-meta">Operations leadership / development mindset</p>
-        <h2>I lead infrastructure during the week and build tooling on weekends.</h2>
+        <p className="mono-meta">Data center operations / development mindset</p>
+        <h2>I operate critical infrastructure during the week and build tooling on weekends.</h2>
       </div>
 
       <dl className="professional-snapshot mono-meta" data-reveal>
@@ -46,7 +46,7 @@ export function ProfessionalSection() {
       <div className="career-record">
         <header className="career-record__heading" data-reveal>
           <p className="mono-meta">Career record</p>
-          <h3>Leadership at the operational layer.</h3>
+          <h3>Responsibility at the operational layer.</h3>
         </header>
         <ol>
           {experience.map((item, index) => (

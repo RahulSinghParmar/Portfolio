@@ -9,16 +9,17 @@ export const profile = {
   name: "Rahul Singh Parmar",
   givenName: "Rahul",
   familyName: "Singh Parmar",
-  role: "Team Lead Network Engineer",
-  headline: "Network operations, systems administration, security, AWS and practical automation.",
+  role: "DCO Tech 3",
+  headline:
+    "Data center operations, network reliability, systems administration and practical automation.",
   statement:
     "I keep networks and systems available, secure and recoverable—and automate the work that should not stay manual.",
   introduction:
-    "I lead day-to-day network and infrastructure operations across connectivity, Windows and Linux administration, monitoring, incident response and security controls. In my homelab, I write PowerShell, Python and edge tooling to remove repeat work and make failures easier to diagnose.",
+    "I work across data center and infrastructure operations, connectivity, Windows and Linux administration, monitoring, incident response and security controls. In my homelab, I write PowerShell, Python and edge tooling to remove repeat work and make failures easier to diagnose.",
   location: "Mumbai, India",
   timezone: "UTC+05:30",
   experience: "4+ years",
-  email: "rahulsinghparmar4@gmail.com",
+  email: "rahulsinghparmar4@protonmail.com",
   siteUrl,
   repositoryUrl: "https://github.com/RahulSinghParmar/Portfolio",
   status: "PORTFOLIO ONLINE",

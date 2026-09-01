@@ -12,7 +12,7 @@
 
 The application, documentation and container form a coherent local release candidate. Static quality checks pass, the production image runs as a non-root user, the deployment contract passes locally, and Lighthouse records full accessibility, best-practice and SEO scores on both audited profiles.
 
-The public release is not ready. A strict HTTPS request to `rahulsinghparmar.site` fails hostname validation, while an insecure request still receives the legacy GitHub Pages response. The reviewed container therefore is not the artifact currently presented by the production hostname.
+The public release is not ready. GitHub Pages has been removed and a healthy Coolify application exists on a temporary Traefik route, but that application still serves base revision `0e0f28d`. The uncommitted Phase 14–18 candidate is not yet the artifact presented by the production hostname.
 
 No new product features were introduced during this audit. Changes were limited to copy, consistency, cleanup, documentation, validation and release controls.
 
@@ -22,6 +22,33 @@ No new product features were introduced during this audit. Changes were limited 
 - Cloudflare is authoritative, Universal SSL is Active, and the domain's explicit Null MX, SPF and DMARC no-mail policy resolves publicly.
 - The final static source is preserved as release `legacy-static-final` at commit `e9caf7735e817431e231a60618c4ecf65a7bcf5c`.
 - The release remains blocked because no apex or `www` web route points to the Coolify candidate, and the external 29-check contract has not run.
+
+### Phase 17 visual regression update — 1 September 2026
+
+- The optimized production interface was audited from 320 to 1920 CSS pixels in system, light and dark themes with full and reduced motion.
+- Mobile light-mode topology contrast and narrow-screen Proton Mail wrapping were corrected without changing the design or content architecture.
+- Tablet menu focus transfer, scroll lock and focus restoration passed; representative production interactions emitted no console errors or warnings.
+- The full matrix and the remaining physical-device/cross-engine boundary are documented in `docs/VISUAL_REGRESSION.md`.
+
+### Phase 18 deployment simplification update — 1 September 2026
+
+- Replaced `next start` with the generated standalone server and assembled public/static assets into one self-contained runtime directory.
+- Reduced the Docker runner to one artifact copy; the validated image remained approximately 83.6 MB, non-root, healthy and at zero restarts.
+- Passed the local standalone and Docker deployment contracts at 29/29, including direct CSS and portrait responses.
+- Confirmed the live Coolify stack contains one portfolio application plus the independent historical `whoami` routing test; UUID-based names are generated deployment identifiers, not duplicate portfolio builds.
+- Confirmed the current temporary route returns HTTP 200 but still serves revision `0e0f28d` and the former Team Lead Network Engineer title.
+- Added `docs/COOLIFY_OPERATIONS.md` with the single-deployment workflow, safe cleanup boundary and production-domain transition.
+
+### Pre-Phase 19 release preflight — 1 September 2026
+
+- Fetched `origin/main` and confirmed local `main` is neither ahead nor behind base commit `0e0f28d`.
+- Confirmed both repository configuration and the base commit identify `RahulSinghParmar <rahulsinghparmar4@protonmail.com>`.
+- Reviewed every modified and untracked release path; `git diff --check`, placeholder review and key-pattern scan passed.
+- Completed a clean `npm ci` after stopping an obsolete repository-local `next dev` process that held the native compiler file.
+- Re-ran the complete quality gate after the clean install; formatting, lint, types, build, performance and 37 SEO checks passed.
+- Built image `rahul-portfolio:1.0.0` as `sha256:5918c5475425ea1e8f7885138556e5946bbcf9ff3fc5e45b07716a1c87c99dad` (83,563,353 bytes).
+- Verified UID/GID `1001`, healthy state, zero restarts, localhost-only audit binding and the 29/29 deployment contract, then removed the test container.
+- Retained the named release image for inspection; no temporary Phase 18 audit image or container remains.
 
 ## What was audited
 
@@ -70,7 +97,7 @@ No new product features were introduced during this audit. Changes were limited 
 
 ### Experience
 
-**Assessment:** The current role and engineering practice are clear, but the public record is intentionally incomplete because exact dates and previous roles have not been verified.
+**Assessment:** The current DCO Tech 3 title and engineering practice are clear. The employer, start date and publishable responsibilities for that role remain intentionally absent until verified, while the previous Team Lead Network Engineer role is retained as career history.
 
 **Fixed:** The heading now uses direct operational language and avoids unsupported outcome claims.
 
@@ -122,7 +149,7 @@ No new product features were introduced during this audit. Changes were limited 
 
 **Fixed:** The heading now states the preferred contact route in plain language. No availability claim is made without confirmation.
 
-**Recommendation:** Manually verify LinkedIn after deployment because automated HEAD requests receive LinkedIn's bot-protection response. Confirm the public email before tagging the release.
+**Recommendation:** Manually verify LinkedIn after deployment because automated HEAD requests receive LinkedIn's bot-protection response. Run a delivery smoke test against the confirmed Proton Mail address before tagging the release.
 
 ### Footer
 
@@ -134,7 +161,7 @@ No new product features were introduced during this audit. Changes were limited 
 
 ### Cross-section consistency
 
-Typography, linework, status colors and spacing are consistent at the audited breakpoints. The main residual design cost is page length: approximately 16,977 px at 1280 × 720 and 20,798 px at 390 × 844. The desktop reading experience is intentionally prioritized; mobile remains functional but necessarily stacks the editorial layouts. The repeated large-heading-plus-grid pattern is coherent, though a later redesign could vary one or two section openings after content is reduced.
+Typography, linework, status colors and spacing are consistent across the audited 320, 390, 768, 1280, 1440 and 1920-pixel viewports. The same hierarchy carries across persistent system, light and dark themes, including Canvas and SVG diagrams. The desktop reading experience is intentionally prioritized; mobile remains functional but necessarily stacks the editorial layouts. The repeated large-heading-plus-grid pattern is coherent, though a later redesign could vary one or two section openings after content is reduced.
 
 ## 2. Content audit
 
@@ -148,7 +175,7 @@ Typography, linework, status colors and spacing are consistent at the audited br
 
 ### Verified content still needed
 
-`CONTENT_TODO.md` records the remaining evidence Rahul must supply: employment dates and previous roles, measurable outcomes, infrastructure certifications, public résumé choice, public email confirmation and monitoring-policy decisions. None blocks the software artifact, but incomplete experience and certification evidence limits recruiter depth.
+`CONTENT_TODO.md` records the remaining evidence Rahul must supply: current-role employer and dates, measurable outcomes, additional previous roles, infrastructure certifications, public résumé choice and monitoring-policy decisions. None blocks the software artifact, but incomplete experience and certification evidence limits recruiter depth.
 
 ## 3. Image audit
 
@@ -193,11 +220,11 @@ None was promoted to a public asset. The images have a visibly synthetic, studio
 
 | Metric                     | Measurement |  Budget | Result |
 | -------------------------- | ----------: | ------: | ------ |
-| Home HTML, raw             |   138.8 KiB | 160 KiB | Pass   |
-| Initial JavaScript, raw    |   582.6 KiB | 620 KiB | Pass   |
-| Initial JavaScript, Brotli |   156.0 KiB | 190 KiB | Pass   |
-| Initial CSS, raw           |    48.1 KiB |  64 KiB | Pass   |
-| Critical route, Brotli     |   178.6 KiB | 225 KiB | Pass   |
+| Home HTML, raw             |   140.6 KiB | 160 KiB | Pass   |
+| Initial JavaScript, raw    |   585.3 KiB | 620 KiB | Pass   |
+| Initial JavaScript, Brotli |   156.7 KiB | 190 KiB | Pass   |
+| Initial CSS, raw           |    50.9 KiB |  64 KiB | Pass   |
+| Critical route, Brotli     |   180.3 KiB | 225 KiB | Pass   |
 | Public raster assets       |   172.6 KiB | 350 KiB | Pass   |
 | Largest public raster      |   172.6 KiB | 200 KiB | Pass   |
 
@@ -212,7 +239,7 @@ The raw HTML budget was raised from 140 KiB to 160 KiB because the candidate was
 
 The remaining mobile opportunity is approximately 55 KiB of unused JavaScript in shared Next.js/React chunks. Application motion libraries are capability-gated and are not part of the initial mobile route. Replacing the framework or compromising the static-first architecture is not justified for this release.
 
-Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, stops off-screen and is omitted for reduced-motion, coarse-pointer, low-power and data-saving clients. Status fetching is deferred until its section approaches the viewport and pauses when it leaves.
+Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, stops off-screen and is omitted for reduced-motion, low-power and data-saving clients. Touch and mobile devices retain progressive motion instead of being rejected solely by pointer type or viewport width. Status fetching is deferred until its section approaches the viewport and pauses when it leaves.
 
 ## 6. Security audit
 
@@ -241,8 +268,9 @@ Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, stops off-scree
 - Capability controls and links are keyboard operable with visible two-pixel focus indicators.
 - Diagrams have accessible names; live status uses a polite atomic region.
 - Reduced-motion users receive the complete static SVG composition without Canvas or scroll animation.
-- No horizontal overflow was observed at 1280 × 720 or 390 × 844.
-- Audited text token contrast ranges from 6.97:1 to 16.72:1 against the primary background and meets WCAG AA.
+- System, light and dark themes initialize before paint, persist across reloads and expose a keyboard-operable control within the mobile focus boundary.
+- No user-facing horizontal overflow was observed from 320 to 1920 CSS pixels.
+- Audited text token contrast ranges from 5.12:1 to 16.72:1 across the dark and light backgrounds and meets WCAG AA.
 
 Outstanding: perform one NVDA plus Chrome or Firefox smoke test before changing navigation, live regions or heading structure. When Apple hardware is available, add VoiceOver plus Safari to the release checklist.
 
@@ -275,11 +303,11 @@ A new contributor can clone, run `npm ci`, optionally copy `.env.example`, start
 
 ### Public release blocker
 
-A strict request to `https://rahulsinghparmar.site` failed certificate hostname validation (`SEC_E_WRONG_PRINCIPAL`). An insecure request returned HTTP 200 from `Server: GitHub.com`, confirming that the old GitHub Pages deployment still owns the public response. The Coolify candidate and its headers, health endpoint and content cannot be verified externally until DNS/TLS routing is corrected.
+The Coolify application currently runs an older revision on `portfolio-rc.parmar.homes`; the reviewed Phase 14–18 tree is not committed, pushed or deployed. The apex and `www` production host rules and the external HTTPS contract remain unfinished. The old GitHub Pages binding has already been removed and is no longer the rollback runtime.
 
 Required resolution:
 
-1. Authorize the repository in Coolify and deploy the reviewed commit on a temporary hostname.
+1. Commit and push the reviewed tree, then deploy that exact commit to the existing Coolify application.
 2. Route apex and `www` through Cloudflare Tunnel to the Traefik HTTP origin.
 3. Configure the canonical redirect and HTTPS enforcement.
 4. Verify strict HTTPS from outside the host.
@@ -298,6 +326,22 @@ Required resolution:
 - Added semantic versioning and a production changelog.
 - Recalibrated the raw-HTML budget to preserve regression headroom without relaxing the compressed route limit.
 
+## Issues fixed in Phase 17
+
+- Raised the mobile light-theme opacity of the static topology, with an explicit reduced-motion treatment.
+- Prevented the Proton Mail address from producing an orphaned final line at narrow mobile widths.
+- Revalidated the production build across system, light and dark themes, full and reduced motion, mobile navigation and 320–1920-pixel viewports.
+- Documented intentional decorative overflow separately from user-facing clipping and recorded the remaining cross-browser boundary.
+
+## Issues fixed in Phase 18
+
+- Eliminated the unsupported `next start` plus standalone-output combination.
+- Made the standalone directory independently runnable by including public and hashed static assets during `postbuild`.
+- Simplified the runtime image to one application-artifact copy without changing its non-root or health contract.
+- Audited live Docker state and separated Coolify control-plane services, the one portfolio deployment and the obsolete routing smoke test.
+- Replaced the stale “repository authorization” task with the actual remaining action: deploy the final reviewed commit.
+- Added an operator-facing Coolify runbook that explains build creation, generated names, cleanup and rollback.
+
 ## Outstanding items
 
 ### Blocking
@@ -306,7 +350,7 @@ Required resolution:
 
 ### Non-blocking release-content decisions
 
-- Confirm public email and manually verify LinkedIn.
+- Smoke-test the confirmed Proton Mail route and manually verify LinkedIn.
 - Supply safe employment dates, prior roles and measurable outcomes.
 - Add verified infrastructure/security/cloud certifications.
 - Decide whether a read-only monitoring source and its retention policy are safe to publish.
@@ -326,4 +370,4 @@ The repository and Docker artifact are ready to be deployed as the final candida
 
 ## NOT READY FOR RELEASE
 
-**Justification:** the reviewed code and container pass local release gates, and the legacy Pages binding has been removed. The canonical hostname intentionally has no production web route until the Coolify candidate is deployed and verified. After the tunnel routes, redirects and external 29-check contract pass, the unchanged candidate can be released as `v1.0.0` without further feature work.
+**Justification:** the reviewed code and simplified standalone container pass local release gates, and the legacy Pages binding has been removed. The currently running Coolify application is an older healthy candidate, not the reviewed Phase 14–18 tree. After the final commit is deployed, the production host rules, redirects and external 29-check contract must pass before the unchanged candidate can be released as `v1.0.0`.

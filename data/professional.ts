@@ -30,9 +30,9 @@ export const careerDirections = [
 export const workingModes = [
   {
     label: "Primary practice",
-    title: "Infrastructure leadership",
+    title: "Data center operations",
     description:
-      "Network operations, incident coordination, systems administration, security controls, and team enablement.",
+      "Infrastructure availability, hardware and network operations, incident handling, change execution, and cross-team coordination.",
   },
   {
     label: "Weekend practice",

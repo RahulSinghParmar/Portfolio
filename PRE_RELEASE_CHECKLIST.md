@@ -44,20 +44,23 @@ The release worktree was saved, `main` was fast-forwarded to remote commit `b331
   - `DEPLOYMENT_CUTOVER_PLAN.md`
   - `PRE_RELEASE_CHECKLIST.md`
   - `docs/DEPLOYMENT.md`
+  - `docs/COOLIFY_OPERATIONS.md`
+  - `docs/VISUAL_REGRESSION.md`
   - `.env.example`
   - `.github/workflows/quality.yml`
   - `Dockerfile`
+  - `scripts/prepare-standalone.mjs`
 - [x] Confirm no `.env.local`, token, API key, private key, tunnel credential, Namecheap export or Cloudflare credential is tracked.
 - [x] Confirm `myphotos/`, `.next/`, Lighthouse output and local audit artifacts remain ignored.
 - [x] Run `git diff --check`.
 - [x] Run the repository secret scan.
-- [ ] Run `npm ci` from the committed lockfile.
+- [x] Run `npm ci` from the committed lockfile.
 - [x] Run `npm run quality:check`.
-- [ ] Build `rahul-portfolio:1.0.0` from the reconciled worktree.
-- [ ] Run the container locally as UID/GID `1001` and confirm it becomes healthy.
-- [ ] Run `npm run deployment:check -- http://localhost:3100` and require 29/29.
-- [ ] Stop and remove the temporary test container.
-- [ ] Review `git diff` in full; confirm no feature, UI or content scope entered Phase 13.
+- [x] Build `rahul-portfolio:1.0.0` from the reconciled worktree.
+- [x] Run the container locally as UID/GID `1001` and confirm it becomes healthy.
+- [x] Run `npm run deployment:check -- http://localhost:3100` and require 29/29.
+- [x] Stop and remove the temporary test container.
+- [x] Review `git diff` in full; confirm no unreviewed feature, UI or content scope entered the release candidate.
 - [ ] Stage only reviewed release paths.
 - [ ] Review `git diff --cached --check` and `git diff --cached`.
 - [ ] Commit with Rahul's configured Git identity and a release-focused message, for example:
