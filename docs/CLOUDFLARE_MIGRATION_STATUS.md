@@ -4,13 +4,24 @@
 
 | Field                    | Value                                                 |
 | ------------------------ | ----------------------------------------------------- |
-| Status                   | Phase 27 complete                                     |
-| Active branch            | `codex/cloudflare-static-migration`                   |
+| Status                   | Phase 28 in progress                                  |
+| Active branch            | `codex/phase-28-hosted-preview`                       |
 | Baseline SHA             | `25467d952bb6069e132890c7de10001fcb21db75` (`v1.0.0`) |
 | Production changes       | None                                                  |
 | DNS / Cloudflare changes | None                                                  |
 | Docker / Coolify changes | None                                                  |
-| Next phase               | Phase 28 — hosted preview and acceptance              |
+| Next phase               | Complete Phase 28 hosted acceptance                   |
+
+## Phase 28 preflight
+
+- The reviewed Phase 27 candidate was squash-merged to `main` at `1de2e8a3713b5a9bd6db990c19c2e5b3dc279c54` under RahulSinghParmar's verified Git identity.
+- GitHub Actions release validation passed on pull request #4 and again on `main`.
+- GitHub environments `cloudflare-preview` and `cloudflare-production` exist with separately scoped `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` secrets.
+- Production requires RahulSinghParmar's review, prevents administrator bypass, and is restricted to `main`. Self-review remains allowed for this single-maintainer repository.
+- Repository variable `PRODUCTION_DEPLOYMENT_ENABLED` remains `false`.
+- Cloudflare Workers Builds are not connected for either portfolio Worker name. GitHub Actions remains the only intended publisher.
+- The separate `maintenance-page` Worker and all production routes remain outside this phase's scope.
+- The isolated preview will use `rahul-singh-parmar-portfolio-preview`; the production Worker name will not be created or updated in Phase 28.
 
 ## Completed in Phase 23
 

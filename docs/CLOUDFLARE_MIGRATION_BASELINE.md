@@ -1,7 +1,9 @@
 # Cloudflare migration baseline
 
-**Phase:** 23 — Baseline and migration contract  
-**Captured:** 7 September 2026  
+**Phase:** 23 — Baseline and migration contract
+
+**Captured:** 7 September 2026
+
 **Scope:** Evidence only. No deployment, DNS, feature, or production-route changes were made.
 
 ## Source and rollback references
