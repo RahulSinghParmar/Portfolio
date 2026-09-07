@@ -1,154 +1,154 @@
-# Production deployment
+# Cloudflare deployment operations
 
-The portfolio is packaged as a minimal Next.js standalone container for the existing Coolify, Traefik and Cloudflare Tunnel stack. The application is stateless: it needs no database or persistent volume, and its only optional external dependency is the read-only system-status source.
+This runbook covers the target release path: GitHub Actions builds a Next.js static export and API Worker, validates the exact candidate, and manually promotes it to Cloudflare Workers Static Assets. It does not authorize production cutover, DNS changes or maintenance-Worker changes.
 
-## Request path
+## Ownership and trust boundaries
 
-```text
-Public visitor
-  └─ HTTPS → Cloudflare edge
-               └─ Cloudflare Tunnel → http://localhost:80
-                                          └─ Traefik Host rule
-                                                       └─ portfolio container :3000
-```
+| Concern                           | Owner                                         |
+| --------------------------------- | --------------------------------------------- |
+| Source and reviewed SHA           | GitHub repository                             |
+| Release validation                | `.github/workflows/quality.yml`               |
+| Preview/production promotion      | `.github/workflows/deploy-cloudflare.yml`     |
+| Static files and `/api/*`         | One Cloudflare Worker project per environment |
+| DNS, custom domains and redirects | Manual Phase 29 operator action               |
+| Homelab delivery                  | Independent of portfolio hosting              |
+| Docker/Coolify v1.0.0             | Rollback reference only                       |
 
-Cloudflare terminates public TLS. Keep the Coolify/Traefik application origin on HTTP to avoid a second certificate flow and redirect loops through the tunnel. The public application identity and canonical URL remain `https://rahulsinghparmar.site`.
+GitHub Actions must be the only automated deployment owner. Keep Cloudflare Workers Builds disconnected or disabled for these Worker projects; otherwise a Git push could publish outside the reviewed workflow.
 
-## Container contract
+## Account setup — manual and not yet performed
 
-The root `Dockerfile` uses four deliberate stages:
+Create two GitHub deployment environments:
 
-1. `base` — Node.js 22 Alpine and shared build settings.
-2. `dependencies` — deterministic `npm ci` from the committed lockfile.
-3. `builder` — Next.js production build with public values frozen at build time; `postbuild` assembles public and static assets into one standalone directory.
-4. `runner` — one copy of the self-contained standalone output and no development dependencies.
+1. `cloudflare-preview`
+2. `cloudflare-production`
 
-The runtime:
+Add these environment secrets to each environment, using separate least-privilege tokens where practical:
 
-- runs as unprivileged UID/GID `1001`;
-- listens on `0.0.0.0:3000`;
-- exposes only the application port;
-- disables Next.js telemetry;
-- handles `SIGTERM` through the standard Next.js server;
-- reports container health through `GET /api/health`;
-- contains OCI source, license, description and version labels.
+| Secret                  | Value                                                      |
+| ----------------------- | ---------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID containing the Worker projects                  |
+| `CLOUDFLARE_API_TOKEN`  | Token scoped to this account and required Worker resources |
 
-The health endpoint is intentionally shallow. It verifies that the process and HTTP router are ready without coupling container availability to an optional monitoring provider.
+Use Cloudflare's **Edit Cloudflare Workers** token template as the starting point, restrict account and zone resources to Rahul's account and `rahulsinghparmar.site`, then remove permissions the workflow does not use. Do not grant DNS write access to CI. A production custom-domain route may require Workers Routes permission when that binding is added in Phase 29; DNS remains a separate manual action.
 
-The same runtime is used outside Docker: `npm start` launches `.next/standalone/server.js` directly. The project no longer uses the unsupported `next start` path with standalone output.
+Protect `cloudflare-production` with required reviewer approval and restrict deployments to `main`. Disable self-approval where the account plan supports it.
 
-## Environment contract
+Create repository variable `PRODUCTION_DEPLOYMENT_ENABLED` with value `false`, or leave it absent. Change it to `true` only for the approved Phase 29 cutover window and return it to `false` afterward.
 
-Public variables are embedded during `next build`; changing them requires a rebuild. Mark both as **build variables** in Coolify:
+Do not create or paste tokens into the repository, issue comments, workflow inputs, logs, `.env*`, `.dev.vars.example` or documentation.
 
-| Variable                   | Stage | Required | Production value                  |
-| -------------------------- | ----- | -------- | --------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`     | Build | Yes      | `https://rahulsinghparmar.site`   |
-| `NEXT_PUBLIC_SITE_VERSION` | Build | Yes      | Release label, initially `v1.0.0` |
+## Local validation
 
-The status adapter is server-only and evaluated at runtime:
-
-| Variable                   | Stage   | Required | Notes                                          |
-| -------------------------- | ------- | -------- | ---------------------------------------------- |
-| `SYSTEM_STATUS_SOURCE`     | Runtime | Yes      | `disabled` until the read-only source is ready |
-| `SYSTEM_STATUS_URL`        | Runtime | No       | Must be HTTPS when source is `http`            |
-| `SYSTEM_STATUS_TOKEN`      | Runtime | No       | Secret; never expose with `NEXT_PUBLIC_`       |
-| `SYSTEM_STATUS_TIMEOUT_MS` | Runtime | No       | 1000–8000 ms; default `3500`                   |
-
-Coolify or the image supplies `NODE_ENV=production`, `HOSTNAME=0.0.0.0`, `PORT=3000` and `NEXT_TELEMETRY_DISABLED=1`; do not duplicate them unless diagnosing a platform override.
-
-## Coolify application setup
-
-1. Create an **Application** in the production project and select the Portfolio Git repository.
-2. Use **Dockerfile** as the build pack, repository root `/`, and `Dockerfile` as the file path.
-3. Set the container port to `3000`. Do not publish that port directly on the Windows host; Traefik owns the public listener.
-4. Add the application domain as `http://rahulsinghparmar.site` inside Coolify so Traefik creates the HTTP Host rule. Visitors and canonical metadata continue to use `https://rahulsinghparmar.site` through Cloudflare.
-5. Configure the health path as `/api/health`, method `GET`, port `3000`, interval `30s`, timeout `5s`, start period `20s`, and three retries. The Docker image contains the same defaults.
-6. Add the build and runtime variables from the tables above. Store `SYSTEM_STATUS_TOKEN` as a masked secret.
-7. Keep one replica initially. The site is stateless and can scale later, but a second replica is unnecessary until traffic or availability measurements justify it.
-8. Enable automatic deployment only after the first manual deployment passes the release gate below.
-
-The Cloudflare Tunnel public-hostname route should target the existing Traefik origin at `http://localhost:80`. Do not point the tunnel directly to port 3000, request a second Coolify ACME certificate through the tunnel, or expose the container port to the LAN.
-
-The application lifecycle, generated container names and safe cleanup rules are documented in [COOLIFY_OPERATIONS.md](./COOLIFY_OPERATIONS.md).
-
-## Local standalone verification
-
-Build and run the exact artifact copied into the container:
+Use Node.js 22 or later:
 
 ```powershell
-npm run build
-npm start
-npm run deployment:check -- http://127.0.0.1:3000
+npm ci
+npm run release:check
+npm run preview:cloudflare
 ```
 
-The build lifecycle copies `public/` and `.next/static/` into `.next/standalone/` before startup. Verify at least one hashed stylesheet and `/images/rahul.webp` when changing that assembly script.
+In a second terminal:
 
-## Local image verification
-
-Build from the repository root:
-
-```bash
-docker build --pull --tag rahul-portfolio:1.0.0 .
-docker run --rm --detach --name rahul-portfolio --publish 127.0.0.1:3100:3000 rahul-portfolio:1.0.0
-npm run deployment:check -- http://localhost:3100
-docker stop rahul-portfolio
+```powershell
+npm run deployment:check -- http://127.0.0.1:8788
 ```
 
-Inspect the runtime identity and health state:
+`release:check` verifies formatting, lint, TypeScript, Worker tests, static export, performance, SEO, a Wrangler preview dry-run, static file count and size, Worker bundle size, header rules and pinned runtime versions. `deployment:check` verifies the live asset/API contract, including real 404s, HEAD, named metadata images, cache policy and security headers.
 
-```bash
-docker inspect --format '{{.Config.User}}' rahul-portfolio:1.0.0
-docker inspect --format '{{json .State.Health}}' rahul-portfolio
+## Pull-request gate
+
+The `Release quality` workflow runs on pull requests, `main` pushes and manual dispatch. It installs the exact lockfile on Node.js 22, runs `release:check`, starts the built site through local Wrangler and exercises the deployment contract.
+
+There is no container-build job in the target path. The Docker image remains a historical rollback artifact and should not consume CI time for every Cloudflare candidate.
+
+## Preview promotion
+
+Phase 28 owns the first hosted preview. After committing the candidate and obtaining a passing quality workflow:
+
+1. Open **Actions → Deploy Cloudflare portfolio → Run workflow**.
+2. Select the reviewed branch and choose `preview`.
+3. Paste the full 40-character commit SHA into `confirmed_sha`.
+4. Review and approve the `cloudflare-preview` environment if configured.
+5. Record the deployed Worker version and hosted URL from the workflow output.
+6. Run:
+
+   ```powershell
+   $env:DEPLOYMENT_EXPECTED_ENV = "preview"
+   npm run deployment:check -- https://<preview-hostname>
+   Remove-Item Env:DEPLOYMENT_EXPECTED_ENV
+   ```
+
+7. Complete the Phase 28 browser and real-device checklist before considering production.
+
+The workflow refuses a SHA mismatch. It validates without deployment credentials first, then the environment-gated job installs, rebuilds and revalidates the same SHA before invoking Wrangler.
+
+## Production promotion
+
+Production is deliberately blocked until Phase 29:
+
+1. Confirm the accepted preview SHA is on `main`.
+2. Complete the DNS, redirect, certificate and maintenance-route preflight.
+3. Set `PRODUCTION_DEPLOYMENT_ENABLED=true` for the cutover window.
+4. Manually dispatch from `main`, choose `production`, and enter the exact full SHA.
+5. A required reviewer approves `cloudflare-production` after checking the SHA and cutover record.
+6. Apply the separately reviewed custom-domain/routing changes.
+7. Run the production contract with `DEPLOYMENT_EXPECTED_ENV=production` and complete external checks.
+8. Return `PRODUCTION_DEPLOYMENT_ENABLED` to `false`.
+
+The current `wrangler.jsonc` intentionally contains no production custom-domain route. A workflow run before Phase 29 can upload a production Worker version, but it cannot take over the public domain.
+
+## Runtime contract
+
+- Static requests are served from `out/` without executing Worker code.
+- `/api` and `/api/*` execute Worker code first.
+- `/api/health` reports request-time edge health and version, not process uptime.
+- `/api/system-status` is disabled until an approved public read-only source exists.
+- API responses are JSON and `no-store`.
+- Unknown documents return the exported 404 page with HTTP 404.
+- Preview responses are `noindex, nofollow`; the production apex is indexable.
+
+## Optional status source
+
+Keep the source disabled unless an approved HTTPS endpoint and public field contract exist. Non-secret values are Worker bindings in `wrangler.jsonc`; the token must be created separately per environment:
+
+```powershell
+npx wrangler secret put SYSTEM_STATUS_TOKEN --env preview
+npx wrangler secret put SYSTEM_STATUS_TOKEN --env production
 ```
 
-## Release-candidate verification
+These commands mutate Cloudflare account state and are not part of local validation. Never expose a private homelab endpoint just to populate the widget.
 
-Validated locally on 31 August 2026 with Docker Desktop Engine 29.7.2:
+## Verification checklist
 
-| Check                        | Result                                     |
-| ---------------------------- | ------------------------------------------ |
-| Production image             | `rahul-portfolio:1.0.0`                    |
-| Local image size             | 79.7 MiB                                   |
-| Runtime identity             | UID `1001` / GID `1001`                    |
-| Container health             | Healthy, zero restarts                     |
-| Deployment contract          | 29/29 checks passed                        |
-| Lighthouse Best Practices    | 100, zero browser-console errors           |
-| Container dependency install | 357 packages audited, zero vulnerabilities |
+- `/` is HTTP 200 with the canonical apex URL.
+- `/api/health` is HTTP 200 JSON with `runtime: cloudflare-workers` and no uptime claim.
+- `/api/system-status` renders a truthful disconnected, live or unavailable state.
+- Unknown document is an HTML HTTP 404; unknown API is JSON HTTP 404.
+- HEAD requests return the correct status with no body.
+- HTML revalidates, hashed assets are immutable and stable images have bounded caching.
+- CSP and all security headers are present on static, API and 404 responses.
+- Named social and icon PNGs return the correct MIME type.
+- Preview is noindex; production does not receive an accidental noindex header.
+- Light/dark/system themes, reduced motion, full motion, keyboard navigation and responsive layout pass.
+- No browser-console error, failed asset or unexpected external request appears.
 
-The test container was stopped and removed after verification. The built image remains in the local Docker cache for inspection or a repeat smoke test.
-
-## Release gate
-
-Before moving traffic to a new deployment:
-
-1. Complete formatting, lint, type, production build, performance, SEO and accessibility checks.
-2. Require the Coolify container to become healthy without restart loops.
-3. Run `npm run deployment:check -- https://rahulsinghparmar.site` from outside the host after deployment.
-4. Confirm `/api/health`, `/robots.txt`, `/sitemap.xml`, `/opengraph-image` and `/twitter-image` return HTTP 200.
-5. Confirm the public response contains the security headers and the canonical HTTPS identity.
-6. Confirm Cloudflare returns HTTPS 200 while the Traefik origin remains HTTP.
-7. Inspect recent application and proxy logs for repeated 4xx/5xx, OOM kills or unexpected restarts.
+Automated browser emulation does not satisfy physical-device acceptance. Record iPhone/Android and desktop-browser evidence separately in Phase 28.
 
 ## Rollback
 
-If the public gate fails:
+Before any production change, record the current Cloudflare Worker version, DNS records, routes, redirect rules and maintenance-Worker routes.
 
-1. Leave the failed deployment available for logs; do not mutate it in place.
-2. In Coolify, select the previous known-good deployment or redeploy its exact Git commit.
-3. Wait for `/api/health` to report healthy before switching traffic.
-4. Repeat the external deployment contract and the Cloudflare/Traefik checks.
-5. Record the failed commit, symptom and relevant application/proxy log window before retrying.
+If a Worker release fails but routing is correct, roll back to the last known-good Cloudflare Worker version, rerun the deployment contract, and retain the failed version/logs for diagnosis.
 
-No database migration or volume rollback is required because this application is stateless.
+If the Phase 29 routing cutover fails, restore the recorded pre-cutover Worker route, maintenance route and web DNS state exactly. Restore the legacy traffic path only if its health was verified before cutover, then repeat HTTPS and external deployment checks.
 
-## Operations and hardening
+The retained Docker/Coolify release is documented in [COOLIFY_OPERATIONS.md](./COOLIFY_OPERATIONS.md). Do not resume or mutate it without explicit operator approval. No database or volume rollback is required by the portfolio itself.
 
-- Let Cloudflare handle public TLS, HSTS, bot controls and edge rate limits; the application supplies CSP, frame, content-type, referrer and permissions protections.
-- Keep Traefik as the only public origin listener and retain Coolify control-plane ports on localhost.
-- Start with conservative CPU and memory limits, then tune them from observed usage rather than guessing. Treat OOM kills or sustained throttling as a failed release signal.
-- Keep application logs on stdout/stderr for Coolify collection. Do not write secrets, authorization headers or full upstream payloads.
-- Rebuild the image regularly so the moving Node 22 Alpine base receives current operating-system and runtime patches. The lockfile continues to pin application dependencies.
-- Pin the base image by digest only if the image-update process also includes scheduled digest refreshes; an abandoned digest is not a security update strategy.
+## References
 
-Git-provider authorization, Cloudflare hostname changes and public traffic cutover require account-level actions and are intentionally separate from local release-candidate verification.
+- [Cloudflare GitHub Actions deployment](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
+- [Cloudflare Wrangler commands](https://developers.cloudflare.com/workers/wrangler/commands/)
+- [Cloudflare Worker platform limits](https://developers.cloudflare.com/workers/platform/limits/)
+- [GitHub deployment environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
+- [GitHub deployment controls](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments)

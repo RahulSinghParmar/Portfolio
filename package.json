@@ -2,19 +2,27 @@
   "name": "rahul-singh-parmar-portfolio",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/clean-build-output.mjs",
     "build": "next build",
-    "postbuild": "node scripts/prepare-standalone.mjs",
-    "start": "node .next/standalone/server.js",
+    "postbuild": "node scripts/prepare-cloudflare-assets.mjs && node scripts/verify-static-export.mjs",
+    "start": "node scripts/preview-static.mjs",
+    "preview:cloudflare": "npm run build && wrangler dev --local --port 8788",
+    "cloudflare:package": "wrangler deploy --dry-run --env preview --outdir .wrangler/dry-run",
+    "cloudflare:limits": "node scripts/check-cloudflare-package.mjs",
+    "cloudflare:check": "npm run build && npm run cloudflare:package && npm run cloudflare:limits",
+    "test:worker": "node --test worker/api-worker.test.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "quality:check": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run performance:check && npm run seo:check",
+    "quality:check": "npm run format:check && npm run lint && npm run typecheck && npm run test:worker && npm run build && npm run performance:check && npm run seo:check",
+    "release:check": "npm run quality:check && npm run cloudflare:package && npm run cloudflare:limits",
     "performance:check": "node scripts/check-performance-budget.mjs",
     "seo:check": "node scripts/check-seo.mjs",
     "deployment:check": "node scripts/check-deployment.mjs"
@@ -34,6 +42,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.3",
     "prettier": "3.9.6",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "wrangler": "4.129.0"
   }
 }

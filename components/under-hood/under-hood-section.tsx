@@ -11,8 +11,9 @@ export function UnderHoodSection() {
         <p className="mono-meta">Portfolio / operated system</p>
         <h2>The portfolio is deployed like the systems it describes.</h2>
         <p>
-          Most of the page ships as server-rendered HTML. Client code is limited to navigation,
-          optional motion, the capability map and the read-only status view.
+          Most of the page ships as pre-rendered HTML from Cloudflare&apos;s asset edge. Client code
+          is limited to navigation, optional motion, the capability map and the read-only status
+          view.
         </p>
       </div>
       <PortfolioArchitecture />

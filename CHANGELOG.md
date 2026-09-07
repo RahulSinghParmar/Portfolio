@@ -2,6 +2,35 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Cloudflare Workers Static Assets packaging with selective API Worker routing, local/preview/production environments and real static 404 handling.
+- Edge-native health and bounded read-only status APIs with failure isolation and Worker unit tests.
+- Release artifact guardrails for static asset count/size, Worker bundle size and `_headers` complexity.
+- Manual, SHA-bound GitHub Actions workflow for preview and protected production promotion.
+
+### Changed
+
+- Replaced the active standalone Node/Coolify delivery model with a reproducible static export and Cloudflare Worker target.
+- Reconciled contributor, deployment and operating documentation around GitHub Actions as the single deployment owner.
+- Retained Docker and Coolify material as an explicit `v1.0.0` rollback reference rather than an active CI path.
+
+### Fixed
+
+- Replaced extensionless generated metadata-image references with deterministic PNG paths and verified MIME types.
+- Updated deployment validation to cover Worker navigation, HEAD, JSON API errors, security headers, cache policies and genuine 404s.
+
+### Performance
+
+- Kept static requests out of Worker execution and applied immutable caching only to fingerprinted assets.
+- Confirmed the migration candidate remains within existing route budgets and new Cloudflare artifact budgets.
+
+### Security
+
+- Added matching security policy to static and Worker-generated responses, preview noindex isolation and least-privilege deployment guidance.
+
 ## [1.0.0] - 2026-09-01
 
 ### Added

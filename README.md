@@ -1,153 +1,86 @@
 # Rahul Singh Parmar — Engineering Portfolio
 
-Production portfolio for Rahul Singh Parmar, a DCO Tech 3 focused on data center operations, network reliability, systems administration, security, AWS, homelab engineering and practical automation.
+Production portfolio for Rahul Singh Parmar, a DCO Tech 3 working across data-center operations, network reliability, systems, security, AWS, homelab engineering and practical automation.
 
 - Public site: [rahulsinghparmar.site](https://rahulsinghparmar.site)
-- Release target: `v1.0.0`
-- Runtime: Next.js standalone server in a non-root Docker container
+- Current release: `v1.0.0`
+- Migration target: Cloudflare Workers Static Assets with an API Worker
+- Runtime requirement: Node.js 22+
 
 ## Project overview
 
-This repository replaces an earlier static portfolio with a typed, data-driven Next.js application. The site presents selected infrastructure work as operational case studies: what failed, how the system responds, which controls protect it and how recovery is observed.
+This repository presents infrastructure work as operational case studies: what a system does, where it can fail, which controls protect it and how recovery is observed. The portfolio is a static Next.js export. Only the health and optional system-status endpoints execute in a small Cloudflare Worker.
 
-Most content is rendered on the server. JavaScript is reserved for navigation, persistent color-theme control, optional motion, the capability map and a read-only status view. The public site has no database, authentication flow or write-capable API.
+The application has no database, authentication flow, write-capable API or persistent storage. A monitoring outage is isolated to the status panel; it cannot take down the portfolio.
 
 ## Architecture
 
 ```text
-Visitor
-  └─ Cloudflare HTTPS edge
-       └─ Cloudflare Tunnel
-            └─ Traefik HTTP origin
-                 └─ Next.js standalone container :3000
-                      ├─ Static and server-rendered portfolio
-                      ├─ GET /api/health
-                      └─ GET /api/system-status
-                           └─ Optional read-only monitoring source
+GitHub reviewed commit
+  └─ locked install → quality gate → static export + Worker dry-run
+       └─ manual GitHub Actions promotion
+            └─ Cloudflare Worker project
+                 ├─ static assets: HTML, CSS, JS, images, metadata
+                 └─ /api/*: health and optional normalized system status
+
+Optional monitoring source ──read-only HTTPS──> API Worker
+Home Docker/Coolify environment ───────────────> independent homelab
 ```
 
-The status adapter is the only optional external data path. It runs server-side, applies a strict timeout, normalizes the upstream payload and exposes a deliberately small public response. Credentials never cross the server boundary.
+GitHub Actions is the intended deployment owner. Cloudflare Workers Builds must remain disabled to prevent two systems from publishing the same project.
 
 ## Technology stack
 
-| Layer       | Technology                                     | Purpose                                                   |
-| ----------- | ---------------------------------------------- | --------------------------------------------------------- |
-| Application | Next.js 16, React 19, TypeScript               | App Router, server rendering and typed UI                 |
-| Styling     | CSS custom properties, Geist Sans and Mono     | Responsive editorial system without a component framework |
-| Motion      | GSAP, ScrollTrigger, Lenis, Canvas 2D          | Capability-gated progressive enhancement                  |
-| Data        | Typed modules under `data/`                    | One source for profile, work, skills and credentials      |
-| Quality     | ESLint, Prettier, TypeScript, custom contracts | Static, performance, SEO and deployment checks            |
-| Runtime     | Node.js 22 Alpine, Docker                      | Minimal standalone production image                       |
-| Delivery    | GitHub, Coolify, Traefik, Cloudflare Tunnel    | Build, health checking, routing and public TLS            |
+| Layer           | Technology                                                 | Purpose                                                   |
+| --------------- | ---------------------------------------------------------- | --------------------------------------------------------- |
+| Application     | Next.js 16, React 19, TypeScript                           | Static App Router output and typed UI                     |
+| Styling         | CSS custom properties, Geist Sans and Mono                 | Responsive editorial system without a component framework |
+| Motion          | GSAP, ScrollTrigger, Lenis, Canvas 2D                      | Capability-gated progressive enhancement                  |
+| Data            | Typed modules under `data/`                                | One source for profile, work, skills and credentials      |
+| Edge runtime    | Cloudflare Workers Static Assets                           | Global static delivery and selective `/api/*` execution   |
+| Quality         | ESLint, Prettier, TypeScript, Node tests, custom contracts | Build, API, performance, SEO and deployment validation    |
+| Release control | GitHub Actions environments                                | Manual preview and protected production promotion         |
 
 ## Features
 
-- Architecture-led project case studies with source and live links only where a verified destination exists.
-- Interactive seven-layer capability map covering networks, security, systems, cloud, automation, observability and self-hosting.
-- Server-rendered professional record, education, certification and public contact channels.
-- Read-only system-status boundary with disconnected, live and unavailable states.
-- Generated Open Graph, Twitter/X, browser and Apple assets.
+- Architecture-led project case studies with verified source and live links.
+- Interactive capability map for networks, security, systems, cloud, automation, observability and self-hosting.
+- Static professional record, education, certifications and contact channels.
+- Read-only status boundary with disconnected, live and unavailable states.
+- Generated Open Graph, Twitter/X, browser and Apple assets with deterministic `.png` names.
 - Person, WebSite, ProfilePage and selected-work structured data.
-- Custom crawl directives, sitemap, manifest, 404 page and health endpoint.
-- Responsive 12/8/4-column layout with keyboard, reduced-motion and persistent system/light/dark theme support.
+- Real HTML 404s, crawl directives, sitemap, manifest and an honest edge health endpoint.
+- Keyboard, reduced-motion, persistent system/light/dark themes and responsive 12/8/4-column layouts.
 
 ## Design philosophy
 
-The interface borrows its visual language from diagrams, runbooks and network maps rather than dashboard templates. Typography carries the hierarchy; lines, grids and status colour provide structure. Motion is optional and never required to understand content or complete a task.
+The visual language comes from diagrams, runbooks and network maps. Typography carries the hierarchy; lines, grids and status color provide structure. Motion is optional and never required to navigate or understand the page.
 
-Three rules guide the implementation:
+Three implementation rules:
 
 1. Publish evidence, not unsupported claims.
 2. Keep the static reading experience complete before client enhancement.
-3. Treat deployment, failure and recovery as part of the product.
+3. Treat deployment, failure isolation and recovery as product behavior.
 
 ## Folder structure
 
 ```text
-app/                    App Router pages, metadata routes, APIs and global CSS
+app/                    Static App Router pages, metadata routes and global CSS
 components/             UI grouped by portfolio section
 data/                   Typed public content and topology definitions
-lib/                    SEO, generated-image and server-status utilities
-public/images/          Optimized release assets only
-scripts/                Performance, SEO and deployment contract checks
+lib/                    Browser-safe contracts and SEO utilities
+worker/                 Cloudflare API entrypoint, security policy and tests
+public/                 Optimized assets and Cloudflare _headers policy
+scripts/                Export, package, performance, SEO and runtime checks
 docs/                   Audit records and operating documentation
-.github/workflows/      Pull-request and main-branch quality gates
-Dockerfile              Multi-stage standalone production image
+.github/workflows/      Quality gate and manual deployment workflow
+wrangler.jsonc          Local, preview and production Worker configuration
+Dockerfile              Preserved v1.0.0 rollback packaging
 ```
 
-Local source portraits in `myphotos/` are intentionally ignored. They are reference material, not deployable assets.
-
-## Performance
-
-The home route is static-first and isolates client boundaries to four focused components. Motion libraries are dynamically imported after hydration unless the visitor requests reduced motion or the device reports a low-power or data-saving constraint. Touch and mobile clients retain motion support, while the semantic route map remains available as the fallback. The `?motion=full` diagnostic override works in both local and production builds.
-
-Canvas rendering is capped at 30 FPS and 1.5 device-pixel ratio, and pauses outside the viewport. Status polling starts only near the status section and stops while it is out of view. Repository budgets cover compressed HTML, JavaScript, CSS and public images.
-
-Run the budget after a production build:
-
-```bash
-npm run build
-npm run performance:check
-```
-
-The recorded baseline and budget rationale are in [docs/PERFORMANCE.md](./docs/PERFORMANCE.md).
-
-## Accessibility
-
-- Semantic landmarks and a single ordered heading hierarchy.
-- Skip link and programmatic main-content focus target.
-- Keyboard-operable navigation, capability controls and external links.
-- Mobile-menu focus containment, Escape handling, focus restoration and inert background content.
-- Keyboard-operable system/light/dark theme control with pre-paint initialization.
-- Visible two-pixel focus indicators.
-- `prefers-reduced-motion` support plus static SVG fallbacks.
-- Polite, atomic announcements for status changes.
-- Explicit context for links that open a new tab.
-
-The manual and automated verification record is in [docs/ACCESSIBILITY.md](./docs/ACCESSIBILITY.md). The production viewport, theme and motion matrix is in [docs/VISUAL_REGRESSION.md](./docs/VISUAL_REGRESSION.md).
-
-## SEO
-
-The canonical site identity is supplied through `NEXT_PUBLIC_SITE_URL`. Metadata, social cards, structured data, robots, sitemap and manifest are generated from the same profile data used by the page.
-
-```bash
-npm run build
-npm run seo:check
-```
-
-See [docs/SEO.md](./docs/SEO.md) for the enforced contract and production verification steps.
-
-## Security
-
-- Server-only monitoring adapter and token.
-- Production HTTPS requirement for the upstream monitoring URL.
-- CSP, clickjacking, content-type, referrer, permissions and cross-origin isolation headers.
-- No database, authentication state, browser storage or write-capable endpoint.
-- Non-root container runtime and deterministic dependency installation.
-- Environment files ignored by Git; public values are explicitly prefixed with `NEXT_PUBLIC_`.
-
-Cloudflare owns public TLS and HSTS. The application intentionally does not add HSTS to local HTTP responses. The CSP currently permits inline script and style execution required by the framework output; replacing that with request nonces would force dynamic rendering and is tracked as a future hardening option rather than hidden as completed work.
-
-Report security concerns through [SECURITY.md](./SECURITY.md).
-
-## Environment variables
-
-Copy `.env.example` to `.env.local` for local overrides. Never commit the resulting file.
-
-| Variable                   | Scope          | Required    | Default / example                          |
-| -------------------------- | -------------- | ----------- | ------------------------------------------ |
-| `NEXT_PUBLIC_SITE_URL`     | Build          | Production  | `https://rahulsinghparmar.site`            |
-| `NEXT_PUBLIC_SITE_VERSION` | Build          | Production  | `v1.0.0`                                   |
-| `SYSTEM_STATUS_SOURCE`     | Runtime        | Yes         | `disabled`; use `http` to connect a source |
-| `SYSTEM_STATUS_URL`        | Runtime        | With `http` | HTTPS JSON endpoint                        |
-| `SYSTEM_STATUS_TOKEN`      | Runtime secret | No          | Bearer token, if required                  |
-| `SYSTEM_STATUS_TIMEOUT_MS` | Runtime        | No          | `3500`, constrained to 1000–8000 ms        |
-
-Public variables are frozen during `next build`; changing them requires a rebuild.
+Source portraits under `myphotos/` are intentionally ignored. They are reference material, not release assets.
 
 ## Development workflow
-
-Node.js 22 is recommended; `package.json` permits Node.js 20.9 or newer.
 
 ```bash
 git clone https://github.com/RahulSinghParmar/Portfolio.git
@@ -156,102 +89,114 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Local overrides are optional; on PowerShell, copy the example with `Copy-Item .env.example .env.local`. Update public content in `data/` rather than duplicating copy inside components.
+Open `http://localhost:3000`. Update public copy in `data/` rather than duplicating it in components. `next dev` is useful for editing, but it is not release evidence.
 
-Before opening a pull request:
-
-```bash
-npm run quality:check
-```
-
-The workflow and contribution standards are documented in [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## Build commands
-
-| Command                             | Purpose                                          |
-| ----------------------------------- | ------------------------------------------------ |
-| `npm run dev`                       | Start the local development server               |
-| `npm run build`                     | Create a self-contained standalone output        |
-| `npm start`                         | Run the supported standalone server on port 3000 |
-| `npm run format`                    | Format repository text files                     |
-| `npm run format:check`              | Verify formatting without writes                 |
-| `npm run lint`                      | Run ESLint with zero warnings allowed            |
-| `npm run typecheck`                 | Run TypeScript without emitting files            |
-| `npm run performance:check`         | Enforce route asset budgets                      |
-| `npm run seo:check`                 | Verify prerendered metadata and crawl contracts  |
-| `npm run deployment:check -- <url>` | Smoke-test a running deployment                  |
-| `npm run quality:check`             | Run the complete static and build gate           |
-
-## Docker usage
+Before a pull request:
 
 ```bash
-docker build --pull --tag rahul-portfolio:1.0.0 .
-docker run --rm --detach \
-  --name rahul-portfolio \
-  --publish 127.0.0.1:3100:3000 \
-  rahul-portfolio:1.0.0
-npm run deployment:check -- http://localhost:3100
-docker stop rahul-portfolio
+npm run release:check
 ```
 
-The runtime image listens on port `3000`, runs as UID/GID `1001`, and checks `/api/health` without depending on the optional status provider.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for change standards.
 
-## Coolify setup
+## Build and validation commands
 
-1. Create an application from this repository and select the root `Dockerfile`.
-2. Set the container port to `3000` and health path to `/api/health`.
-3. Add `NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_SITE_VERSION` as build variables.
-4. Add status variables at runtime; mask `SYSTEM_STATUS_TOKEN`.
-5. Configure the Coolify domain as `http://rahulsinghparmar.site` so Traefik owns the HTTP origin route.
-6. Point the Cloudflare Tunnel hostname to the existing Traefik origin at `http://localhost:80`.
-7. Keep automatic deployment disabled until the first manual release passes the external deployment contract.
+| Command                             | Purpose                                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `npm run dev`                       | Start the editing server                                                |
+| `npm run build`                     | Produce the static `out/` artifact                                      |
+| `npm start`                         | Preview the export and API contract through the dependency-free adapter |
+| `npm run preview:cloudflare`        | Build and run the complete site through local Wrangler on port 8788     |
+| `npm run quality:check`             | Format, lint, type, Worker tests, export, performance and SEO           |
+| `npm run cloudflare:check`          | Build, dry-run package and enforce Cloudflare artifact limits           |
+| `npm run release:check`             | Run the full quality and Cloudflare package gate                        |
+| `npm run deployment:check -- <url>` | Verify a running Cloudflare-compatible deployment                       |
 
-Detailed setup, verification and rollback instructions are in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md). Coolify's generated names, deployment lifecycle and cleanup policy are explained in [docs/COOLIFY_OPERATIONS.md](./docs/COOLIFY_OPERATIONS.md).
+## Performance
+
+Motion libraries load after hydration only when device and user preferences allow them. Canvas work is capped at 30 FPS and 1.5 device-pixel ratio and pauses outside the viewport. Status polling begins only near its section, stops when hidden or out of view, and prevents overlapping requests.
+
+The repository rejects releases that exceed its HTML, JavaScript, CSS, image, static-output, file-count or Worker-bundle budgets. These release guardrails are intentionally tighter than the provider maximums. See [docs/PERFORMANCE.md](./docs/PERFORMANCE.md).
+
+## Accessibility
+
+- Semantic landmarks, ordered headings, skip link and main-content focus target.
+- Keyboard-operable navigation, theme and capability controls.
+- Mobile-menu focus containment, Escape handling, restoration and inert background content.
+- Visible focus indicators and static fallbacks for reduced motion.
+- Polite, atomic status announcements and explicit new-tab context.
+
+The verification records are in [docs/ACCESSIBILITY.md](./docs/ACCESSIBILITY.md) and [docs/VISUAL_REGRESSION.md](./docs/VISUAL_REGRESSION.md). Browser emulation is recorded separately from physical-device acceptance.
+
+## SEO
+
+`NEXT_PUBLIC_SITE_URL` supplies one canonical identity for metadata, named social cards, structured data, robots, sitemap and manifest. Hosted previews must return `X-Robots-Tag: noindex, nofollow`; production must not. The deployment contract checks both states. See [docs/SEO.md](./docs/SEO.md).
+
+## Security
+
+- Static and API responses receive matching CSP, clickjacking, MIME, referrer, permissions and cross-origin controls.
+- API responses are `no-store`; fingerprinted assets alone receive immutable caching.
+- The optional upstream URL is a fixed Worker binding, must use HTTPS and cannot redirect.
+- Payloads, timeouts and published fields are bounded; credentials remain Worker secrets.
+- Environment files, Wrangler local state and source portraits are ignored by Git.
+- CI actions and Wrangler are pinned; the deployment workflow has read-only repository permissions.
+
+The CSP permits framework-required inline script and style execution. Adding nonces would require dynamic rendering and is not misrepresented as completed hardening. Report concerns through [SECURITY.md](./SECURITY.md).
+
+## Environment variables
+
+Build-time public values may be placed in `.env.local`. Worker runtime values belong in `.dev.vars` locally and Cloudflare bindings/secrets when hosted. Never commit either file.
+
+| Variable                   | Scope          | Required    | Default / purpose                                  |
+| -------------------------- | -------------- | ----------- | -------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`     | Build          | Production  | `https://rahulsinghparmar.site`                    |
+| `NEXT_PUBLIC_SITE_VERSION` | Build          | Production  | Release identity                                   |
+| `DEPLOYMENT_ENV`           | Worker binding | Yes         | `local`, `preview` or `production`                 |
+| `SITE_VERSION`             | Worker binding | Yes         | Public edge release identity                       |
+| `SYSTEM_STATUS_SOURCE`     | Worker binding | Yes         | `disabled`; use `http` only for an approved source |
+| `SYSTEM_STATUS_URL`        | Worker binding | With `http` | Exact HTTPS JSON endpoint                          |
+| `SYSTEM_STATUS_TOKEN`      | Worker secret  | No          | Optional bearer credential                         |
+| `SYSTEM_STATUS_TIMEOUT_MS` | Worker binding | No          | `3500`, constrained to 1000–8000 ms                |
+
+See [.env.example](./.env.example), [.dev.vars.example](./.dev.vars.example) and [docs/CLOUDFLARE_LOCAL_PREVIEW.md](./docs/CLOUDFLARE_LOCAL_PREVIEW.md).
 
 ## Deployment
 
-The GitHub workflow validates pull requests and pushes to `main` with the static/build contract, a production-server smoke test and a Docker build. Provider-side deployment remains an explicit operator action.
+Deployment is intentionally manual. The `Deploy Cloudflare portfolio` workflow accepts `preview` or `production` and requires the full reviewed commit SHA. It always rebuilds and reruns `release:check` before publishing. Production additionally requires:
 
-For a release candidate:
+- the workflow to run from `main`;
+- repository variable `PRODUCTION_DEPLOYMENT_ENABLED=true`;
+- approval through the `cloudflare-production` GitHub environment.
 
-1. Run `npm ci` from the committed lockfile.
-2. Run `npm run quality:check`.
-3. Build and smoke-test the Docker image.
-4. Deploy the exact reviewed commit to Coolify.
-5. Run `npm run deployment:check -- https://rahulsinghparmar.site` from outside the host.
-6. Confirm container health, Cloudflare routing and application/proxy logs.
+Until Phase 29 cutover approval, keep that variable absent or `false`, leave the production Worker without a custom-domain route, and do not alter DNS or the maintenance Worker. Follow [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for account setup, preview promotion, production promotion and verification.
 
-## Release process
+## Docker and Coolify rollback
 
-1. Update `package.json`, `NEXT_PUBLIC_SITE_VERSION` examples and `CHANGELOG.md`.
-2. Create a release-candidate branch or pull request from a clean working tree.
-3. Require the GitHub quality workflow to pass.
-4. Deploy and verify the candidate without changing its contents in place.
-5. Tag the accepted commit as `vMAJOR.MINOR.PATCH` and publish GitHub release notes from the matching changelog entry.
-6. Roll back to the previous known-good commit if the external release gate fails.
+The Dockerfile and existing Coolify v1.0.0 deployment are retained as rollback artifacts during migration. They are not the new build or CI path. Do not resume, rebuild, delete or repoint the old service as part of routine Cloudflare releases. Its operating record remains in [docs/COOLIFY_OPERATIONS.md](./docs/COOLIFY_OPERATIONS.md).
+
+## Release and rollback
+
+1. Review and commit a clean candidate.
+2. Require `Release quality` to pass.
+3. Manually deploy the exact SHA to `cloudflare-preview`.
+4. Run the deployment contract and complete hosted browser/device acceptance.
+5. Promote the same accepted commit to the protected production environment only during the approved cutover.
+6. If validation fails, use Cloudflare version rollback and restore the recorded routing state; do not patch a failed artifact in place.
+
+The operational migration sequence is tracked in [docs/CLOUDFLARE_MIGRATION_PLAN.md](./docs/CLOUDFLARE_MIGRATION_PLAN.md) and [docs/CLOUDFLARE_MIGRATION_STATUS.md](./docs/CLOUDFLARE_MIGRATION_STATUS.md).
 
 ## Versioning strategy
 
-The project follows Semantic Versioning:
-
-- `MAJOR`: incompatible architecture, deployment or public content-contract change.
-- `MINOR`: backward-compatible section, capability or integration addition.
-- `PATCH`: copy, accessibility, security, performance or visual correction without a public contract change.
-
-The first production release is `v1.0.0`.
+The project follows Semantic Versioning. `MAJOR` covers incompatible architecture or public contracts; `MINOR` covers backward-compatible capabilities; `PATCH` covers corrections without a contract change. The next release number remains provisional until Phase 30 verifies history and production acceptance.
 
 ## Future roadmap
 
-The release candidate deliberately excludes speculative features. Future work should be driven by verified content or operational evidence:
+- Connect the status adapter only when a safe public telemetry contract exists.
+- Replace qualitative outcomes with measured reliability evidence as it becomes available.
+- Evaluate nonce-based CSP only if its benefit justifies dynamic rendering and cache cost.
 
-- Connect the read-only status adapter when a safe public telemetry contract exists.
-- Replace qualitative project outcomes with measured reliability or recovery data.
-- Add infrastructure, security or cloud credentials when verified public records are available.
-- Add an authentic high-resolution portrait only after source quality and publication rights are confirmed.
-- Evaluate nonce-based CSP if the security benefit justifies dynamic rendering and cache impact.
-
-Open content decisions are tracked in [CONTENT_TODO.md](./CONTENT_TODO.md).
+Content decisions remain in [CONTENT_TODO.md](./CONTENT_TODO.md).
 
 ## License
 
-Released under the [MIT License](./LICENSE). Portfolio copy, personal photographs and personal identity remain attributable to Rahul Singh Parmar even where the surrounding source code is reusable under MIT.
+Released under the [MIT License](./LICENSE). Portfolio copy, personal photographs and personal identity remain attributable to Rahul Singh Parmar where the surrounding source is reusable under MIT.

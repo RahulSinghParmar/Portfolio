@@ -1,0 +1,124 @@
+name: Deploy Cloudflare portfolio
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deployment environment
+        required: true
+        type: choice
+        options:
+          - preview
+          - production
+      confirmed_sha:
+        description: Full commit SHA reviewed for deployment
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-portfolio-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate requested candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET: ${{ inputs.target }}
+      CONFIRMED_SHA: ${{ inputs.confirmed_sha }}
+      PRODUCTION_DEPLOYMENT_ENABLED: ${{ vars.PRODUCTION_DEPLOYMENT_ENABLED }}
+
+    steps:
+      - name: Check out selected commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Verify promotion guardrails
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CONFIRMED_SHA" != "$GITHUB_SHA" ]; then
+            echo "confirmed_sha must exactly match the checked-out commit: $GITHUB_SHA"
+            exit 1
+          fi
+          if [ "$TARGET" = "production" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "Production deployment is allowed only from main."
+            exit 1
+          fi
+          if [ "$TARGET" = "production" ] && [ "$PRODUCTION_DEPLOYMENT_ENABLED" != "true" ]; then
+            echo "Set repository variable PRODUCTION_DEPLOYMENT_ENABLED=true only for an approved cutover."
+            exit 1
+          fi
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run release gate
+        run: npm run release:check
+
+  deploy-preview:
+    name: Deploy preview
+    if: inputs.target == 'preview'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: cloudflare-preview
+
+    steps:
+      - name: Check out selected commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and revalidate exact candidate
+        run: |
+          npm ci
+          npm run release:check
+
+      - name: Deploy preview Worker and assets
+        run: npx wrangler deploy --env preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-production:
+    name: Deploy production
+    if: inputs.target == 'production'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: cloudflare-production
+
+    steps:
+      - name: Check out selected commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and revalidate exact candidate
+        run: |
+          npm ci
+          npm run release:check
+
+      - name: Deploy production Worker and assets
+        run: npx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

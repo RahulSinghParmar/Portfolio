@@ -60,4 +60,16 @@ Before the public `v1.0.0` tag:
 2. Smoke-test current Safari on macOS and iOS, including theme persistence and reduced motion.
 3. Smoke-test Android Chrome at 360–412 CSS pixels.
 4. Check one physical 1920-pixel desktop and one high-density mobile screen for font rendering and touch targets.
-5. Repeat the navigation and theme checks against the final HTTPS hostname after the Coolify/Cloudflare cutover.
+5. Repeat the navigation and theme checks against the hosted Cloudflare preview, then the final HTTPS hostname after cutover.
+
+## Phase 27 Cloudflare-runtime check
+
+On 7 September 2026, the exported candidate was rechecked through Wrangler `4.129.0` at `http://127.0.0.1:8788`, rather than through `next dev` or the retired Node container path.
+
+| View                         | Evidence                                                                                                                | Result                    |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| 1280 × 720 desktop           | Full-motion Canvas present; primary navigation visible; skip link moved focus to `main-content`; no horizontal overflow | Pass                      |
+| 847 × 912 constrained/tablet | Responsive menu shown; full-motion Canvas present; light and dark surfaces both resolved; no horizontal overflow        | Pass                      |
+| Reduced-motion contract      | Source/CSS fallback retained and the earlier 390 × 844 reduced-motion result remains valid                              | Not newly device-emulated |
+
+This check proves the Cloudflare local runtime preserves the validated interface. It does not replace Phase 28 checks on a hosted preview, native reduced-motion settings, Firefox/Edge/Safari or physical iOS/Android hardware.

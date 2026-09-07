@@ -17,7 +17,7 @@ npm ci
 npm run dev
 ```
 
-Node.js 22 is recommended. Open `http://localhost:3000`.
+Node.js 22 or later is required. Open `http://localhost:3000`.
 
 ## Change standards
 
@@ -34,10 +34,10 @@ Node.js 22 is recommended. Open `http://localhost:3000`.
 Run the complete local gate before submitting a pull request:
 
 ```bash
-npm run quality:check
+npm run release:check
 ```
 
-For deployment-related changes, also build and test the container as described in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md).
+For runtime or deployment changes, also start `npm run preview:cloudflare` and run `npm run deployment:check -- http://127.0.0.1:8788`. The Docker/Coolify path is retained only as a migration rollback reference.
 
 ## Pull requests
 

@@ -15,10 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  application:
-    name: Application contract
+  release:
+    name: Export and Worker contract
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Check out repository
@@ -33,34 +33,30 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Run static and build checks
-        run: npm run quality:check
+      - name: Validate release artifact
+        run: npm run release:check
 
-      - name: Start production server
-        run: npm start > /tmp/portfolio-server.log 2>&1 &
-
-      - name: Wait for health endpoint
+      - name: Exercise the Cloudflare runtime contract
+        shell: bash
         run: |
+          set -euo pipefail
+          npx wrangler dev --local --port 8788 --show-interactive-dev-session=false > /tmp/portfolio-worker.log 2>&1 &
+          worker_pid=$!
+          cleanup() { kill "$worker_pid" 2>/dev/null || true; }
+          trap cleanup EXIT
+
           for attempt in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:3000/api/health > /dev/null; then
-              exit 0
+            if curl --fail --silent http://127.0.0.1:8788/api/health > /dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/portfolio-worker.log
+              exit 1
             fi
             sleep 1
           done
-          cat /tmp/portfolio-server.log
-          exit 1
 
-      - name: Verify deployment contract
-        run: npm run deployment:check -- http://127.0.0.1:3000
-
-  container:
-    name: Container build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Build release image
-        run: docker build --tag rahul-portfolio:ci .
+          if ! npm run deployment:check -- http://127.0.0.1:8788; then
+            cat /tmp/portfolio-worker.log
+            exit 1
+          fi

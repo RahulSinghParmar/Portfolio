@@ -3,9 +3,9 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join, relative, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
-const buildRoot = join(projectRoot, ".next");
-const homeDocument = join(buildRoot, "server", "app", "index.html");
-const publicImages = join(projectRoot, "public", "images");
+const buildRoot = join(projectRoot, "out");
+const homeDocument = join(buildRoot, "index.html");
+const publicImages = join(buildRoot, "images");
 
 const kibibytes = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`;
 const unique = (values) => [...new Set(values)];
@@ -23,12 +23,11 @@ function extractAssets(html, expression) {
 }
 
 function resolveBuildAsset(assetUrl) {
-  const prefix = "/_next/";
-  if (!assetUrl.startsWith(prefix)) {
+  if (!assetUrl.startsWith("/_next/")) {
     throw new Error(`Unsupported build asset URL: ${assetUrl}`);
   }
 
-  return join(buildRoot, assetUrl.slice(prefix.length));
+  return join(buildRoot, assetUrl.slice(1));
 }
 
 function collectFiles(directory) {
@@ -41,7 +40,7 @@ function collectFiles(directory) {
 }
 
 if (!existsSync(homeDocument)) {
-  console.error("Performance budget requires a production build. Run `npm run build` first.");
+  console.error("Performance budget requires a static export. Run `npm run build` first.");
   process.exit(1);
 }
 

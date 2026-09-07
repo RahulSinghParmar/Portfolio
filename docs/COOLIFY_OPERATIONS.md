@@ -1,4 +1,6 @@
-# Coolify operations
+# Coolify rollback operations
+
+> Migration note: this document describes the retained `v1.0.0` rollback runtime. Cloudflare Workers Static Assets is the active migration target, and routine releases must follow [DEPLOYMENT.md](./DEPLOYMENT.md). Do not resume, rebuild or delete the preserved Coolify workload without explicit operator approval.
 
 This runbook explains the portfolio's Coolify lifecycle on the existing Windows Docker Desktop host. It distinguishes expected Coolify infrastructure from application deployments so generated names and temporary build artifacts are not mistaken for duplicate portfolio instances.
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { SystemStatus } from "@/lib/system-status";
+import type { SystemStatus } from "@/lib/system-status-contract";
 
 const stateLabels = {
   pending: "Awaiting source",
@@ -17,13 +17,19 @@ function valueOrDash(value: string | number | null, suffix = "") {
 
 export function LiveSystemStatus() {
   const statusRef = useRef<HTMLDivElement>(null);
+  const activeRequestRef = useRef<AbortController | null>(null);
+  const mountedRef = useRef(true);
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [shouldPoll, setShouldPoll] = useState(false);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(false);
 
   const refresh = useCallback(async () => {
+    if (activeRequestRef.current) return;
+
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 8000);
+    activeRequestRef.current = controller;
+    const timeout = window.setTimeout(() => controller.abort("timeout"), 8000);
     setIsLoading(true);
 
     try {
@@ -34,21 +40,43 @@ export function LiveSystemStatus() {
       if (!response.ok) throw new Error("Status request failed");
       setStatus((await response.json()) as SystemStatus);
     } catch {
-      setStatus({
-        state: "unavailable",
-        status: "Status boundary unavailable",
-        version: "—",
-        checkedAt: null,
-        responseTimeMs: null,
-        uptimePercent: null,
-        region: null,
-        source: "unavailable",
-        services: [],
-      });
+      if (controller.signal.reason !== "suspended" && mountedRef.current) {
+        setStatus({
+          state: "unavailable",
+          status: "Status boundary unavailable",
+          version: "—",
+          checkedAt: null,
+          responseTimeMs: null,
+          uptimePercent: null,
+          region: null,
+          source: "unavailable",
+          services: [],
+        });
+      }
     } finally {
       window.clearTimeout(timeout);
-      setIsLoading(false);
+      if (activeRequestRef.current === controller) {
+        activeRequestRef.current = null;
+        if (mountedRef.current) setIsLoading(false);
+      }
     }
+  }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      const activeRequest = activeRequestRef.current;
+      activeRequest?.abort("suspended");
+      if (activeRequestRef.current === activeRequest) activeRequestRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleVisibility = () => setIsDocumentVisible(!document.hidden);
+    handleVisibility();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
 
   useEffect(() => {
@@ -67,21 +95,29 @@ export function LiveSystemStatus() {
   }, []);
 
   useEffect(() => {
-    if (!shouldPoll) return;
+    if (!shouldPoll || !isDocumentVisible) {
+      const activeRequest = activeRequestRef.current;
+      activeRequest?.abort("suspended");
+      if (activeRequestRef.current === activeRequest) activeRequestRef.current = null;
+      return;
+    }
 
-    const initial = window.setTimeout(() => void refresh(), 0);
-    const interval = window.setInterval(() => void refresh(), 60_000);
-    const handleVisibility = () => {
-      if (!document.hidden) void refresh();
+    let cancelled = false;
+    let nextPoll: number | undefined;
+    const poll = async () => {
+      await refresh();
+      if (!cancelled) nextPoll = window.setTimeout(() => void poll(), 60_000);
     };
 
-    document.addEventListener("visibilitychange", handleVisibility);
+    void poll();
     return () => {
-      window.clearTimeout(initial);
-      window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibility);
+      cancelled = true;
+      if (nextPoll !== undefined) window.clearTimeout(nextPoll);
+      const activeRequest = activeRequestRef.current;
+      activeRequest?.abort("suspended");
+      if (activeRequestRef.current === activeRequest) activeRequestRef.current = null;
     };
-  }, [refresh, shouldPoll]);
+  }, [isDocumentVisible, refresh, shouldPoll]);
 
   const state = status?.state ?? "pending";
 
