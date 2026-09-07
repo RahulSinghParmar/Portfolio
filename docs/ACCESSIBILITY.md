@@ -74,13 +74,13 @@ Both palettes meet WCAG AA for normal text. The system preference initializes be
 
 ## Regression workflow
 
-Start and audit a production build:
+Start and audit the release artifact through the target Cloudflare runtime:
 
 ```bash
-npm run build
-npm run start -- --port 3100
-npx --yes lighthouse http://localhost:3100 --only-categories=accessibility --preset=desktop
-npx --yes lighthouse http://localhost:3100 --only-categories=accessibility
+npm run release:check
+npm run preview:cloudflare
+npx --yes lighthouse http://127.0.0.1:8788 --only-categories=accessibility --preset=desktop
+npx --yes lighthouse http://127.0.0.1:8788 --only-categories=accessibility
 ```
 
 For every release:

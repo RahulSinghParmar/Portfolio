@@ -2,14 +2,14 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const outputRoot = path.join(root, ".next", "server", "app");
+const outputRoot = path.join(root, "out");
 
 const files = {
   home: path.join(outputRoot, "index.html"),
-  notFound: path.join(outputRoot, "_not-found.html"),
-  robots: path.join(outputRoot, "robots.txt.body"),
-  sitemap: path.join(outputRoot, "sitemap.xml.body"),
-  manifest: path.join(outputRoot, "manifest.webmanifest.body"),
+  notFound: path.join(outputRoot, "404.html"),
+  robots: path.join(outputRoot, "robots.txt"),
+  sitemap: path.join(outputRoot, "sitemap.xml"),
+  manifest: path.join(outputRoot, "manifest.webmanifest"),
 };
 
 const expected = {
@@ -93,12 +93,15 @@ for (const [property, value] of Object.entries(openGraphRequirements)) {
 
 check(
   "Open Graph image",
-  Boolean(metaContent("property", "og:image")?.includes("/opengraph-image")),
+  Boolean(metaContent("property", "og:image")?.endsWith("/opengraph-image.png")),
 );
 check("Open Graph image alt", Boolean(metaContent("property", "og:image:alt")));
 check("Twitter large card", metaContent("name", "twitter:card") === "summary_large_image");
 check("Twitter creator", metaContent("name", "twitter:creator") === expected.twitterCreator);
-check("Twitter image", Boolean(metaContent("name", "twitter:image")?.includes("/twitter-image")));
+check(
+  "Twitter image",
+  Boolean(metaContent("name", "twitter:image")?.endsWith("/twitter-image.png")),
+);
 check("Twitter image alt", Boolean(metaContent("name", "twitter:image:alt")));
 check("web manifest link", home.includes('rel="manifest" href="/manifest.webmanifest"'));
 check("64px browser icon", home.includes('type="image/png" sizes="64x64"'));

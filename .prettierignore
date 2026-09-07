@@ -1,6 +1,8 @@
 .next
 node_modules
 public/images
+public/_headers
+.dev.vars.example
 package-lock.json
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md

@@ -1,9 +1,9 @@
 const deliverySteps = [
   { index: "01", title: "Commit", detail: "Reviewed source on GitHub" },
-  { index: "02", title: "Validate", detail: "Lint · types · production build" },
-  { index: "03", title: "Build", detail: "Standalone Next.js container" },
-  { index: "04", title: "Deploy", detail: "Coolify-managed runtime" },
-  { index: "05", title: "Observe", detail: "Health and recovery signals" },
+  { index: "02", title: "Validate", detail: "Lint · types · Worker tests" },
+  { index: "03", title: "Export", detail: "Next.js static assets" },
+  { index: "04", title: "Package", detail: "API Worker + asset manifest" },
+  { index: "05", title: "Deploy", detail: "Cloudflare edge runtime" },
 ] as const;
 
 export function DeploymentPipeline() {
@@ -24,7 +24,7 @@ export function DeploymentPipeline() {
         ))}
       </ol>
       <p className="delivery-pipeline__note mono-meta">
-        The container path is locally verified. Repository authorization, public routing and traffic
+        The Cloudflare package is locally verified. Hosted preview, public routing and traffic
         cutover remain operator-controlled release steps.
       </p>
     </div>

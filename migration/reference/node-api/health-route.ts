@@ -1,6 +1,9 @@
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
+/**
+ * Phase 23 Node API reference.
+ *
+ * This is intentionally outside `app/` so Next.js can emit a static export.
+ * Phase 25 will replace it with an edge-native health handler.
+ */
 export function GET() {
   return Response.json(
     {

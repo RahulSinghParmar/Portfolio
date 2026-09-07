@@ -28,6 +28,10 @@ export const metadata: Metadata = {
     languages: { "en-IN": "/" },
   },
   formatDetection: { email: false, address: false, telephone: false },
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png", sizes: "64x64" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+  },
   openGraph: {
     type: "profile",
     locale: siteMetadata.locale,
@@ -38,12 +42,29 @@ export const metadata: Metadata = {
     firstName: profile.givenName,
     lastName: profile.familyName,
     username: "RahulSinghParmar",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Rahul Singh Parmar — DCO Tech 3, infrastructure operator, and automation builder",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteMetadata.title,
     description: siteMetadata.socialDescription,
     creator: siteMetadata.twitterHandle,
+    images: [
+      {
+        url: "/twitter-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Rahul Singh Parmar — DCO Tech 3, infrastructure operator, and automation builder",
+      },
+    ],
   },
   robots: {
     index: true,
