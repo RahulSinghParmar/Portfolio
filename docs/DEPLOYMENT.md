@@ -16,7 +16,17 @@ This runbook covers the target release path: GitHub Actions builds a Next.js sta
 
 GitHub Actions must be the only automated deployment owner. Keep Cloudflare Workers Builds disconnected or disabled for these Worker projects; otherwise a Git push could publish outside the reviewed workflow.
 
-## Account setup — manual and not yet performed
+## Account setup — completed for hosted preview
+
+The Phase 28 preflight verified the following controls without recording any secret values:
+
+- GitHub environments `cloudflare-preview` and `cloudflare-production` exist.
+- Each environment contains separately scoped `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` secrets.
+- Production requires RahulSinghParmar's review, disallows administrator bypass and accepts deployments only from `main`.
+- Repository variable `PRODUCTION_DEPLOYMENT_ENABLED` remains `false`.
+- Cloudflare Workers Builds are disconnected for the portfolio projects, leaving GitHub Actions as the only publisher.
+
+Use the following requirements when rotating or rebuilding this setup.
 
 Create two GitHub deployment environments:
 

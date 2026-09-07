@@ -4,13 +4,26 @@
 
 | Field                    | Value                                                 |
 | ------------------------ | ----------------------------------------------------- |
-| Status                   | Phase 27 complete                                     |
-| Active branch            | `codex/cloudflare-static-migration`                   |
+| Status                   | Phase 28 hosted checks complete; device review due    |
+| Active branch            | `codex/phase-28-hosted-preview`                       |
 | Baseline SHA             | `25467d952bb6069e132890c7de10001fcb21db75` (`v1.0.0`) |
+| Preview source SHA       | `868f5c6fed62f98a32fdb2b8e7041c3ce64c1c3e`            |
+| Preview Worker version   | `c472a0fe-4417-45c8-b7fe-376ffa6d3248`                |
 | Production changes       | None                                                  |
 | DNS / Cloudflare changes | None                                                  |
 | Docker / Coolify changes | None                                                  |
-| Next phase               | Phase 28 — hosted preview and acceptance              |
+| Next phase               | Complete Phase 28 hosted acceptance                   |
+
+## Phase 28 preflight
+
+- The reviewed Phase 27 candidate was squash-merged to `main` at `1de2e8a3713b5a9bd6db990c19c2e5b3dc279c54` under RahulSinghParmar's verified Git identity.
+- GitHub Actions release validation passed on pull request #4 and again on `main`.
+- GitHub environments `cloudflare-preview` and `cloudflare-production` exist with separately scoped `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` secrets.
+- Production requires RahulSinghParmar's review, prevents administrator bypass, and is restricted to `main`. Self-review remains allowed for this single-maintainer repository.
+- Repository variable `PRODUCTION_DEPLOYMENT_ENABLED` remains `false`.
+- Cloudflare Workers Builds are not connected for either portfolio Worker name. GitHub Actions remains the only intended publisher.
+- The separate `maintenance-page` Worker and all production routes remain outside this phase's scope.
+- The isolated preview will use `rahul-singh-parmar-portfolio-preview`; the production Worker name will not be created or updated in Phase 28.
 
 ## Completed in Phase 23
 
@@ -208,6 +221,49 @@ Results:
 - Dependency freshness is not identical to vulnerability status: the locked tree has zero known advisories, but ESLint 9 support deprecation and the available patch releases should be reviewed in a narrow follow-up after migration stabilization.
 - The current Docker/Coolify state was not re-inspected in Phase 27 and remained untouched. The portfolio workload is intentionally paused/unhealthy by prior operator decision and must not be resumed without approval.
 
+## Phase 28 hosted-preview evidence
+
+- Created `codex/phase-28-hosted-preview` from synchronized `main` and committed with `RahulSinghParmar <rahulsinghparmar4@protonmail.com>`.
+- Added `.gitattributes` to keep repository text files on LF across Windows and Linux. This resolved a local Prettier false failure caused by the machine-wide `core.autocrlf=true` setting; it did not alter application behavior.
+- Published only `rahul-singh-parmar-portfolio-preview` to its isolated `workers.dev` hostname. Production routing, DNS, the production Worker, Coolify, Docker and `maintenance-page` were not changed.
+- The exact-SHA guard rejected an incorrect confirmation value in run `34160299208` before build or upload. The corrected initial preview run `34160331553` passed both release gates and deployed source `22ebd8b346d1e5e5741d31cf8b571db627d980f3` as Worker version `1c891b1c-de6b-4f05-a5ed-50e8223394cf`.
+- Ran a preview-only failure drill from source `bbf9a5b11f27af4f3cdc575d8eea065d2fa52ea1` in run `34160927420`. A reserved `.invalid` HTTPS status source produced the safe public state `unavailable` without exposing the configured URL; the rendered page remained usable. Worker version: `cc3c039c-4084-4d19-af24-ef73aa43c3cc`.
+- Restored the normal disconnected status configuration and deployed final preview source `868f5c6fed62f98a32fdb2b8e7041c3ce64c1c3e` in run `34161163595`. Final Worker version: `c472a0fe-4417-45c8-b7fe-376ffa6d3248`.
+- The remote deployment contract passed all 73 route, HEAD, 404, API, security-header, cache, robots, sitemap, metadata-image and portrait checks against the final hosted preview.
+- Hosted browser review at `1367 × 912` verified the forced full-motion Canvas and scroll transforms, the native reduced-motion SVG fallback, system/light/dark theme switching and persistence, skip-link focus transfer, truthful disconnected and unavailable status states, zero horizontal overflow and an empty browser console.
+
+Preview URL:
+
+```text
+https://rahul-singh-parmar-portfolio-preview.rahulsinghparmar4.workers.dev
+```
+
+### Phase 28 command evidence
+
+```text
+npm run release:check
+gh workflow run deploy-cloudflare.yml --ref codex/phase-28-hosted-preview -f target=preview -f confirmed_sha=<exact-sha>
+gh run watch <run-id> --exit-status
+npm run deployment:check -- https://rahul-singh-parmar-portfolio-preview.rahulsinghparmar4.workers.dev
+```
+
+Results:
+
+- Local release gate: pass after applying the repository LF policy.
+- Hosted workflow release gates: pass for the initial, failure-drill and restored deployments.
+- Final remote deployment contract: 73/73 pass.
+- Final status source: deliberately disconnected; no monitoring secret or endpoint was added.
+
+### Phase 28 rollback
+
+The preview can be rolled back without touching production by either redispatching the preview workflow for source `22ebd8b346d1e5e5741d31cf8b571db627d980f3`, or selecting Worker version `1c891b1c-de6b-4f05-a5ed-50e8223394cf` in the Cloudflare preview Worker's deployment history. Rerun the 73-check deployment contract after rollback.
+
+### Phase 28 outstanding acceptance
+
+- Rahul must review the hosted preview on a physical desktop and phone, including normal scrolling, `?motion=full`, theme persistence and the responsive navigation.
+- Safari/iOS, Android and any additional browser-engine observations must be recorded as user evidence; the automated in-app browser result is not a substitute.
+- Do not start Phase 29, merge this branch or alter production routing until Rahul accepts the preview.
+
 ## Important current facts
 
 - Public apex, `www`, and `portfolio-rc.parmar.homes` behavior was not re-queried in Phase 27. Treat the Phase 23/26 observations as historical until Phase 29 performs a fresh routing preflight.
@@ -232,4 +288,4 @@ Results:
 
 Use the following request to continue safely:
 
-> Start Phase 28 using `docs/CLOUDFLARE_MIGRATION_PLAN.md` and `docs/CLOUDFLARE_MIGRATION_STATUS.md`. Commit and push the reviewed candidate only after approval, configure the documented GitHub environments and least-privilege Cloudflare credentials manually, deploy the exact SHA to the hosted preview, and complete cross-browser and real-device acceptance. Do not change production routing or DNS.
+> Review the Phase 28 preview on physical desktop and mobile devices. Report browser/device, theme behavior, normal and `?motion=full` motion behavior, navigation, overflow and any console-visible failure. Do not start Phase 29 or alter production routing until the hosted preview is accepted.

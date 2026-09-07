@@ -1,6 +1,6 @@
 # Portfolio hosting migration: Phases 23–30
 
-Status: Phases 23–26 complete; implementation continues with Phase 27.
+Status: Phases 23–27 complete; Phase 28 hosted-preview acceptance is in progress.
 
 Prepared: 7 September 2026. Repository baseline inspected: `25467d9` (`v1.0.0`).
 Target: Next.js static export plus a small API Worker, deployed together using Cloudflare Workers Static Assets. GitHub remains the source of truth.
