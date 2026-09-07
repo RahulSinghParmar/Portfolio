@@ -26,9 +26,10 @@
       "preview_urls": true,
       "vars": {
         "DEPLOYMENT_ENV": "preview",
-        "SITE_VERSION": "v1.0.0-preview",
-        "SYSTEM_STATUS_SOURCE": "disabled",
-        "SYSTEM_STATUS_TIMEOUT_MS": "3500",
+        "SITE_VERSION": "v1.0.0-preview-failure-test",
+        "SYSTEM_STATUS_SOURCE": "http",
+        "SYSTEM_STATUS_URL": "https://preview-upstream.invalid/status",
+        "SYSTEM_STATUS_TIMEOUT_MS": "1000",
       },
     },
     "production": {
