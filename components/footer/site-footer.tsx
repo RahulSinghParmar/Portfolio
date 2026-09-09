@@ -17,7 +17,7 @@ export function SiteFooter() {
       </a>
       <div className="site-footer__meta mono-meta">
         <span>© {new Date().getFullYear()}</span>
-        <span>{process.env.NEXT_PUBLIC_SITE_VERSION ?? "v1.0.0"}</span>
+        <span>{process.env.NEXT_PUBLIC_SITE_VERSION ?? "v1.1.0"}</span>
         <span>{profile.location}</span>
         <a className="focus-ring" href={profile.repositoryUrl} target="_blank" rel="noreferrer">
           Source <span aria-hidden="true">↗</span>

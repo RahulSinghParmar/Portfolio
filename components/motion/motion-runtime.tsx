@@ -71,6 +71,11 @@ export function MotionRuntime() {
             0.28,
           )
           .from(
+            "[data-hero-portrait]",
+            { xPercent: 18, yPercent: 4, scale: 0.975, autoAlpha: 0, duration: 1.3 },
+            0.24,
+          )
+          .from(
             ".hero__discipline > span",
             { y: 12, autoAlpha: 0, stagger: 0.06, duration: 0.65 },
             0.48,
@@ -102,6 +107,18 @@ export function MotionRuntime() {
             start: "top top",
             end: "bottom top",
             scrub: 1,
+          },
+        });
+
+        gsap.to("[data-hero-portrait]", {
+          yPercent: 7,
+          scale: 0.985,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.9,
           },
         });
 
@@ -177,7 +194,7 @@ export function MotionRuntime() {
           });
 
           const index = project.querySelector("[data-project-index]");
-          if (index) {
+          if (index && window.matchMedia("(min-width: 48rem)").matches) {
             gsap.fromTo(
               index,
               { xPercent: project.dataset.layout === "reverse" ? 8 : -8 },

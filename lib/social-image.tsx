@@ -56,7 +56,7 @@ export function createSocialImage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ width: 700, display: "flex", flexDirection: "column" }}>
           <div style={{ color: "#85f4c7", fontSize: 21, letterSpacing: 3, marginBottom: 24 }}>
-            DCO TECH 3
+            DCO TECH 3 / AWS
           </div>
           <div
             style={{

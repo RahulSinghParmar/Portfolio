@@ -1,6 +1,6 @@
 # Accessibility baseline
 
-Phase 9 treats accessibility as a release requirement across keyboard, screen, motion and contrast behavior. The portfolio is progressively enhanced: its content, navigation and system diagrams remain usable without animation or a precision pointer.
+Accessibility is a release requirement across keyboard, screen, motion and contrast behavior. The portfolio is progressively enhanced: its content, navigation and system diagrams remain usable without animation or a precision pointer.
 
 ## Verified interface contract
 
@@ -13,21 +13,25 @@ Phase 9 treats accessibility as a release requirement across keyboard, screen, m
 - Live system-state changes use a polite atomic status region.
 - Links that open a new browser tab disclose that behavior to assistive technology.
 - Focus indicators use a two-pixel high-contrast outline and are not removed from interactive controls.
-- Reduced-motion mode disables Canvas, route, map and footer animation while retaining the complete information architecture.
+- Reduced-motion mode disables Canvas, route, map and footer animation while retaining the complete information architecture; changing the system preference also detaches or restores the optional hero signal layer without a reload.
 - The color-theme control is keyboard operable, exposes one stable accessible action and participates in mobile-menu focus containment.
 - System, light and dark themes update native control color scheme and browser theme color without changing content semantics.
 - The mobile light-theme SVG fallback uses an explicit contrast treatment so reduced-motion users receive a visible topology rather than a decorative trace.
+- Fine-pointer packets and touch pulses are decorative Canvas feedback only; the operating-system cursor, content order and interactive targets remain unchanged.
+- The capability map exposes one keyboard tab stop for its selected layer; Arrow keys move between adjacent layers, Home and End move to the boundaries, and focus, route, node and detail state remain synchronized.
+- Mobile project depth is exposed through native, descriptively labelled disclosure controls. The first case study starts expanded, later studies remain reachable by keyboard or touch, and desktop/tablet retain their complete visible case-study layouts.
+- The mobile capability selector scrolls horizontally within its own boundary. Keyboard focus brings the selected item into view while the active route, node and detail remain synchronized.
 
 ## Lighthouse result
 
 Measured locally on 31 August 2026 against the production build. Lighthouse scores can vary slightly with browser and machine versions.
 
-| Profile | Baseline | Phase 9 | Scored failures |
+| Profile | Baseline | Current | Scored failures |
 | ------- | -------: | ------: | --------------: |
 | Desktop |       99 |     100 |               0 |
 | Mobile  |       99 |     100 |               0 |
 
-The baseline failures were missing SVG image names and a mismatch between the visible site mark and its accessible label. Both are resolved in the Phase 9 result.
+The baseline failures were missing SVG image names and a mismatch between the visible site mark and its accessible label. Both are resolved in the current result.
 
 ## Manual keyboard and motion review
 
@@ -40,6 +44,9 @@ The following paths were exercised at the mobile breakpoint in a real browser:
 5. Activate the skip link and confirm focus moves to the main content.
 6. Enable reduced motion and confirm the page reports reduced mode, Canvas enhancement is absent and project, capability-map and footer animations are disabled.
 7. Confirm the page and mobile overlay introduce no horizontal overflow.
+8. Focus the selected capability control, exercise all four Arrow keys plus Home and End, and confirm focus and the announced detail move together.
+9. Below 768 CSS pixels, open and close each project disclosure with Enter and Space; confirm its label remains visible, content returns in document order and no project link or outcome is hidden.
+10. At 320–430 CSS pixels, move through the capability rail with Tab and Arrow keys; confirm focused controls scroll into view without moving the page horizontally.
 
 Automated and keyboard checks do not replace assistive-technology testing. Before a public release that materially changes navigation or page structure, perform a smoke test with NVDA plus Chrome or Firefox on Windows and, when available, VoiceOver plus Safari on Apple hardware.
 
@@ -93,3 +100,5 @@ For every release:
 6. Repeat a screen-reader smoke test after navigation, heading, live-region or diagram changes.
 
 The current viewport, theme and motion matrix is recorded in [VISUAL_REGRESSION.md](./VISUAL_REGRESSION.md). It separates locally verified Chromium behavior from the physical-device and cross-engine checks that remain before the public tag.
+
+Future topology, pointer and mobile-density changes are governed by [INTERACTION_SYSTEM.md](./INTERACTION_SYSTEM.md), including equivalent pointer, keyboard and touch paths and the requirement that the static interface remain complete when enhancement is unavailable.

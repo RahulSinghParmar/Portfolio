@@ -1,8 +1,8 @@
 /**
- * Phase 23 Node API reference.
+ * Retired Node API reference.
  *
  * This is intentionally outside `app/` so Next.js can emit a static export.
- * Phase 25 will replace it with an edge-native health handler.
+ * The active implementation is the edge-native health handler under worker/.
  */
 export function GET() {
   return Response.json(

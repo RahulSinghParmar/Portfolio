@@ -6,7 +6,7 @@ const expectedEnvironment =
     : baseUrl.hostname === "rahulsinghparmar.site"
       ? "production"
       : "local");
-const expectedTitle = "Rahul Singh Parmar — DCO Tech 3";
+const expectedTitle = "Rahul Singh Parmar — DCO Tech 3 at AWS";
 const checks = [];
 const failures = [];
 
@@ -189,7 +189,7 @@ if (cssPath) {
   );
 }
 
-const portrait = await request("/images/rahul.webp", { accept: "image/webp" });
+const portrait = await request("/images/rahul-portrait.webp", { accept: "image/webp" });
 check("portrait status", portrait?.response.status === 200);
 check(
   "portrait MIME",

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { profile } from "@/data/profile";
 
 import { InfrastructureNetwork } from "./infrastructure-network";
@@ -6,7 +8,7 @@ export function HeroFoundation() {
   return (
     <section className="hero section-grid" id="index" aria-labelledby="hero-title">
       <div className="hero__eyebrow mono-meta">
-        <span>INFRASTRUCTURE / NETWORK 01</span>
+        <span>AWS / DATA CENTER OPERATIONS 01</span>
         <span>{profile.location}</span>
       </div>
 
@@ -34,18 +36,32 @@ export function HeroFoundation() {
         <InfrastructureNetwork />
       </div>
 
+      <div className="hero__portrait" data-hero-portrait>
+        <div className="hero__portrait-orbit" aria-hidden="true" />
+        <Image
+          className="hero__portrait-image"
+          src="/images/rahul-portrait.webp"
+          alt={`${profile.name}, ${profile.role} at ${profile.employer}`}
+          width={461}
+          height={1450}
+          sizes="(max-width: 768px) 55vw, (max-width: 1200px) 30vw, 24vw"
+          priority
+          unoptimized
+        />
+      </div>
+
       <dl className="hero__metadata mono-meta">
         <div>
           <dt>Role</dt>
           <dd>{profile.role}</dd>
         </div>
         <div>
-          <dt>Experience</dt>
-          <dd>{profile.experience}</dd>
+          <dt>Organization</dt>
+          <dd>{profile.employer}</dd>
         </div>
         <div>
-          <dt>Local time</dt>
-          <dd>{profile.timezone}</dd>
+          <dt>Experience</dt>
+          <dd>{profile.experience}</dd>
         </div>
         <div>
           <dt>Status</dt>

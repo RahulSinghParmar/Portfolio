@@ -4,28 +4,50 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-09
+
+Stable source release after desktop and mobile review. Production promotion is a separate, protected action.
+
 ### Added
 
 - Cloudflare Workers Static Assets packaging with selective API Worker routing, local/preview/production environments and real static 404 handling.
 - Edge-native health and bounded read-only status APIs with failure isolation and Worker unit tests.
 - Release artifact guardrails for static asset count/size, Worker bundle size and `_headers` complexity.
 - Manual, SHA-bound GitHub Actions workflow for preview and protected production promotion.
+- Responsive, theme-aware hero portrait with alpha transparency and capability-gated entrance and scroll motion.
+- Reproducible portrait preparation command and a content-editing guide for biography, experience, projects, skills, credentials and contacts.
+- An interaction-system contract covering responsive topology density, pointer signals, map selection, mobile disclosure, accessibility and performance limits.
+- A bounded route-directed signal layer with pointer packets, ambient traffic and a touch-only topology pulse.
+- A synchronized seven-layer operational map with direct diagram selection, roving keyboard focus and stable live detail updates.
+- Native mobile case-study disclosures that preserve essential project summaries while making system topology and engineering decisions available on demand.
+- Theme-aware, optimized repository preview images captured from the production-compatible static build.
 
 ### Changed
 
 - Replaced the active standalone Node/Coolify delivery model with a reproducible static export and Cloudflare Worker target.
 - Reconciled contributor, deployment and operating documentation around GitHub Actions as the single deployment owner.
 - Retained Docker and Coolify material as an explicit `v1.0.0` rollback reference rather than an active CI path.
+- Identified the current role as DCO Tech 3 at Amazon Web Services (AWS) across visible content, metadata and structured data.
+- Rebalanced the desktop hero into separate identity, topology and portrait columns, with a simpler portrait-first composition on narrow screens.
+- Consolidated temporary implementation reports into stable contributor and deployment documentation.
+- Reduced narrow-screen section spacing and decorative project indices, and converted the seven-layer systems selector into a compact horizontal control rail.
 
 ### Fixed
 
 - Replaced extensionless generated metadata-image references with deterministic PNG paths and verified MIME types.
 - Updated deployment validation to cover Worker navigation, HEAD, JSON API errors, security headers, cache policies and genuine 404s.
+- Prevented decorative project-index motion from creating narrow-screen horizontal overflow.
+- Removed superseded portrait assets and public development-tool configuration from the release tree.
+- Raised the mobile Cloud node above the discipline row so the responsive topology and content no longer collide.
+- Kept keyboard-selected system layers synchronized when focus scrolls the mobile control rail beneath a stationary pointer.
+- Restored the full desktop project topology and engineering-detail grid while retaining native mobile disclosure behavior.
 
 ### Performance
 
 - Kept static requests out of Worker execution and applied immutable caching only to fingerprinted assets.
 - Confirmed the migration candidate remains within existing route budgets and new Cloudflare artifact budgets.
+- Replaced per-interaction particle allocation with fixed pools and fully pauses the signal loop while hidden or outside the hero viewport.
+- Keeps the capability-map and detail-panel dimensions stable while active layers change.
 
 ### Security
 
@@ -59,7 +81,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Fixed
 
 - Corrected project-diagram hydration output.
-- Removed stale phase and target-deployment messaging from the public interface.
+- Removed stale release-stage and target-deployment messaging from the public interface.
 - Removed obsolete CSS selectors and unused content-status fields.
 - Replaced the malformed 217×256 legacy favicon path with generated square browser and Apple icons.
 - Added private conduct-reporting guidance and removed placeholder repository policy text.

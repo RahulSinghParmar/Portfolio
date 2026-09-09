@@ -1,7 +1,7 @@
 # Optional local Worker overrides. Copy this file to `.dev.vars` only when
 # testing a real, read-only HTTPS status source. `.dev.vars` is ignored by Git.
 DEPLOYMENT_ENV=local
-SITE_VERSION=v1.0.0-local
+SITE_VERSION=v1.1.0-local
 SYSTEM_STATUS_SOURCE=disabled
 SYSTEM_STATUS_URL=
 SYSTEM_STATUS_TOKEN=

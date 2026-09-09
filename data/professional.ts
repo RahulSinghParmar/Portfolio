@@ -30,7 +30,7 @@ export const careerDirections = [
 export const workingModes = [
   {
     label: "Primary practice",
-    title: "Data center operations",
+    title: "AWS data center operations",
     description:
       "Infrastructure availability, hardware and network operations, incident handling, change execution, and cross-team coordination.",
   },
