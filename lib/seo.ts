@@ -5,17 +5,16 @@ import { education } from "@/data/professional";
 import { skillLayers } from "@/data/skills";
 
 export const siteMetadata = {
-  title: `${profile.name} — ${profile.role}`,
+  title: `${profile.name} — ${profile.role} at AWS`,
   description:
-    "Rahul Singh Parmar is a DCO Tech 3 in Mumbai working across data center operations, secure networks, infrastructure automation, and reliable systems.",
+    "Rahul Singh Parmar is a DCO Tech 3 at Amazon Web Services in Mumbai, focused on data center operations, networks, automation, and reliable systems.",
   socialDescription:
-    "Data center operations, network engineering, security, AWS, automation, and self-hosted systems.",
+    "AWS data center operations, network engineering, security, automation, and self-hosted systems.",
   locale: "en_IN",
   language: "en-IN",
   twitterHandle: "@rahulsingh474",
-  contentUpdated: "2026-09-01",
-  socialImageAlt:
-    "Rahul Singh Parmar — DCO Tech 3, infrastructure operator, and automation builder",
+  contentUpdated: "2026-09-08",
+  socialImageAlt: "Rahul Singh Parmar — DCO Tech 3 at Amazon Web Services and automation builder",
   keywords: [
     "Rahul Singh Parmar",
     "DCO Tech 3",
@@ -76,8 +75,12 @@ export function buildStructuredData() {
         givenName: profile.givenName,
         familyName: profile.familyName,
         url: profile.siteUrl,
-        image: absoluteUrl("/images/rahul.webp"),
+        image: absoluteUrl("/images/rahul-portrait.webp"),
         jobTitle: profile.role,
+        worksFor: {
+          "@type": "Organization",
+          name: profile.employer,
+        },
         email: profile.email,
         address: "Mumbai, India",
         sameAs: profile.links.map((link) => link.href),
@@ -113,7 +116,7 @@ export function buildStructuredData() {
         dateModified: siteMetadata.contentUpdated,
         isPartOf: { "@id": identifiers.website },
         mainEntity: { "@id": identifiers.person },
-        primaryImageOfPage: absoluteUrl("/images/rahul.webp"),
+        primaryImageOfPage: absoluteUrl("/images/rahul-portrait.webp"),
         hasPart: { "@id": identifiers.work },
       },
       {

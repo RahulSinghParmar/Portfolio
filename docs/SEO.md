@@ -1,10 +1,10 @@
 # SEO and social-sharing baseline
 
-Phase 10 turns the portfolio into a consistent machine-readable profile without changing its editorial interface. Search crawlers, social preview bots, recruiter searches, browsers and structured-data consumers now receive the same verified identity and project story.
+The SEO contract gives the portfolio one consistent machine-readable profile without changing its editorial interface. Search crawlers, social preview bots, recruiter searches, browsers and structured-data consumers receive the same verified identity and project story.
 
 ## Search positioning
 
-The primary entity is **Rahul Singh Parmar, DCO Tech 3 in Mumbai**. Supporting vocabulary covers the actual work represented on the page:
+The primary entity is **Rahul Singh Parmar, DCO Tech 3 at Amazon Web Services (AWS) in Mumbai**. Supporting vocabulary covers the actual work represented on the page:
 
 - data center operations, network engineering, infrastructure operations and network security;
 - AWS, cloud infrastructure, Linux and Windows administration;
@@ -29,12 +29,12 @@ The title and description lead with the current role instead of presenting Rahul
 
 The home page emits one escaped JSON-LD `@graph` containing:
 
-- `Person` — name, current role, location, public identities, expertise and verified credentials;
+- `Person` — name, current role, employer, location, public identities, expertise and verified credentials;
 - `WebSite` — portfolio identity, language and publisher relationship;
 - `ProfilePage` — canonical profile page, primary image and maintained content date;
 - `ItemList` — the three selected systems and their canonical on-page case-study anchors.
 
-No employer, university, credential identifier or service claim is invented when the repository does not contain verified data. JSON-LD is serialized with `<` escaped to prevent executable markup injection.
+Employer, education, credentials and service claims are published only when the repository contains verified data. JSON-LD is serialized with `<` escaped to prevent executable markup injection.
 
 ## Crawl surfaces
 
@@ -54,7 +54,7 @@ Measured locally on 31 August 2026 against the production build:
 | Desktop |       100 |               0 |
 | Mobile  |       100 |               0 |
 
-The pre-Phase 10 page also scored 100 because Lighthouse covers the basic discoverability path. The repository contract adds the deeper checks Lighthouse does not score: social image completeness, structured-data entities, canonical consistency, crawl files, manifest identity and not-found indexing behavior.
+The earlier baseline also scored 100 because Lighthouse covers the basic discoverability path. The repository contract adds the deeper checks Lighthouse does not score: social image completeness, structured-data entities, canonical consistency, crawl files, manifest identity and not-found indexing behavior.
 
 ## Regression workflow
 

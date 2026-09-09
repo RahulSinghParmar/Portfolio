@@ -116,5 +116,5 @@ const server = createServer(async (request, response) => {
 
 server.listen(port, host, () => {
   console.log(`Static export available at http://${host}:${port}`);
-  console.log("Phase 25 API Worker adapter is enabled for /api/*.");
+  console.log("API Worker adapter is enabled for /api/*.");
 });

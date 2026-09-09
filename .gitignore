@@ -1,5 +1,7 @@
 # Dependencies
 /node_modules
+/experiments/**/node_modules/
+/release-artifacts/
 
 # Next.js output
 /.next
@@ -20,6 +22,7 @@
 .lighthouse/
 *.tsbuildinfo
 .vscode/
+/AGENTS.md
 
 # Operating systems
 .DS_Store

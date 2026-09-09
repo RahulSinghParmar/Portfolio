@@ -3,7 +3,7 @@ import { applyResponseSecurityHeaders } from "./security-headers.ts";
 import { getSystemStatus } from "./system-status.ts";
 
 const serviceName = "rahul-singh-parmar-portfolio";
-const defaultVersion = "v1.0.0";
+const defaultVersion = "v1.1.0";
 
 function responseHeaders(env: PortfolioWorkerEnv, additionalHeaders?: HeadersInit) {
   const headers = new Headers(additionalHeaders);

@@ -10,13 +10,23 @@ This runbook covers the target release path: GitHub Actions builds a Next.js sta
 | Release validation                | `.github/workflows/quality.yml`               |
 | Preview/production promotion      | `.github/workflows/deploy-cloudflare.yml`     |
 | Static files and `/api/*`         | One Cloudflare Worker project per environment |
-| DNS, custom domains and redirects | Manual Phase 29 operator action               |
+| DNS, custom domains and redirects | Manual production-cutover action              |
 | Homelab delivery                  | Independent of portfolio hosting              |
 | Docker/Coolify v1.0.0             | Rollback reference only                       |
 
 GitHub Actions must be the only automated deployment owner. Keep Cloudflare Workers Builds disconnected or disabled for these Worker projects; otherwise a Git push could publish outside the reviewed workflow.
 
-## Account setup — manual and not yet performed
+## Account setup
+
+The hosted-preview preflight verified the following controls without recording any secret values:
+
+- GitHub environments `cloudflare-preview` and `cloudflare-production` exist.
+- Each environment contains separately scoped `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` secrets.
+- Production requires RahulSinghParmar's review, disallows administrator bypass and accepts deployments only from `main`.
+- Repository variable `PRODUCTION_DEPLOYMENT_ENABLED` remains `false`.
+- Cloudflare Workers Builds are disconnected for the portfolio projects, leaving GitHub Actions as the only publisher.
+
+Use the following requirements when rotating or rebuilding this setup.
 
 Create two GitHub deployment environments:
 
@@ -30,11 +40,11 @@ Add these environment secrets to each environment, using separate least-privileg
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID containing the Worker projects                  |
 | `CLOUDFLARE_API_TOKEN`  | Token scoped to this account and required Worker resources |
 
-Use Cloudflare's **Edit Cloudflare Workers** token template as the starting point, restrict account and zone resources to Rahul's account and `rahulsinghparmar.site`, then remove permissions the workflow does not use. Do not grant DNS write access to CI. A production custom-domain route may require Workers Routes permission when that binding is added in Phase 29; DNS remains a separate manual action.
+Use Cloudflare's **Edit Cloudflare Workers** token template as the starting point, restrict account and zone resources to Rahul's account and `rahulsinghparmar.site`, then remove permissions the workflow does not use. Do not grant DNS write access to CI. A production custom-domain route may require Workers Routes permission when that binding is added during cutover; DNS remains a separate manual action.
 
 Protect `cloudflare-production` with required reviewer approval and restrict deployments to `main`. Disable self-approval where the account plan supports it.
 
-Create repository variable `PRODUCTION_DEPLOYMENT_ENABLED` with value `false`, or leave it absent. Change it to `true` only for the approved Phase 29 cutover window and return it to `false` afterward.
+Create repository variable `PRODUCTION_DEPLOYMENT_ENABLED` with value `false`, or leave it absent. Change it to `true` only for the approved production-cutover window and return it to `false` afterward.
 
 Do not create or paste tokens into the repository, issue comments, workflow inputs, logs, `.env*`, `.dev.vars.example` or documentation.
 
@@ -64,7 +74,7 @@ There is no container-build job in the target path. The Docker image remains a h
 
 ## Preview promotion
 
-Phase 28 owns the first hosted preview. After committing the candidate and obtaining a passing quality workflow:
+After committing a candidate and obtaining a passing quality workflow:
 
 1. Open **Actions → Deploy Cloudflare portfolio → Run workflow**.
 2. Select the reviewed branch and choose `preview`.
@@ -79,13 +89,13 @@ Phase 28 owns the first hosted preview. After committing the candidate and obtai
    Remove-Item Env:DEPLOYMENT_EXPECTED_ENV
    ```
 
-7. Complete the Phase 28 browser and real-device checklist before considering production.
+7. Complete the hosted browser and real-device checklist before considering production.
 
 The workflow refuses a SHA mismatch. It validates without deployment credentials first, then the environment-gated job installs, rebuilds and revalidates the same SHA before invoking Wrangler.
 
 ## Production promotion
 
-Production is deliberately blocked until Phase 29:
+Production remains deliberately blocked until an approved cutover:
 
 1. Confirm the accepted preview SHA is on `main`.
 2. Complete the DNS, redirect, certificate and maintenance-route preflight.
@@ -96,7 +106,7 @@ Production is deliberately blocked until Phase 29:
 7. Run the production contract with `DEPLOYMENT_EXPECTED_ENV=production` and complete external checks.
 8. Return `PRODUCTION_DEPLOYMENT_ENABLED` to `false`.
 
-The current `wrangler.jsonc` intentionally contains no production custom-domain route. A workflow run before Phase 29 can upload a production Worker version, but it cannot take over the public domain.
+The current `wrangler.jsonc` intentionally contains no production custom-domain route. A workflow run before cutover can upload a production Worker version, but it cannot take over the public domain.
 
 ## Runtime contract
 
@@ -133,7 +143,7 @@ These commands mutate Cloudflare account state and are not part of local validat
 - Light/dark/system themes, reduced motion, full motion, keyboard navigation and responsive layout pass.
 - No browser-console error, failed asset or unexpected external request appears.
 
-Automated browser emulation does not satisfy physical-device acceptance. Record iPhone/Android and desktop-browser evidence separately in Phase 28.
+Automated browser emulation does not satisfy physical-device acceptance. Record iPhone/Android and desktop-browser evidence separately for every release candidate.
 
 ## Rollback
 
@@ -141,7 +151,7 @@ Before any production change, record the current Cloudflare Worker version, DNS 
 
 If a Worker release fails but routing is correct, roll back to the last known-good Cloudflare Worker version, rerun the deployment contract, and retain the failed version/logs for diagnosis.
 
-If the Phase 29 routing cutover fails, restore the recorded pre-cutover Worker route, maintenance route and web DNS state exactly. Restore the legacy traffic path only if its health was verified before cutover, then repeat HTTPS and external deployment checks.
+If routing cutover fails, restore the recorded pre-cutover Worker route, maintenance route and web DNS state exactly. Restore the legacy traffic path only if its health was verified before cutover, then repeat HTTPS and external deployment checks.
 
 The retained Docker/Coolify release is documented in [COOLIFY_OPERATIONS.md](./COOLIFY_OPERATIONS.md). Do not resume or mutate it without explicit operator approval. No database or volume rollback is required by the portfolio itself.
 

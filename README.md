@@ -1,11 +1,16 @@
 # Rahul Singh Parmar — Engineering Portfolio
 
-Production portfolio for Rahul Singh Parmar, a DCO Tech 3 working across data-center operations, network reliability, systems, security, AWS, homelab engineering and practical automation.
+Production portfolio for Rahul Singh Parmar, a DCO Tech 3 at Amazon Web Services (AWS) working across data-center operations, network reliability, systems, security, homelab engineering and practical automation.
 
 - Public site: [rahulsinghparmar.site](https://rahulsinghparmar.site)
-- Current release: `v1.0.0`
+- Stable source version: `v1.1.0` — [release history](https://github.com/RahulSinghParmar/Portfolio/releases)
 - Migration target: Cloudflare Workers Static Assets with an API Worker
 - Runtime requirement: Node.js 22+
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/portfolio-preview-dark.webp">
+  <img src="./docs/assets/portfolio-preview-light.webp" alt="Rahul Singh Parmar portfolio hero showing a responsive infrastructure topology and portrait" width="1440">
+</picture>
 
 ## Project overview
 
@@ -56,6 +61,8 @@ GitHub Actions is the intended deployment owner. Cloudflare Workers Builds must 
 
 The visual language comes from diagrams, runbooks and network maps. Typography carries the hierarchy; lines, grids and status color provide structure. Motion is optional and never required to navigate or understand the page.
 
+Responsive topology, pointer feedback and mobile progressive disclosure follow the measurable [interaction system contract](./docs/INTERACTION_SYSTEM.md).
+
 Three implementation rules:
 
 1. Publish evidence, not unsupported claims.
@@ -72,13 +79,29 @@ lib/                    Browser-safe contracts and SEO utilities
 worker/                 Cloudflare API entrypoint, security policy and tests
 public/                 Optimized assets and Cloudflare _headers policy
 scripts/                Export, package, performance, SEO and runtime checks
-docs/                   Audit records and operating documentation
+docs/                   Content, quality and deployment documentation
 .github/workflows/      Quality gate and manual deployment workflow
 wrangler.jsonc          Local, preview and production Worker configuration
 Dockerfile              Preserved v1.0.0 rollback packaging
 ```
 
-Source portraits under `myphotos/` are intentionally ignored. They are reference material, not release assets.
+Source portraits under `myphotos/` are intentionally ignored. The release portrait is an optimized transparent WebP under `public/images/`.
+
+## Changing portfolio content
+
+Public content is intentionally separated from layout code. Most updates require editing one typed file under `data/`:
+
+| Change                                                   | File                     |
+| -------------------------------------------------------- | ------------------------ |
+| Name, role, employer, biography, email or social profile | `data/profile.ts`        |
+| Work history                                             | `data/experience.ts`     |
+| Education, working modes or career direction             | `data/professional.ts`   |
+| Featured projects and links                              | `data/projects.ts`       |
+| Skills and capability map                                | `data/skills.ts`         |
+| Certifications                                           | `data/certifications.ts` |
+| Contact directory                                        | `data/contact.ts`        |
+
+The complete editing and publishing walkthrough is in [docs/CONTENT_EDITING.md](./docs/CONTENT_EDITING.md). It explains content fields, portrait preparation, local preview, validation and the protected Cloudflare release path.
 
 ## Development workflow
 
@@ -111,6 +134,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for change standards.
 | `npm run cloudflare:check`          | Build, dry-run package and enforce Cloudflare artifact limits           |
 | `npm run release:check`             | Run the full quality and Cloudflare package gate                        |
 | `npm run deployment:check -- <url>` | Verify a running Cloudflare-compatible deployment                       |
+| `npm run asset:portrait -- <file>`  | Convert a prepared green-screen portrait to transparent WebP            |
 
 ## Performance
 
@@ -168,7 +192,7 @@ Deployment is intentionally manual. The `Deploy Cloudflare portfolio` workflow a
 - repository variable `PRODUCTION_DEPLOYMENT_ENABLED=true`;
 - approval through the `cloudflare-production` GitHub environment.
 
-Until Phase 29 cutover approval, keep that variable absent or `false`, leave the production Worker without a custom-domain route, and do not alter DNS or the maintenance Worker. Follow [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for account setup, preview promotion, production promotion and verification.
+Until production cutover approval, keep that variable absent or `false`, leave the production Worker without a custom-domain route, and do not alter DNS or the maintenance Worker. Follow [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for account setup, preview promotion, production promotion and verification.
 
 ## Docker and Coolify rollback
 
@@ -183,19 +207,17 @@ The Dockerfile and existing Coolify v1.0.0 deployment are retained as rollback a
 5. Promote the same accepted commit to the protected production environment only during the approved cutover.
 6. If validation fails, use Cloudflare version rollback and restore the recorded routing state; do not patch a failed artifact in place.
 
-The operational migration sequence is tracked in [docs/CLOUDFLARE_MIGRATION_PLAN.md](./docs/CLOUDFLARE_MIGRATION_PLAN.md) and [docs/CLOUDFLARE_MIGRATION_STATUS.md](./docs/CLOUDFLARE_MIGRATION_STATUS.md).
+The stable release and rollback procedure is maintained in [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md). Historical implementation notes remain available through Git history rather than living beside current operating instructions.
 
 ## Versioning strategy
 
-The project follows Semantic Versioning. `MAJOR` covers incompatible architecture or public contracts; `MINOR` covers backward-compatible capabilities; `PATCH` covers corrections without a contract change. The next release number remains provisional until Phase 30 verifies history and production acceptance.
+The project follows Semantic Versioning. `MAJOR` covers incompatible architecture or public contracts; `MINOR` covers backward-compatible capabilities; `PATCH` covers corrections without a contract change. A version is published only after the exact production revision passes the release and deployment contracts.
 
 ## Future roadmap
 
 - Connect the status adapter only when a safe public telemetry contract exists.
 - Replace qualitative outcomes with measured reliability evidence as it becomes available.
 - Evaluate nonce-based CSP only if its benefit justifies dynamic rendering and cache cost.
-
-Content decisions remain in [CONTENT_TODO.md](./CONTENT_TODO.md).
 
 ## License
 

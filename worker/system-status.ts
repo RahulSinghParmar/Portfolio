@@ -5,7 +5,7 @@ import type {
 } from "../lib/system-status-contract.ts";
 import type { PortfolioWorkerEnv, WorkerDependencies } from "./environment.ts";
 
-const defaultVersion = "v1.0.0";
+const defaultVersion = "v1.1.0";
 const defaultTimeoutMs = 3500;
 const minimumTimeoutMs = 1000;
 const maximumTimeoutMs = 8000;

@@ -1,49 +1,142 @@
-const nodes = [
-  { id: "edge", x: 82, y: 70, label: "EDGE" },
-  { id: "network", x: 238, y: 42, label: "NETWORK" },
-  { id: "security", x: 390, y: 108, label: "SECURITY" },
-  { id: "compute", x: 192, y: 190, label: "COMPUTE" },
-  { id: "observe", x: 420, y: 236, label: "OBSERVE" },
-  { id: "automate", x: 92, y: 290, label: "AUTOMATE" },
+type TopologyNode = {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  labelSide?: "left" | "right";
+};
+
+type TopologyScene = {
+  id: "desktop" | "tablet" | "mobile";
+  viewBox: string;
+  nodes: readonly TopologyNode[];
+  routes: readonly (readonly [number, number])[];
+};
+
+const scenes: readonly TopologyScene[] = [
+  {
+    id: "desktop",
+    viewBox: "0 0 1440 900",
+    nodes: [
+      { id: "edge", label: "EDGE", x: 525, y: 202, labelSide: "left" },
+      { id: "network", label: "NETWORK", x: 760, y: 126 },
+      { id: "security", label: "SECURITY", x: 1002, y: 236 },
+      { id: "compute", label: "COMPUTE", x: 718, y: 430, labelSide: "left" },
+      { id: "observe", label: "OBSERVE", x: 1022, y: 558 },
+      { id: "cloud", label: "CLOUD", x: 820, y: 704 },
+      { id: "automate", label: "AUTOMATE", x: 548, y: 642, labelSide: "left" },
+    ],
+    routes: [
+      [0, 1],
+      [1, 2],
+      [2, 4],
+      [4, 5],
+      [5, 6],
+      [6, 0],
+      [0, 3],
+      [1, 3],
+      [2, 3],
+      [3, 4],
+      [3, 5],
+      [3, 6],
+    ],
+  },
+  {
+    id: "tablet",
+    viewBox: "0 0 900 900",
+    nodes: [
+      { id: "edge", label: "EDGE", x: 326, y: 208, labelSide: "left" },
+      { id: "network", label: "NETWORK", x: 514, y: 126 },
+      { id: "security", label: "SECURITY", x: 610, y: 292, labelSide: "left" },
+      { id: "compute", label: "COMPUTE", x: 454, y: 466, labelSide: "left" },
+      { id: "cloud", label: "CLOUD", x: 602, y: 650 },
+    ],
+    routes: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 0],
+      [0, 3],
+      [1, 3],
+    ],
+  },
+  {
+    id: "mobile",
+    viewBox: "0 0 390 844",
+    nodes: [
+      { id: "edge", label: "EDGE", x: 46, y: 432 },
+      { id: "network", label: "NETWORK", x: 116, y: 548 },
+      { id: "cloud", label: "CLOUD", x: 54, y: 620 },
+    ],
+    routes: [
+      [0, 1],
+      [1, 2],
+      [2, 0],
+    ],
+  },
 ] as const;
+
+function TopologyScene({ scene }: { scene: TopologyScene }) {
+  return (
+    <svg
+      className={`network-foundation network-foundation--${scene.id}`}
+      viewBox={scene.viewBox}
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <g>
+        {scene.routes.map(([fromIndex, toIndex], index) => {
+          const from = scene.nodes[fromIndex];
+          const to = scene.nodes[toIndex];
+          return (
+            <line
+              key={`${from.id}-${to.id}`}
+              className={index < 2 ? "is-active" : undefined}
+              x1={from.x}
+              y1={from.y}
+              x2={to.x}
+              y2={to.y}
+              pathLength="1"
+            />
+          );
+        })}
+      </g>
+
+      <g>
+        {scene.nodes.map((node, index) => {
+          const labelOnLeft = node.labelSide === "left";
+          return (
+            <g
+              data-network-node={node.id}
+              key={node.id}
+              transform={`translate(${node.x} ${node.y})`}
+            >
+              <circle r={index === 3 ? 31 : 25} />
+              <circle r={index === 3 ? 15 : 12} />
+              <circle r="3.5" />
+              <text x={labelOnLeft ? -22 : 22} y="4" textAnchor={labelOnLeft ? "end" : "start"}>
+                {node.label}
+              </text>
+            </g>
+          );
+        })}
+      </g>
+
+      <g className="network-foundation__coordinates">
+        <text x="10" y="22">
+          SYS / {String(scene.nodes.length).padStart(2, "0")}
+        </text>
+      </g>
+    </svg>
+  );
+}
 
 export function NetworkFoundation() {
   return (
-    <svg
-      className="network-foundation"
-      viewBox="0 0 520 350"
-      role="img"
-      aria-labelledby="network-title network-description"
-    >
-      <title id="network-title">Abstract infrastructure topology</title>
-      <desc id="network-description">
-        Connected edge, network, security, compute, observability and automation nodes.
-      </desc>
-      <g className="network-foundation__grid" aria-hidden="true">
-        {Array.from({ length: 13 }, (_, index) => (
-          <line key={`v-${index}`} x1={index * 43} x2={index * 43} y1="0" y2="350" />
-        ))}
-        {Array.from({ length: 9 }, (_, index) => (
-          <line key={`h-${index}`} x1="0" x2="520" y1={index * 43} y2={index * 43} />
-        ))}
-      </g>
-      <g className="network-foundation__routes" aria-hidden="true">
-        <path d="M82 70 L238 42 L390 108 L420 236 L192 190 L92 290 L82 70" />
-        <path d="M82 70 L192 190 L390 108" />
-        <path d="M238 42 L192 190 L420 236" />
-        <path d="M92 290 L420 236" />
-      </g>
-      <g className="network-foundation__nodes">
-        {nodes.map((node) => (
-          <g key={node.id} transform={`translate(${node.x} ${node.y})`}>
-            <circle r="6" />
-            <circle className="network-foundation__node-ring" r="13" />
-            <text x="18" y="4">
-              {node.label}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
+    <div className="network-foundation-set" aria-hidden="true">
+      {scenes.map((scene) => (
+        <TopologyScene key={scene.id} scene={scene} />
+      ))}
+    </div>
   );
 }

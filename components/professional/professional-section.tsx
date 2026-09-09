@@ -10,8 +10,8 @@ export function ProfessionalSection() {
       <SectionLabel index="04">Professional practice</SectionLabel>
 
       <div className="professional-section__heading" data-reveal>
-        <p className="mono-meta">Data center operations / development mindset</p>
-        <h2>I operate critical infrastructure during the week and build tooling on weekends.</h2>
+        <p className="mono-meta">Physical infrastructure / software thinking</p>
+        <h2>I operate where cloud becomes physical—and build beyond the shift.</h2>
       </div>
 
       <dl className="professional-snapshot mono-meta" data-reveal>
@@ -20,8 +20,8 @@ export function ProfessionalSection() {
           <dd>{profile.role}</dd>
         </div>
         <div>
-          <dt>Experience</dt>
-          <dd>{profile.experience}</dd>
+          <dt>Organization</dt>
+          <dd>{profile.employer}</dd>
         </div>
         <div>
           <dt>Base</dt>
@@ -63,11 +63,13 @@ export function ProfessionalSection() {
               </div>
               <div className="career-record__scope">
                 <p>{item.summary}</p>
-                <ul>
-                  {item.responsibilities.map((responsibility) => (
-                    <li key={responsibility}>{responsibility}</li>
-                  ))}
-                </ul>
+                {item.responsibilities.length > 0 ? (
+                  <ul>
+                    {item.responsibilities.map((responsibility) => (
+                      <li key={responsibility}>{responsibility}</li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </li>
           ))}

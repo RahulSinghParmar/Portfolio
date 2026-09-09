@@ -14,8 +14,9 @@ const files = {
 
 const expected = {
   canonical: "https://rahulsinghparmar.site",
-  title: "Rahul Singh Parmar — DCO Tech 3",
+  title: "Rahul Singh Parmar — DCO Tech 3 at AWS",
   role: "DCO Tech 3",
+  employer: "Amazon Web Services (AWS)",
   email: "rahulsinghparmar4@protonmail.com",
   language: "en-IN",
   twitterCreator: "@rahulsingh474",
@@ -132,6 +133,7 @@ const person = graph.find((entry) => entry["@type"] === "Person");
 const work = graph.find((entry) => entry["@type"] === "ItemList");
 check("verified social identities", Array.isArray(person?.sameAs) && person.sameAs.length === 4);
 check("current professional role", person?.jobTitle === expected.role);
+check("current organization", person?.worksFor?.name === expected.employer);
 check("confirmed public email", person?.email === expected.email);
 check("three selected projects", work?.numberOfItems === 3 && work?.itemListElement?.length === 3);
 
@@ -139,7 +141,10 @@ check("robots allows portfolio", robots.includes("Allow: /"));
 check("robots blocks API", robots.includes("Disallow: /api/"));
 check("robots declares sitemap", robots.includes(`Sitemap: ${expected.canonical}/sitemap.xml`));
 check("sitemap canonical URL", sitemap.includes(`<loc>${expected.canonical}</loc>`));
-check("sitemap profile image", sitemap.includes(`${expected.canonical}/images/rahul.webp`));
+check(
+  "sitemap profile image",
+  sitemap.includes(`${expected.canonical}/images/rahul-portrait.webp`),
+);
 
 let manifest;
 try {

@@ -15,7 +15,7 @@
   },
   "vars": {
     "DEPLOYMENT_ENV": "local",
-    "SITE_VERSION": "v1.0.0-local",
+    "SITE_VERSION": "v1.1.0-local",
     "SYSTEM_STATUS_SOURCE": "disabled",
     "SYSTEM_STATUS_TIMEOUT_MS": "3500",
   },
@@ -26,7 +26,7 @@
       "preview_urls": true,
       "vars": {
         "DEPLOYMENT_ENV": "preview",
-        "SITE_VERSION": "v1.0.0-preview",
+        "SITE_VERSION": "v1.1.0-preview",
         "SYSTEM_STATUS_SOURCE": "disabled",
         "SYSTEM_STATUS_TIMEOUT_MS": "3500",
       },
@@ -37,7 +37,7 @@
       "preview_urls": false,
       "vars": {
         "DEPLOYMENT_ENV": "production",
-        "SITE_VERSION": "v1.0.0",
+        "SITE_VERSION": "v1.1.0",
         "SYSTEM_STATUS_SOURCE": "disabled",
         "SYSTEM_STATUS_TIMEOUT_MS": "3500",
       },

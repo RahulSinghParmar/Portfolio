@@ -1,5 +1,7 @@
 # Contributing
 
+For biography, experience, projects, skills, credentials, contact details or portrait updates, start with [docs/CONTENT_EDITING.md](./docs/CONTENT_EDITING.md). The content layer is kept separate from layout code so routine portfolio maintenance does not require React changes.
+
 This portfolio is a personal production site, but focused corrections and improvements are welcome.
 
 ## Before opening an issue

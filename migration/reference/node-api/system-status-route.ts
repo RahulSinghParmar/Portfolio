@@ -1,8 +1,8 @@
 /**
- * Phase 23 Node API reference.
+ * Retired Node API reference.
  *
  * This is intentionally outside `app/` so Next.js can emit a static export.
- * Phase 25 will port the route and status adapter to the API Worker.
+ * The active route and status adapter now live under worker/.
  */
 import { getSystemStatus } from "./system-status-adapter";
 

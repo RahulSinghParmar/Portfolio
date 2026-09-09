@@ -1,6 +1,6 @@
 # Cloudflare local preview
 
-This is the operator guide for the Phase 26 delivery path: a Next.js static export in `out/`, a small API Worker in `worker/`, and Cloudflare Workers Static Assets serving both through one project.
+This is the operator guide for the Cloudflare delivery path: a Next.js static export in `out/`, a small API Worker in `worker/`, and Cloudflare Workers Static Assets serving both through one project.
 
 It does not publish a Worker, modify DNS, or interact with the existing maintenance Worker.
 
@@ -63,7 +63,7 @@ Do not make a private homelab endpoint public solely to populate the widget.
 - `preview`: a separate Worker name with `workers_dev` and version preview URLs enabled.
 - `production`: a separate Worker name with public preview URLs disabled.
 
-Production custom-domain routes are intentionally absent. They belong to the controlled Phase 29 cutover and must not be inferred or created during local development.
+Production custom-domain routes are intentionally absent. They belong to the controlled production cutover and must not be inferred or created during local development.
 
 If the status adapter is connected later, create secrets through Wrangler for each environment rather than adding them to source:
 

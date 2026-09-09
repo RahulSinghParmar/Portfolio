@@ -43,16 +43,24 @@ export function ProjectCaseStudy({ project, position }: ProjectCaseStudyProps) {
         </dl>
       </header>
 
-      <ProjectArchitecture project={project} />
+      <details className="project-case-study__disclosure" open={position === 0}>
+        <summary className="project-case-study__disclosure-toggle focus-ring mono-meta">
+          System topology + engineering decisions
+        </summary>
 
-      <div className="project-case-study__details">
-        {detailFields.map(([label, field]) => (
-          <div className="project-case-study__detail" key={field} data-project-detail>
-            <h4 className="mono-meta">{label}</h4>
-            <p>{project[field]}</p>
+        <div className="project-case-study__disclosure-content">
+          <ProjectArchitecture project={project} />
+
+          <div className="project-case-study__details">
+            {detailFields.map(([label, field]) => (
+              <div className="project-case-study__detail" key={field} data-project-detail>
+                <h4 className="mono-meta">{label}</h4>
+                <p>{project[field]}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </details>
 
       <footer className="project-case-study__outcome">
         <div>

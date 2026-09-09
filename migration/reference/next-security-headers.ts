@@ -1,7 +1,7 @@
 /**
- * Security-header contract from the Phase 23 Next.js runtime.
- * Preserved Phase 23 Next.js runtime contract. Phase 26 ports these values to
- * Cloudflare static-asset and Worker response configuration.
+ * Security-header contract from the retired Next.js server runtime.
+ * Preserved for comparison with the active Cloudflare static-asset and Worker
+ * response configuration.
  */
 export const productionSecurityHeaders = [
   {

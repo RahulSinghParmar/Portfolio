@@ -2,6 +2,15 @@ import type { Experience } from "./types";
 
 export const experience = [
   {
+    period: "Current",
+    company: "Amazon Web Services (AWS)",
+    role: "DCO Tech 3",
+    location: "Mumbai, India",
+    summary:
+      "Working in AWS data center operations. Public detail is intentionally limited to role and organization.",
+    responsibilities: [],
+  },
+  {
     period: "Previous",
     company: "ALFA KPO PRIVATE LIMITED",
     role: "Team Lead Network Engineer",

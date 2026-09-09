@@ -1,11 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { type KeyboardEvent, useRef, useState } from "react";
 import { skillLayers } from "@/data/skills";
 
 export function InfrastructureMap() {
   const [activeId, setActiveId] = useState(skillLayers[0].id);
+  const controlRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const activeLayer = skillLayers.find((layer) => layer.id === activeId) ?? skillLayers[0];
+
+  const selectLayer = (index: number, moveFocus = false) => {
+    const layer = skillLayers[index];
+    setActiveId(layer.id);
+    if (moveFocus) controlRefs.current[index]?.focus();
+  };
+
+  const handleControlKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | undefined;
+
+    switch (event.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+        nextIndex = (index + 1) % skillLayers.length;
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+        nextIndex = (index - 1 + skillLayers.length) % skillLayers.length;
+        break;
+      case "Home":
+        nextIndex = 0;
+        break;
+      case "End":
+        nextIndex = skillLayers.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    selectLayer(nextIndex, true);
+  };
 
   return (
     <div className="infrastructure-map" data-system-map>
@@ -30,6 +63,7 @@ export function InfrastructureMap() {
             {skillLayers.map((layer) => (
               <line
                 className="infrastructure-map__route"
+                data-layer-route={layer.id}
                 data-active={layer.id === activeId}
                 key={layer.id}
                 x1="360"
@@ -47,15 +81,19 @@ export function InfrastructureMap() {
             </text>
           </g>
           <g aria-hidden="true">
-            {skillLayers.map((layer) => (
+            {skillLayers.map((layer, index) => (
               <g
                 className="infrastructure-map__node"
+                data-layer-node={layer.id}
                 data-active={layer.id === activeId}
                 key={layer.id}
+                onClick={() => setActiveId(layer.id)}
+                onPointerEnter={() => selectLayer(index)}
                 transform={`translate(${layer.x} ${layer.y})`}
               >
                 <circle r="20" />
                 <circle r="4" />
+                <circle className="infrastructure-map__node-hit" r="32" />
                 <text y="34" textAnchor="middle">
                   {layer.label.toUpperCase()}
                 </text>
@@ -70,14 +108,24 @@ export function InfrastructureMap() {
 
       <div className="infrastructure-map__interface">
         <ol className="infrastructure-map__controls" aria-label="Capability layers">
-          {skillLayers.map((layer) => (
+          {skillLayers.map((layer, index) => (
             <li key={layer.id}>
               <button
                 className="focus-ring"
                 type="button"
+                aria-controls="capability-layer-detail"
                 aria-pressed={layer.id === activeId}
-                onClick={() => setActiveId(layer.id)}
-                onPointerEnter={() => setActiveId(layer.id)}
+                data-layer-control={layer.id}
+                onClick={() => selectLayer(index)}
+                onFocus={() => selectLayer(index)}
+                onKeyDown={(event) => handleControlKeyDown(event, index)}
+                onPointerMove={() => {
+                  if (layer.id !== activeId) selectLayer(index);
+                }}
+                ref={(element) => {
+                  controlRefs.current[index] = element;
+                }}
+                tabIndex={layer.id === activeId ? 0 : -1}
               >
                 <span className="mono-meta">{layer.index}</span>
                 <span>{layer.label}</span>
@@ -87,16 +135,23 @@ export function InfrastructureMap() {
           ))}
         </ol>
 
-        <div className="infrastructure-map__detail" aria-live="polite">
-          <p className="mono-meta">Active layer / {activeLayer.index}</p>
-          <h3>{activeLayer.label}</h3>
-          <p>{activeLayer.description}</p>
-          <p className="infrastructure-map__signal mono-meta">{activeLayer.signal}</p>
-          <ul aria-label={`${activeLayer.label} technologies`}>
-            {activeLayer.items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+        <div
+          className="infrastructure-map__detail"
+          id="capability-layer-detail"
+          aria-atomic="true"
+          aria-live="polite"
+        >
+          <div className="infrastructure-map__detail-content" key={activeLayer.id}>
+            <p className="mono-meta">Active layer / {activeLayer.index}</p>
+            <h3>{activeLayer.label}</h3>
+            <p>{activeLayer.description}</p>
+            <p className="infrastructure-map__signal mono-meta">{activeLayer.signal}</p>
+            <ul aria-label={`${activeLayer.label} technologies`}>
+              {activeLayer.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
