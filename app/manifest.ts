@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
     name: `${profile.name} — Portfolio`,
-    short_name: "RSP Portfolio",
+    short_name: `${profile.initials} Portfolio`,
     description: siteMetadata.description,
     start_url: "/",
     scope: "/",
@@ -17,6 +17,6 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#0b0c0c",
     theme_color: "#0b0c0c",
     categories: ["portfolio", "technology", "productivity"],
-    icons: [{ src: "/icon", sizes: "64x64", type: "image/png" }],
+    icons: [{ src: "/icon.png", sizes: "64x64", type: "image/png" }],
   };
 }

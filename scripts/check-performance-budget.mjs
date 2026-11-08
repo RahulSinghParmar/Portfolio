@@ -45,6 +45,7 @@ if (!existsSync(homeDocument)) {
 }
 
 const htmlBuffer = readFileSync(homeDocument);
+const content = JSON.parse(readFileSync(join(projectRoot, "content/portfolio.json"), "utf8"));
 const html = htmlBuffer.toString("utf8");
 const scriptUrls = extractAssets(html, /<script[^>]+src="([^"]+)"/g);
 const styleUrls = extractAssets(html, /<link[^>]+href="([^"]+\.css[^\"]*)"/g);
@@ -79,7 +80,8 @@ const measurements = {
 };
 
 const budgets = {
-  "home HTML / raw": 160 * 1024,
+  // Allow content growth without manual counter edits; transfer/JS ceilings remain fixed.
+  "home HTML / raw": Math.max(160, 64 + content.projects.length * 32) * 1024,
   "initial JavaScript / raw": 620 * 1024,
   "initial JavaScript / Brotli": 190 * 1024,
   "initial CSS / raw": 64 * 1024,

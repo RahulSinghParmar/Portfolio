@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-type NetworkConnection = Navigator & { connection?: { saveData?: boolean } };
+import { motionEnabled, observeMotionPreference } from "@/lib/motion-preference";
 
 export function NetworkSignalRuntime() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,12 +11,7 @@ export function NetworkSignalRuntime() {
     const frame = canvas?.closest<HTMLElement>("[data-network-frame]");
     if (!canvas || !frame) return;
 
-    const forceMotion = new URLSearchParams(window.location.search).get("motion") === "full";
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const connection = navigator as NetworkConnection;
-    const lowCapability = navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2;
-    const shouldSkipEngine = () =>
-      !forceMotion && (reducedMotion.matches || lowCapability || connection.connection?.saveData);
+    const shouldSkipEngine = () => !motionEnabled();
 
     let disposed = false;
     let loading = false;
@@ -77,26 +71,25 @@ export function NetworkSignalRuntime() {
     );
 
     const handleMotionPreference = () => {
-      if (forceMotion) return;
       cancelScheduledLoad();
-      if (reducedMotion.matches) {
+      if (shouldSkipEngine()) {
         observer.disconnect();
         detach?.();
         detach = undefined;
-      } else if (!lowCapability && !connection.connection?.saveData) {
+      } else {
         observer.observe(frame);
       }
     };
 
     if (!shouldSkipEngine()) observer.observe(frame);
-    reducedMotion.addEventListener("change", handleMotionPreference);
+    const unobserve = observeMotionPreference(handleMotionPreference);
 
     return () => {
       disposed = true;
       observer.disconnect();
       detach?.();
       cancelScheduledLoad();
-      reducedMotion.removeEventListener("change", handleMotionPreference);
+      unobserve();
     };
   }, []);
 

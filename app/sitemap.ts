@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: siteMetadata.contentUpdated,
       changeFrequency: "monthly",
       priority: 1,
-      images: [`${profile.siteUrl}/images/rahul-portrait.webp`],
+      images: [`${profile.siteUrl}${profile.portrait.src}`],
     },
   ];
 }

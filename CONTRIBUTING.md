@@ -23,7 +23,7 @@ Node.js 22 or later is required. Open `http://localhost:3000`.
 
 ## Change standards
 
-- Keep public content in the typed modules under `data/`.
+- Keep public content in `content/portfolio.json`; `data/` contains rendering adapters. Run `npm run content:check` after edits.
 - Preserve server-component boundaries unless client state is required.
 - Do not make animation necessary for navigation or comprehension.
 - Test desktop, tablet and mobile layouts without horizontal overflow.

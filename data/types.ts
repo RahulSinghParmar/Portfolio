@@ -46,7 +46,7 @@ export type Project = {
   observability: string;
   outcome: string;
   metrics: readonly ProjectMetric[];
-  architecture: ProjectArchitecture;
+  architecture: ProjectArchitecture | null;
   repositoryUrl: string | null;
   liveUrl: string | null;
 };
@@ -72,6 +72,8 @@ export type Education = {
   degree: string;
   discipline: string;
   note: string;
+  institution?: string;
+  period?: string;
 };
 
 export type CareerDirection = {

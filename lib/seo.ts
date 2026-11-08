@@ -1,42 +1,15 @@
 import { certifications } from "@/data/certifications";
 import { profile } from "@/data/profile";
 import { projects } from "@/data/projects";
-import { education } from "@/data/professional";
+import { educationHistory } from "@/data/professional";
 import { skillLayers } from "@/data/skills";
+import content from "@/content/portfolio.json";
 
 export const siteMetadata = {
-  title: `${profile.name} — ${profile.role} at AWS`,
-  description:
-    "Rahul Singh Parmar is a DCO Tech 3 at Amazon Web Services in Mumbai, focused on data center operations, networks, automation, and reliable systems.",
-  socialDescription:
-    "AWS data center operations, network engineering, security, automation, and self-hosted systems.",
-  locale: "en_IN",
-  language: "en-IN",
-  twitterHandle: "@rahulsingh474",
-  contentUpdated: "2026-09-08",
-  socialImageAlt: "Rahul Singh Parmar — DCO Tech 3 at Amazon Web Services and automation builder",
-  keywords: [
-    "Rahul Singh Parmar",
-    "DCO Tech 3",
-    "Data Center Operations",
-    "Network Engineer Mumbai",
-    "Infrastructure Engineer",
-    "Network Security",
-    "Infrastructure Operations",
-    "Systems Administration",
-    "AWS",
-    "Cloud Infrastructure",
-    "DevOps",
-    "Automation Engineer",
-    "PowerShell",
-    "Python",
-    "Linux",
-    "Windows Server",
-    "Docker",
-    "Cloudflare Workers",
-    "Homelab",
-    "Self Hosting",
-  ],
+  ...content.seo,
+  title: `${profile.name} — ${profile.role}${profile.employerShort ? ` at ${profile.employerShort}` : ""}`,
+  socialImageAlt: `${profile.name} — ${profile.role} at ${profile.employer}`,
+  keywords: [profile.name, profile.role, ...content.seo.keywords],
 } as const;
 
 const absoluteUrl = (path: string) => new URL(path, profile.siteUrl).toString();
@@ -75,22 +48,22 @@ export function buildStructuredData() {
         givenName: profile.givenName,
         familyName: profile.familyName,
         url: profile.siteUrl,
-        image: absoluteUrl("/images/rahul-portrait.webp"),
+        image: absoluteUrl(profile.portrait.src),
         jobTitle: profile.role,
         worksFor: {
           "@type": "Organization",
           name: profile.employer,
         },
         email: profile.email,
-        address: "Mumbai, India",
+        address: profile.location,
         sameAs: profile.links.map((link) => link.href),
         knowsAbout,
         hasCredential: [
-          {
+          ...educationHistory.map((education) => ({
             "@type": "EducationalOccupationalCredential",
             name: `${education.degree} in ${education.discipline}`,
             credentialCategory: "degree",
-          },
+          })),
           ...certifications.map((certification) => ({
             "@type": "EducationalOccupationalCredential",
             name: certification.name,
@@ -116,7 +89,7 @@ export function buildStructuredData() {
         dateModified: siteMetadata.contentUpdated,
         isPartOf: { "@id": identifiers.website },
         mainEntity: { "@id": identifiers.person },
-        primaryImageOfPage: absoluteUrl("/images/rahul-portrait.webp"),
+        primaryImageOfPage: absoluteUrl(profile.portrait.src),
         hasPart: { "@id": identifiers.work },
       },
       {

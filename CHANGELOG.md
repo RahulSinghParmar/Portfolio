@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-08
+
+Content and runtime refinement release. Production promotion is a separate, protected action.
+
+### Added
+
+- Consolidated public résumé content into one schema-backed JSON file, with validation, generated labels and metadata, multiple education entries and optional project diagrams.
+- Added persistent motion preferences and browser/accessibility regression checks.
+
+### Changed
+
+- Removed CPU-count-based animation suppression and shared the policy across GSAP, Canvas and CSS.
+- Replaced the disconnected default runtime panel with a real portfolio-health observation, retaining a separate optional monitoring relay.
+- Refreshed delivery copy, social identity assets, icon references and maintenance retry facts.
+- Updated framework/image/build dependencies and added browser/accessibility regression checks to the quality workflow.
+- Added editing, monitoring integration and final-review documentation.
+
 ## [1.1.0] - 2026-09-09
 
 Stable source release after desktop and mobile review. Production promotion is a separate, protected action.

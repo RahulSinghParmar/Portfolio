@@ -960,7 +960,7 @@ ol {
   border-inline: 1px solid var(--line);
 }
 
-.project-architecture__grid line {
+.project-architecture__grid path {
   stroke: var(--grid);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
@@ -3196,6 +3196,23 @@ ol {
   html:not([data-motion="full"]) .footer-signal__active {
     animation: none;
   }
+}
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+.motion-control {
+  padding: 0.5rem 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  min-height: 44px;
 }
 
 html[data-motion="reduced"] .infrastructure-map__route,

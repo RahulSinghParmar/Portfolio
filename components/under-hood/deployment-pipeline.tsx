@@ -10,7 +10,7 @@ export function DeploymentPipeline() {
   return (
     <div className="delivery-pipeline" data-reveal>
       <header>
-        <p className="mono-meta">Delivery path / target architecture</p>
+        <p className="mono-meta">Delivery path / Cloudflare</p>
         <h3>From reviewed change to observable runtime.</h3>
       </header>
       <ol>
@@ -24,8 +24,8 @@ export function DeploymentPipeline() {
         ))}
       </ol>
       <p className="delivery-pipeline__note mono-meta">
-        The Cloudflare package is locally verified. Hosted preview, public routing and traffic
-        cutover remain operator-controlled release steps.
+        Reviewed changes pass automated checks, then an approved GitHub Actions deployment publishes
+        the static assets and API Worker to Cloudflare.
       </p>
     </div>
   );

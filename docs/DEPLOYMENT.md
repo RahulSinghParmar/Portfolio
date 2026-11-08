@@ -1,6 +1,6 @@
 # Cloudflare deployment operations
 
-This runbook covers the target release path: GitHub Actions builds a Next.js static export and API Worker, validates the exact candidate, and manually promotes it to Cloudflare Workers Static Assets. It does not authorize production cutover, DNS changes or maintenance-Worker changes.
+GitHub Actions builds a Next.js static export and API Worker, validates the exact candidate, and manually promotes it to Cloudflare Workers Static Assets. The domain cutover is complete; see [PUBLIC_LAUNCH.md](PUBLIC_LAUNCH.md) for its record and [UPDATE_AND_RELEASE.md](UPDATE_AND_RELEASE.md) for routine releases. DNS is not changed by a content update.
 
 ## Ownership and trust boundaries
 
@@ -121,6 +121,8 @@ The current `wrangler.jsonc` intentionally contains no production custom-domain 
 ## Optional status source
 
 Keep the source disabled unless an approved HTTPS endpoint and public field contract exist. Non-secret values are Worker bindings in `wrangler.jsonc`; the token must be created separately per environment:
+
+The panel checks the portfolio's own health when the external source is disabled. See [STATUS_INTEGRATION.md](STATUS_INTEGRATION.md) for the required JSON contract and how to connect a real monitor.
 
 ```powershell
 npx wrangler secret put SYSTEM_STATUS_TOKEN --env preview

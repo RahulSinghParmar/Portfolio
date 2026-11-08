@@ -15,6 +15,7 @@ const detailFields = [
 ] as const;
 
 export function ProjectCaseStudy({ project, position }: ProjectCaseStudyProps) {
+  const hasDetails = project.architecture || detailFields.some(([, field]) => project[field]);
   return (
     <article
       className="project-case-study section-grid"
@@ -43,24 +44,28 @@ export function ProjectCaseStudy({ project, position }: ProjectCaseStudyProps) {
         </dl>
       </header>
 
-      <details className="project-case-study__disclosure" open={position === 0}>
-        <summary className="project-case-study__disclosure-toggle focus-ring mono-meta">
-          System topology + engineering decisions
-        </summary>
+      {hasDetails ? (
+        <details className="project-case-study__disclosure" open={position === 0}>
+          <summary className="project-case-study__disclosure-toggle focus-ring mono-meta">
+            System topology + engineering decisions
+          </summary>
 
-        <div className="project-case-study__disclosure-content">
-          <ProjectArchitecture project={project} />
+          <div className="project-case-study__disclosure-content">
+            {project.architecture ? <ProjectArchitecture project={project} /> : null}
 
-          <div className="project-case-study__details">
-            {detailFields.map(([label, field]) => (
-              <div className="project-case-study__detail" key={field} data-project-detail>
-                <h4 className="mono-meta">{label}</h4>
-                <p>{project[field]}</p>
-              </div>
-            ))}
+            <div className="project-case-study__details">
+              {detailFields
+                .filter(([, field]) => project[field])
+                .map(([label, field]) => (
+                  <div className="project-case-study__detail" key={field} data-project-detail>
+                    <h4 className="mono-meta">{label}</h4>
+                    <p>{project[field]}</p>
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-      </details>
+        </details>
+      ) : null}
 
       <footer className="project-case-study__outcome">
         <div>

@@ -113,8 +113,8 @@ if (headers !== undefined) {
 }
 
 const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
-if (packageJson.devDependencies?.wrangler !== "4.129.0") {
-  fail("Wrangler must remain pinned exactly to 4.129.0 for this candidate.");
+if (packageJson.devDependencies?.wrangler !== "4.158.0") {
+  fail("Wrangler must remain pinned exactly to 4.158.0 for this candidate.");
 }
 if (packageJson.engines?.node !== ">=22.0.0") {
   fail("package.json engines.node must remain >=22.0.0.");

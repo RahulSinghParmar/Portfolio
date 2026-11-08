@@ -1,40 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-
-type NetworkConnection = Navigator & {
-  connection?: { saveData?: boolean };
-};
+import { motionEnabled, observeMotionPreference } from "@/lib/motion-preference";
 
 export function MotionRuntime() {
   useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const networkConnection = navigator as NetworkConnection;
-    const forceMotion = new URLSearchParams(window.location.search).get("motion") === "full";
-    const useReducedMotion =
-      !forceMotion &&
-      (reducedMotion.matches ||
-        (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2) ||
-        networkConnection.connection?.saveData === true);
-    document.documentElement.dataset.motion = useReducedMotion ? "reduced" : "full";
-
-    if (useReducedMotion) {
-      return () => {
-        delete document.documentElement.dataset.motion;
-      };
-    }
-
     let disposed = false;
     let disposeMotion: (() => void) | undefined;
+    let revision = 0;
 
-    const initializeMotion = async () => {
+    const initializeMotion = async (requestedRevision: number) => {
       const [{ default: gsap }, { ScrollTrigger }, { default: Lenis }] = await Promise.all([
         import("gsap"),
         import("gsap/ScrollTrigger"),
         import("lenis"),
       ]);
 
-      if (disposed) return;
+      if (disposed || requestedRevision !== revision || !motionEnabled()) return;
 
       gsap.registerPlugin(ScrollTrigger);
 
@@ -52,7 +34,16 @@ export function MotionRuntime() {
       gsap.ticker.add(advanceLenis);
       gsap.ticker.lagSmoothing(0);
 
-      const context = gsap.context(() => {
+      const context = gsap.context(() => {}, document.body);
+      // Install cleanup before any selector/plugin work can fail.
+      disposeMotion = () => {
+        context.revert();
+        lenis.off("scroll", updateScrollTrigger);
+        lenis.destroy();
+        gsap.ticker.remove(advanceLenis);
+        gsap.ticker.lagSmoothing(500, 33);
+      };
+      context.add(() => {
         const entrance = gsap.timeline({
           defaults: { ease: "power3.out" },
         });
@@ -179,19 +170,30 @@ export function MotionRuntime() {
 
           reveal
             .from(title, { y: 48, autoAlpha: 0, duration: 1 })
-            .from(metadata, { y: 24, autoAlpha: 0, duration: 0.75 }, 0.12)
-            .from(diagram, { y: 38, autoAlpha: 0, duration: 1 }, 0.22)
-            .from(nodes, { scale: 0, autoAlpha: 0, stagger: 0.075, duration: 0.55 }, 0.42)
-            .from(routes, { autoAlpha: 0, stagger: 0.07, duration: 0.7 }, 0.46)
-            .from(details, { y: 24, autoAlpha: 0, stagger: 0.07, duration: 0.7 }, 0.62)
-            .from(metrics, { y: 18, autoAlpha: 0, stagger: 0.08, duration: 0.6 }, 0.74);
+            .from(metadata, { y: 24, autoAlpha: 0, duration: 0.75 }, 0.12);
+          if (diagram) reveal.from(diagram, { y: 38, autoAlpha: 0, duration: 1 }, 0.22);
+          if (nodes.length)
+            reveal.from(nodes, { scale: 0, autoAlpha: 0, stagger: 0.075, duration: 0.55 }, 0.42);
+          if (routes.length)
+            reveal.from(routes, { autoAlpha: 0, stagger: 0.07, duration: 0.7 }, 0.46);
+          if (details.length)
+            reveal.from(details, { y: 24, autoAlpha: 0, stagger: 0.07, duration: 0.7 }, 0.62);
+          if (metrics.length)
+            reveal.from(metrics, { y: 18, autoAlpha: 0, stagger: 0.08, duration: 0.6 }, 0.74);
 
-          gsap.to(routes, {
-            strokeDashoffset: -66,
-            duration: 3.6,
-            ease: "none",
-            repeat: -1,
-          });
+          if (routes.length)
+            gsap.to(routes, {
+              strokeDashoffset: -66,
+              duration: 3.6,
+              ease: "none",
+              repeat: -1,
+              scrollTrigger: {
+                trigger: project,
+                start: "top bottom",
+                end: "bottom top",
+                toggleActions: "play pause resume pause",
+              },
+            });
 
           const index = project.querySelector("[data-project-index]");
           if (index && window.matchMedia("(min-width: 48rem)").matches) {
@@ -211,26 +213,31 @@ export function MotionRuntime() {
             );
           }
         });
-      }, document.body);
+      });
 
       ScrollTrigger.refresh();
-
-      disposeMotion = () => {
-        context.revert();
-        lenis.off("scroll", updateScrollTrigger);
-        lenis.destroy();
-        gsap.ticker.remove(advanceLenis);
-        gsap.ticker.lagSmoothing(500, 33);
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      };
     };
 
-    void initializeMotion().catch(() => {
-      document.documentElement.dataset.motion = "reduced";
-    });
+    const update = () => {
+      revision += 1;
+      const requestedRevision = revision;
+      disposeMotion?.();
+      disposeMotion = undefined;
+      document.documentElement.dataset.motion = motionEnabled() ? "full" : "reduced";
+      if (motionEnabled())
+        void initializeMotion(requestedRevision).catch(() => {
+          if (disposed || requestedRevision !== revision) return;
+          disposeMotion?.();
+          disposeMotion = undefined;
+          document.documentElement.dataset.motion = "reduced";
+        });
+    };
+    update();
+    const unobserve = observeMotionPreference(update);
 
     return () => {
       disposed = true;
+      unobserve();
       disposeMotion?.();
       delete document.documentElement.dataset.motion;
     };
