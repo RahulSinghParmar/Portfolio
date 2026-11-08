@@ -43,7 +43,7 @@ Employer, education, credentials and service claims are published only when the 
 - `/manifest.webmanifest` provides install identity, scope, theme and the generated icon.
 - `/opengraph-image` and `/twitter-image` are statically generated and cached by Next.js.
 
-Update `siteMetadata.contentUpdated` in `lib/seo.ts` only when meaningful public content changes. Avoid replacing it with the build time, which would send a false freshness signal on every deployment.
+Update `seo.contentUpdated` in `content/portfolio.json` only when meaningful public content changes. Avoid replacing it with the build time, which would send a false freshness signal on every deployment.
 
 ## Lighthouse review
 

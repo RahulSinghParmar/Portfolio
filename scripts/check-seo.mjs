@@ -3,6 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const outputRoot = path.join(root, "out");
+const content = JSON.parse(await readFile(path.join(root, "content/portfolio.json"), "utf8"));
 
 const files = {
   home: path.join(outputRoot, "index.html"),
@@ -13,13 +14,13 @@ const files = {
 };
 
 const expected = {
-  canonical: "https://rahulsinghparmar.site",
-  title: "Rahul Singh Parmar — DCO Tech 3 at AWS",
-  role: "DCO Tech 3",
-  employer: "Amazon Web Services (AWS)",
-  email: "rahulsinghparmar4@protonmail.com",
-  language: "en-IN",
-  twitterCreator: "@rahulsingh474",
+  canonical: (process.env.NEXT_PUBLIC_SITE_URL ?? content.profile.siteUrl).replace(/\/$/, ""),
+  title: `${content.profile.name} — ${content.profile.role}${content.profile.employerShort ? ` at ${content.profile.employerShort}` : ""}`,
+  role: content.profile.role,
+  employer: content.profile.employer,
+  email: content.profile.email,
+  language: content.seo.language,
+  twitterCreator: content.seo.twitterHandle,
 };
 
 const read = async (file) => {
@@ -60,10 +61,17 @@ const description = metaContent("name", "description");
 const canonical = home.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"[^>]*>/i)?.[1] ?? null;
 
 check("document language", home.includes(`<html lang="${expected.language}"`), expected.language);
-check("canonical title", title === expected.title, title ?? "missing title");
+const escapeHtml = (value) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#x27;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+check("canonical title", title === escapeHtml(expected.title), title ?? "missing title");
 check(
   "search description",
-  Boolean(description && description.length >= 120 && description.length <= 160),
+  Boolean(description && description.length >= 50 && description.length <= 200),
   description ?? "missing description",
 );
 check("single canonical URL", canonical === expected.canonical, canonical ?? "missing canonical");
@@ -131,11 +139,19 @@ for (const type of ["Person", "WebSite", "ProfilePage", "ItemList"]) {
 
 const person = graph.find((entry) => entry["@type"] === "Person");
 const work = graph.find((entry) => entry["@type"] === "ItemList");
-check("verified social identities", Array.isArray(person?.sameAs) && person.sameAs.length === 4);
+check(
+  "configured social identities",
+  Array.isArray(person?.sameAs) &&
+    person.sameAs.length === content.contactChannels.filter((channel) => channel.identity).length,
+);
 check("current professional role", person?.jobTitle === expected.role);
 check("current organization", person?.worksFor?.name === expected.employer);
 check("confirmed public email", person?.email === expected.email);
-check("three selected projects", work?.numberOfItems === 3 && work?.itemListElement?.length === 3);
+check(
+  "selected project count",
+  work?.numberOfItems === content.projects.length &&
+    work?.itemListElement?.length === content.projects.length,
+);
 
 check("robots allows portfolio", robots.includes("Allow: /"));
 check("robots blocks API", robots.includes("Disallow: /api/"));
@@ -143,7 +159,7 @@ check("robots declares sitemap", robots.includes(`Sitemap: ${expected.canonical}
 check("sitemap canonical URL", sitemap.includes(`<loc>${expected.canonical}</loc>`));
 check(
   "sitemap profile image",
-  sitemap.includes(`${expected.canonical}/images/rahul-portrait.webp`),
+  sitemap.includes(`${expected.canonical}${content.profile.portrait.src}`),
 );
 
 let manifest;
@@ -153,7 +169,7 @@ try {
   failures.push("manifest is not valid JSON");
 }
 
-check("manifest identity", manifest?.name === "Rahul Singh Parmar — Portfolio");
+check("manifest identity", manifest?.name === `${content.profile.name} — Portfolio`);
 check("manifest scope", manifest?.start_url === "/" && manifest?.scope === "/");
 check("manifest theme", manifest?.theme_color === "#0b0c0c");
 

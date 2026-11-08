@@ -1,0 +1,563 @@
+{
+  "$schema": "./portfolio.schema.json",
+  "profile": {
+    "name": "Rahul Singh Parmar",
+    "givenName": "Rahul",
+    "familyName": "Singh Parmar",
+    "role": "DCO Tech 3",
+    "employer": "Amazon Web Services (AWS)",
+    "headline": "AWS data center operations, network reliability, systems administration and practical automation.",
+    "statement": "I work where cloud becomes physical—and build the tools that keep operations clear, repeatable and calm.",
+    "introduction": "At Amazon Web Services, I work in data center operations with a foundation in connectivity, Windows and Linux administration, monitoring, incident response and security controls. Away from the shift, I write PowerShell, Python and edge tooling in my homelab to remove repeat work and make failures easier to diagnose.",
+    "location": "Mumbai, India",
+    "timezone": "UTC+05:30",
+    "experience": "4+ years",
+    "email": "rahulsinghparmar4@protonmail.com",
+    "repositoryUrl": "https://github.com/RahulSinghParmar/Portfolio",
+    "status": "PORTFOLIO ONLINE",
+    "disciplines": ["AWS Operations", "Networks", "Security", "Automation"],
+    "initials": "RSP",
+    "username": "RahulSinghParmar",
+    "employerShort": "AWS",
+    "heroLabel": "AWS / Data center operations",
+    "nameLines": ["Rahul", "Singh", "Parmar"],
+    "footerNote": "Built, tested and operated from Mumbai.",
+    "portrait": {
+      "src": "/images/rahul-portrait.webp",
+      "width": 461,
+      "height": 1450
+    },
+    "siteUrl": "https://rahulsinghparmar.site"
+  },
+  "projects": [
+    {
+      "slug": "home-server-heartbeat",
+      "title": "Home Server Heartbeat",
+      "summary": "An edge-run health monitor that distinguishes a real outage from a transient failed request.",
+      "role": "Infrastructure + automation",
+      "year": "2026",
+      "technologies": ["Cloudflare Workers", "KV", "Resend", "JavaScript"],
+      "challenge": "Public homelab services need continuous checks, but single-request alerting creates noise and makes recovery harder to trust.",
+      "approach": "A scheduled Worker probes each service with a ten-second timeout, records consecutive results in KV, and treats redirects as reachable responses.",
+      "automation": "Cloudflare Cron runs the monitor every five minutes. Email is emitted only after three failures or two successful recovery checks.",
+      "security": "Notification credentials stay in Worker secrets, while the repository contains only deployment configuration and non-sensitive routing logic.",
+      "observability": "Each run reports service state, HTTP status, response time, and transition counters; Worker observability is enabled at the platform layer.",
+      "outcome": "A low-maintenance feedback loop for Immich, Nextcloud, Vaultwarden, and the Glance dashboard—with state-aware outage and recovery signals.",
+      "metrics": [
+        {
+          "value": "05m",
+          "label": "check cadence"
+        },
+        {
+          "value": "03",
+          "label": "failures to alert"
+        },
+        {
+          "value": "02",
+          "label": "checks to recover"
+        }
+      ],
+      "architecture": {
+        "label": "Scheduled checks become state-aware notifications",
+        "nodes": [
+          {
+            "id": "cron",
+            "label": "CRON",
+            "detail": "05 MIN",
+            "x": 72,
+            "y": 98,
+            "align": "start"
+          },
+          {
+            "id": "worker",
+            "label": "WORKER",
+            "detail": "EDGE PROBE",
+            "x": 252,
+            "y": 98
+          },
+          {
+            "id": "services",
+            "label": "SERVICES",
+            "detail": "04 ROUTES",
+            "x": 476,
+            "y": 98
+          },
+          {
+            "id": "kv",
+            "label": "KV STATE",
+            "detail": "THRESHOLDS",
+            "x": 252,
+            "y": 240
+          },
+          {
+            "id": "resend",
+            "label": "RESEND",
+            "detail": "TRANSITIONS",
+            "x": 648,
+            "y": 240,
+            "align": "end"
+          }
+        ],
+        "routes": [
+          {
+            "id": "trigger",
+            "path": "M72 98 H252",
+            "label": "TRIGGER",
+            "labelX": 162,
+            "labelY": 82
+          },
+          {
+            "id": "probe",
+            "path": "M252 98 H476",
+            "label": "HTTP PROBE",
+            "labelX": 364,
+            "labelY": 82
+          },
+          {
+            "id": "result",
+            "path": "M476 98 C476 184 390 240 252 240",
+            "label": "RESULT",
+            "labelX": 415,
+            "labelY": 184
+          },
+          {
+            "id": "notify",
+            "path": "M252 240 H648",
+            "label": "STATE CHANGE ONLY",
+            "labelX": 450,
+            "labelY": 224
+          }
+        ]
+      },
+      "repositoryUrl": "https://github.com/RahulSinghParmar/home-server-heartbeat",
+      "liveUrl": null
+    },
+    {
+      "slug": "infrastructure-maintenance-page",
+      "title": "Infrastructure Maintenance Edge",
+      "summary": "A Cloudflare Worker that converts tunnel and origin failures into a useful, protocol-correct maintenance response.",
+      "role": "Edge + interface engineering",
+      "year": "2026",
+      "technologies": ["Cloudflare Workers", "HTTP", "JavaScript", "Edge delivery"],
+      "challenge": "When a tunnel or origin disappears, a default provider error gives visitors no context and gives crawlers the wrong operational signal.",
+      "approach": "The Worker forwards healthy requests unchanged, intercepts known Cloudflare and origin failure codes, and catches disconnected-tunnel exceptions.",
+      "automation": "The maintenance response sends Retry-After: 45 and refreshes the page after 45 seconds, allowing visitors to recheck the service without manual intervention.",
+      "security": "The fallback is deliberately static and dependency-light. No origin credentials or privileged control surface are exposed to the browser.",
+      "observability": "Worker observability is enabled, and failure classes remain explicit through temporary-unavailability response semantics.",
+      "outcome": "Visitors receive a branded recovery state while crawlers receive HTTP 503, Retry-After, and no-cache headers instead of a misleading permanent failure.",
+      "metrics": [
+        {
+          "value": "503",
+          "label": "temporary status"
+        },
+        {
+          "value": "45s",
+          "label": "retry contract"
+        },
+        {
+          "value": "11",
+          "label": "failure codes"
+        }
+      ],
+      "architecture": {
+        "label": "Healthy traffic passes through; failure traffic falls back at the edge",
+        "nodes": [
+          {
+            "id": "visitor",
+            "label": "REQUEST",
+            "detail": "PUBLIC EDGE",
+            "x": 72,
+            "y": 112,
+            "align": "start"
+          },
+          {
+            "id": "worker",
+            "label": "WORKER",
+            "detail": "STATUS GATE",
+            "x": 282,
+            "y": 112
+          },
+          {
+            "id": "origin",
+            "label": "ORIGIN",
+            "detail": "TUNNEL",
+            "x": 648,
+            "y": 72,
+            "align": "end"
+          },
+          {
+            "id": "fallback",
+            "label": "FALLBACK",
+            "detail": "HTTP 503",
+            "x": 648,
+            "y": 238,
+            "align": "end"
+          }
+        ],
+        "routes": [
+          {
+            "id": "request",
+            "path": "M72 112 H282",
+            "label": "REQUEST",
+            "labelX": 177,
+            "labelY": 96
+          },
+          {
+            "id": "healthy",
+            "path": "M282 112 C420 112 464 72 648 72",
+            "label": "2XX / 3XX",
+            "labelX": 475,
+            "labelY": 67
+          },
+          {
+            "id": "failure",
+            "path": "M282 112 C420 112 464 238 648 238",
+            "label": "5XX / EXCEPTION",
+            "labelX": 475,
+            "labelY": 211
+          }
+        ]
+      },
+      "repositoryUrl": "https://github.com/RahulSinghParmar/maintenance-page",
+      "liveUrl": null
+    },
+    {
+      "slug": "homelab-dashboard",
+      "title": "Homelab Dashboard",
+      "summary": "A single operational surface for navigating and checking the services that make up the parmar.homes homelab.",
+      "role": "Homelab + platform operations",
+      "year": "Current",
+      "technologies": ["Glance", "Docker", "Linux", "Cloudflare Tunnel"],
+      "challenge": "A growing self-hosted environment becomes difficult to operate when service entry points, availability, and ownership are scattered.",
+      "approach": "The Glance dashboard acts as the front door to a Linux and Docker-based service estate, keeping the operational surface compact and legible.",
+      "automation": "The dashboard itself is included in the five-minute heartbeat cycle, so the control surface is monitored alongside the services it represents.",
+      "security": "Public routing is separated from the private service layer through the tunnel and reverse-proxy path rather than exposing the host directly.",
+      "observability": "The dashboard, Immich, Nextcloud, and Vaultwarden each have purpose-built health endpoints consumed by the external heartbeat worker.",
+      "outcome": "One memorable entry point connects daily self-hosted tools while the surrounding monitor and maintenance edge cover failure and recovery states.",
+      "metrics": [
+        {
+          "value": "04",
+          "label": "monitored routes"
+        },
+        {
+          "value": "24/7",
+          "label": "service intent"
+        },
+        {
+          "value": "01",
+          "label": "operational entry"
+        }
+      ],
+      "architecture": {
+        "label": "A public entry point routes to a private, monitored service layer",
+        "nodes": [
+          {
+            "id": "edge",
+            "label": "EDGE",
+            "detail": "TUNNEL",
+            "x": 72,
+            "y": 160,
+            "align": "start"
+          },
+          {
+            "id": "proxy",
+            "label": "PROXY",
+            "detail": "ROUTING",
+            "x": 250,
+            "y": 160
+          },
+          {
+            "id": "glance",
+            "label": "GLANCE",
+            "detail": "DASHBOARD",
+            "x": 438,
+            "y": 160
+          },
+          {
+            "id": "apps-a",
+            "label": "MEDIA",
+            "detail": "IMMICH",
+            "x": 648,
+            "y": 72,
+            "align": "end"
+          },
+          {
+            "id": "apps-b",
+            "label": "CLOUD",
+            "detail": "NEXTCLOUD",
+            "x": 648,
+            "y": 160,
+            "align": "end"
+          },
+          {
+            "id": "apps-c",
+            "label": "VAULT",
+            "detail": "VAULTWARDEN",
+            "x": 648,
+            "y": 248,
+            "align": "end"
+          }
+        ],
+        "routes": [
+          {
+            "id": "tunnel",
+            "path": "M72 160 H250",
+            "label": "HTTPS",
+            "labelX": 161,
+            "labelY": 144
+          },
+          {
+            "id": "route",
+            "path": "M250 160 H438",
+            "label": "ROUTE",
+            "labelX": 344,
+            "labelY": 144
+          },
+          {
+            "id": "media",
+            "path": "M438 160 C510 160 540 72 648 72",
+            "label": "SERVICE",
+            "labelX": 552,
+            "labelY": 91
+          },
+          {
+            "id": "cloud",
+            "path": "M438 160 H648",
+            "label": "SERVICE",
+            "labelX": 543,
+            "labelY": 144
+          },
+          {
+            "id": "vault",
+            "path": "M438 160 C510 160 540 248 648 248",
+            "label": "SERVICE",
+            "labelX": 552,
+            "labelY": 235
+          }
+        ]
+      },
+      "repositoryUrl": null,
+      "liveUrl": "https://dash.parmar.homes"
+    }
+  ],
+  "experience": [
+    {
+      "current": true,
+      "period": "Current",
+      "summary": "Working in AWS data center operations. Public detail is intentionally limited to role and organization.",
+      "responsibilities": []
+    },
+    {
+      "current": false,
+      "period": "Previous",
+      "company": "ALFA KPO PRIVATE LIMITED",
+      "role": "Team Lead Network Engineer",
+      "location": "Mumbai, India",
+      "summary": "Led the operation, reliability and security of business-critical network and systems infrastructure.",
+      "responsibilities": [
+        "Coordinated network operations, monitoring, incident response and vendor escalation.",
+        "Administered Windows, Linux, identity, endpoint and network-security systems.",
+        "Improved reliability through documentation, PowerShell and Python automation.",
+        "Mentored engineers and standardized operational runbooks."
+      ]
+    }
+  ],
+  "careerDirections": [
+    {
+      "title": "Automate operations",
+      "description": "Move recurring infrastructure work from manual procedure into reviewed, observable workflows."
+    },
+    {
+      "title": "Deepen cloud security",
+      "description": "Apply network and systems experience to identity-aware, resilient AWS infrastructure."
+    },
+    {
+      "title": "Build reliable platforms",
+      "description": "Bridge operations and development so internal tools are as maintainable as the systems they support."
+    }
+  ],
+  "workingModes": [
+    {
+      "label": "Primary practice",
+      "title": "AWS data center operations",
+      "description": "Infrastructure availability, hardware and network operations, incident handling, change execution, and cross-team coordination."
+    },
+    {
+      "label": "Weekend practice",
+      "title": "Development and homelab",
+      "description": "Automation, edge services, self-hosting, and small software systems built from real operational needs."
+    }
+  ],
+  "skillLayers": [
+    {
+      "index": "01",
+      "id": "network",
+      "label": "Network",
+      "description": "Designing and operating the paths that keep users, services, and sites connected.",
+      "signal": "Route / segment / resolve",
+      "x": 130,
+      "y": 84,
+      "items": ["Cisco", "Brocade", "Routing", "VLAN", "VPN", "DNS", "DHCP"]
+    },
+    {
+      "index": "02",
+      "id": "security",
+      "label": "Security",
+      "description": "Reducing attack surface through edge policy, endpoint control, and vulnerability work.",
+      "signal": "Inspect / harden / assess",
+      "x": 354,
+      "y": 54,
+      "items": [
+        "Sophos Firewall",
+        "Sophos Endpoint",
+        "Nessus",
+        "OpenVAS",
+        "Vulnerability Assessment"
+      ]
+    },
+    {
+      "index": "03",
+      "id": "systems",
+      "label": "Systems",
+      "description": "Administering the operating systems, identities, and virtual platforms beneath applications.",
+      "signal": "Provision / govern / maintain",
+      "x": 574,
+      "y": 92,
+      "items": ["Linux", "Windows Server", "Active Directory", "Virtualization"]
+    },
+    {
+      "index": "04",
+      "id": "cloud",
+      "label": "Cloud",
+      "description": "Extending infrastructure into isolated, identity-aware AWS environments.",
+      "signal": "Isolate / authorize / scale",
+      "x": 630,
+      "y": 242,
+      "items": ["AWS", "EC2", "IAM", "VPC"]
+    },
+    {
+      "index": "05",
+      "id": "automation",
+      "label": "Automation",
+      "description": "Turning repeatable operational work into reviewed scripts and delivery workflows.",
+      "signal": "Script / review / execute",
+      "x": 486,
+      "y": 340,
+      "items": ["PowerShell", "Python", "Shell", "GitHub Actions"]
+    },
+    {
+      "index": "06",
+      "id": "observability",
+      "label": "Observability",
+      "description": "Converting service and network signals into useful detection and actionable alerts.",
+      "signal": "Measure / correlate / alert",
+      "x": 250,
+      "y": 350,
+      "items": ["PRTG", "Domotz", "Metrics", "Alerting"]
+    },
+    {
+      "index": "07",
+      "id": "platform",
+      "label": "Platform",
+      "description": "Running self-hosted applications as a connected Linux and container service estate.",
+      "signal": "Package / route / serve",
+      "x": 82,
+      "y": 232,
+      "items": ["Docker", "Nextcloud", "Jellyfin", "Mattermost", "Self-hosting"]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "iOS & Swift — The Complete iOS App Development Bootcamp",
+      "issuer": "Udemy",
+      "issued": "October 2021",
+      "credentialUrl": "https://udemy-certificate.s3.amazonaws.com/pdf/UC-0debc1c1-78fd-4fc3-8a08-c97beeeac9a4.pdf"
+    }
+  ],
+  "contactChannels": [
+    {
+      "label": "LinkedIn",
+      "value": "rahulsinghparmar4",
+      "href": "https://www.linkedin.com/in/rahulsinghparmar4/",
+      "description": "Professional background and engineering updates.",
+      "identity": true
+    },
+    {
+      "label": "GitHub",
+      "value": "RahulSinghParmar",
+      "href": "https://github.com/RahulSinghParmar",
+      "description": "Source code, experiments, and infrastructure tooling.",
+      "identity": true
+    },
+    {
+      "label": "Field notes",
+      "value": "rahulsinghparmar.hashnode.dev",
+      "href": "https://rahulsinghparmar.hashnode.dev/",
+      "description": "Writing across hardware, security, networking, and development.",
+      "identity": true
+    },
+    {
+      "label": "Homelab",
+      "value": "dash.parmar.homes",
+      "href": "https://dash.parmar.homes",
+      "description": "The public operating surface for Rahul's self-hosted environment.",
+      "identity": false
+    },
+    {
+      "label": "X / Twitter",
+      "value": "@rahulsingh474",
+      "href": "https://twitter.com/rahulsingh474",
+      "description": "Short-form technology notes and conversations.",
+      "identity": true
+    },
+    {
+      "label": "Portfolio source",
+      "value": "RahulSinghParmar/Portfolio",
+      "href": "https://github.com/RahulSinghParmar/Portfolio",
+      "description": "The implementation, decisions, and release history behind this site.",
+      "identity": false
+    }
+  ],
+  "educationHistory": [
+    {
+      "degree": "Bachelor of Engineering",
+      "discipline": "Computer Engineering",
+      "note": "Engineering foundation spanning computing systems and software development."
+    }
+  ],
+  "seo": {
+    "description": "Rahul Singh Parmar is a DCO Tech 3 at Amazon Web Services in Mumbai, focused on data center operations, networks, automation, and reliable systems.",
+    "socialDescription": "AWS data center operations, network engineering, security, automation, and self-hosted systems.",
+    "language": "en-IN",
+    "locale": "en_IN",
+    "twitterHandle": "@rahulsingh474",
+    "contentUpdated": "2026-11-08",
+    "keywords": [
+      "Data Center Operations",
+      "Network Engineering",
+      "Infrastructure Operations",
+      "Network Security",
+      "Systems Administration",
+      "AWS",
+      "PowerShell",
+      "Python",
+      "Linux",
+      "Windows Server",
+      "Docker",
+      "Cloudflare Workers",
+      "Homelab"
+    ]
+  },
+  "sections": {
+    "about": {
+      "eyebrow": "Physical infrastructure / software thinking",
+      "title": "Infrastructure on shift. Software and systems beyond it.",
+      "careerTitle": "Experience at the operational layer.",
+      "educationMark": "BE"
+    },
+    "work": {
+      "title": "Systems built around real operating problems.",
+      "description": "A dashboard provides the entry point, a heartbeat checks the services behind it, and an edge fallback handles the moments when the private origin cannot answer."
+    }
+  }
+}

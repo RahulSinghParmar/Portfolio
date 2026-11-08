@@ -1,7 +1,8 @@
 import { createSocialImage, socialImageSize } from "@/lib/social-image";
+import { siteMetadata } from "@/lib/seo";
 
 export const dynamic = "force-static";
-export const alt = "Rahul Singh Parmar — DCO Tech 3 at Amazon Web Services and automation builder";
+export const alt = siteMetadata.socialImageAlt;
 export const size = socialImageSize;
 export const contentType = "image/png";
 

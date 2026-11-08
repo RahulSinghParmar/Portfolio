@@ -6,6 +6,7 @@ type ProjectArchitectureProps = {
 
 export function ProjectArchitecture({ project }: ProjectArchitectureProps) {
   const { architecture } = project;
+  if (!architecture) return null;
 
   return (
     <figure className="project-architecture" aria-labelledby={`${project.slug}-diagram-title`}>
@@ -22,12 +23,17 @@ export function ProjectArchitecture({ project }: ProjectArchitectureProps) {
         <title id={`${project.slug}-diagram-svg-title`}>{`${project.title} system topology`}</title>
         <desc id={`${project.slug}-diagram-description`}>{architecture.label}</desc>
         <g className="project-architecture__grid" aria-hidden="true">
-          {Array.from({ length: 13 }, (_, index) => (
-            <line key={`v-${index}`} x1={index * 60} y1="0" x2={index * 60} y2="320" />
-          ))}
-          {Array.from({ length: 9 }, (_, index) => (
-            <line key={`h-${index}`} x1="0" y1={index * 40} x2="720" y2={index * 40} />
-          ))}
+          <defs>
+            <pattern
+              id={`${project.slug}-grid`}
+              width="60"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path d="M60 0H0V40" fill="none" />
+            </pattern>
+          </defs>
+          <rect width="720" height="320" fill={`url(#${project.slug}-grid)`} />
         </g>
 
         <g className="project-architecture__routes" aria-hidden="true">

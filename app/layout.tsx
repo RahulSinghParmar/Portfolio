@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(profile.siteUrl),
   title: {
     default: siteMetadata.title,
-    template: "%s — Rahul Singh Parmar",
+    template: `%s — ${profile.name}`,
   },
   description: siteMetadata.description,
   applicationName: `${profile.name} — Portfolio`,
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: profile.name,
     firstName: profile.givenName,
     lastName: profile.familyName,
-    username: "RahulSinghParmar",
+    username: profile.username,
     images: [
       {
         url: "/opengraph-image.png",
@@ -102,7 +102,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
-        <SiteNavigation />
+        <SiteNavigation
+          profile={{ name: profile.name, initials: profile.initials, location: profile.location }}
+        />
         {children}
         <MotionRuntime />
       </body>

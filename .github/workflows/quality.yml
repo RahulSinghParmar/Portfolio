@@ -36,6 +36,9 @@ jobs:
       - name: Validate release artifact
         run: npm run release:check
 
+      - name: Install browser for production interaction checks
+        run: npx playwright install --with-deps chromium
+
       - name: Exercise the Cloudflare runtime contract
         shell: bash
         run: |
@@ -60,3 +63,5 @@ jobs:
             cat /tmp/portfolio-worker.log
             exit 1
           fi
+
+          npm run test:browser -- http://127.0.0.1:8788

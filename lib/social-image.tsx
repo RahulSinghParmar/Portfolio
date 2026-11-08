@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { profile } from "@/data/profile";
 
 export const socialImageSize = {
   width: 1200,
@@ -49,14 +50,14 @@ export function createSocialImage() {
           textTransform: "uppercase",
         }}
       >
-        <span>Infrastructure / Network 01</span>
-        <span>Mumbai, India</span>
+        <span>{profile.heroLabel}</span>
+        <span>{profile.location}</span>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ width: 700, display: "flex", flexDirection: "column" }}>
           <div style={{ color: "#85f4c7", fontSize: 21, letterSpacing: 3, marginBottom: 24 }}>
-            DCO TECH 3 / AWS
+            {`${profile.role} / ${profile.employerShort}`}
           </div>
           <div
             style={{
@@ -68,11 +69,11 @@ export function createSocialImage() {
               letterSpacing: -4,
             }}
           >
-            <span>Rahul Singh</span>
-            <span style={{ color: "#b8b5ad" }}>Parmar</span>
+            <span>{profile.givenName}</span>
+            <span style={{ color: "#b8b5ad" }}>{profile.familyName}</span>
           </div>
           <div style={{ display: "flex", marginTop: 34, color: "#d7d4cc", fontSize: 24 }}>
-            Networks&nbsp;&nbsp;/&nbsp;&nbsp;Security&nbsp;&nbsp;/&nbsp;&nbsp;Cloud&nbsp;&nbsp;/&nbsp;&nbsp;Automation
+            {profile.disciplines.join(" / ")}
           </div>
         </div>
 
@@ -145,8 +146,8 @@ export function createSocialImage() {
           letterSpacing: 2,
         }}
       >
-        <span>4+ years / infrastructure operations</span>
-        <span style={{ color: "#85f4c7" }}>rahulsinghparmar.site</span>
+        <span>{`${profile.experience} / ${profile.role}`}</span>
+        <span style={{ color: "#85f4c7" }}>{new URL(profile.siteUrl).hostname}</span>
       </div>
     </div>,
     socialImageSize,

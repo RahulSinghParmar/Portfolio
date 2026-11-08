@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { profile } from "@/data/profile";
 
 export function createBrandIcon(size: number) {
   return new ImageResponse(
@@ -18,7 +19,7 @@ export function createBrandIcon(size: number) {
         letterSpacing: Math.max(1, Math.round(size * 0.015)),
       }}
     >
-      RSP
+      {profile.initials}
     </div>,
     { width: size, height: size },
   );

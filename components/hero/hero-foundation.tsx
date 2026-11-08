@@ -8,21 +8,20 @@ export function HeroFoundation() {
   return (
     <section className="hero section-grid" id="index" aria-labelledby="hero-title">
       <div className="hero__eyebrow mono-meta">
-        <span>AWS / DATA CENTER OPERATIONS 01</span>
+        <span>{profile.heroLabel} 01</span>
         <span>{profile.location}</span>
       </div>
 
       <div className="hero__title-wrap">
         <h1 className="hero__title" id="hero-title" data-hero-title>
-          <span className="hero__title-line">
-            <span data-hero-line>Rahul</span>
-          </span>
-          <span className="hero__title-line hero__title-line--muted">
-            <span data-hero-line>Singh</span>
-          </span>
-          <span className="hero__title-line">
-            <span data-hero-line>Parmar</span>
-          </span>
+          {profile.nameLines.map((line, index) => (
+            <span
+              className={`hero__title-line${index === 1 ? " hero__title-line--muted" : ""}`}
+              key={index}
+            >
+              <span data-hero-line>{line}</span>
+            </span>
+          ))}
         </h1>
       </div>
 
@@ -40,10 +39,10 @@ export function HeroFoundation() {
         <div className="hero__portrait-orbit" aria-hidden="true" />
         <Image
           className="hero__portrait-image"
-          src="/images/rahul-portrait.webp"
+          src={profile.portrait.src}
           alt={`${profile.name}, ${profile.role} at ${profile.employer}`}
-          width={461}
-          height={1450}
+          width={profile.portrait.width}
+          height={profile.portrait.height}
           sizes="(max-width: 768px) 55vw, (max-width: 1200px) 30vw, 24vw"
           priority
           unoptimized

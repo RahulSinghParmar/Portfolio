@@ -5,6 +5,11 @@
 node_modules
 
 .env*
+.dev.vars*
+.wrangler
+release-artifacts
+out
+experiments
 *.log
 *.tsbuildinfo
 

@@ -5,9 +5,9 @@ Performance is treated as a release constraint rather than a one-time score. The
 ## Critical-path strategy
 
 - The page remains a statically prerendered Server Component route.
-- GSAP, ScrollTrigger and Lenis are imported after hydration when motion preferences, hardware and network capacity permit.
+- GSAP, ScrollTrigger and Lenis are imported after hydration when the shared motion preference permits.
 - A dependency-free inline initializer applies the stored or system color theme before first paint.
-- Reduced-motion, low-power and data-saving clients keep the static SVG composition and do not request the motion libraries. Touch and mobile devices are not classified as low-power solely by pointer type or viewport width.
+- Auto respects reduced-motion and data-saving preferences; the user can select On or Off. CPU count, pointer type and viewport width alone do not disable animation. Off retains the static SVG composition.
 - The Canvas network renders at no more than 30 FPS on desktop/tablet and 20 FPS on mobile, caps its pixel ratio at 1.5, uses fixed particle pools and releases its animation frame while hidden or outside the viewport.
 - The system-status request and polling interval activate only when the status interface is within 600 px of the viewport, and polling stops again when it leaves that range.
 - Raster source assets use WebP with transparency preserved where required.

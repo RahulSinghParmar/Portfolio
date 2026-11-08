@@ -1,14 +1,17 @@
 {
   "name": "rahul-singh-parmar-portfolio",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
+    "predev": "npm run content:check",
     "dev": "next dev",
-    "prebuild": "node scripts/clean-build-output.mjs",
+    "content:check": "node scripts/check-content.mjs",
+    "test:browser": "node scripts/check-browser.mjs",
+    "prebuild": "npm run content:check && node scripts/clean-build-output.mjs",
     "build": "next build",
     "postbuild": "node scripts/prepare-cloudflare-assets.mjs && node scripts/verify-static-export.mjs",
     "start": "node scripts/preview-static.mjs",
@@ -32,19 +35,22 @@
     "geist": "1.7.2",
     "gsap": "3.15.0",
     "lenis": "1.3.26",
-    "next": "16.3.3",
+    "next": "16.4.5",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@types/node": "26.4.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.3.3",
+    "ajv": "8.20.0",
+    "eslint-config-next": "16.4.5",
     "prettier": "3.9.6",
-    "sharp": "0.35.4",
+    "playwright": "1.65.0",
+    "sharp": "0.35.5",
     "typescript": "6.0.3",
-    "wrangler": "4.129.0"
+    "wrangler": "4.158.0"
   }
 }

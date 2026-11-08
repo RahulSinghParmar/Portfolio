@@ -1,12 +1,17 @@
+import { readFile } from "node:fs/promises";
+const content = JSON.parse(
+  await readFile(new URL("../content/portfolio.json", import.meta.url), "utf8"),
+);
+const canonical = (process.env.NEXT_PUBLIC_SITE_URL ?? content.profile.siteUrl).replace(/\/$/, "");
 const baseUrl = new URL(process.argv[2] ?? process.env.DEPLOYMENT_URL ?? "http://127.0.0.1:8788");
 const expectedEnvironment =
   process.env.DEPLOYMENT_EXPECTED_ENV ??
   (baseUrl.hostname.endsWith(".workers.dev")
     ? "preview"
-    : baseUrl.hostname === "rahulsinghparmar.site"
+    : baseUrl.hostname === new URL(canonical).hostname
       ? "production"
       : "local");
-const expectedTitle = "Rahul Singh Parmar — DCO Tech 3 at AWS";
+const expectedTitle = `${content.profile.name} — ${content.profile.role}${content.profile.employerShort ? ` at ${content.profile.employerShort}` : ""}`;
 const checks = [];
 const failures = [];
 
@@ -51,10 +56,17 @@ function hasSecurityHeaders(result, prefix) {
 const home = await request("/", { accept: "text/html" });
 check("home status", home?.response.status === 200, `home returned ${home?.response.status}`);
 check("home HTML", home?.response.headers.get("content-type")?.includes("text/html") === true);
-check("home title", home?.body.includes(`<title>${expectedTitle}</title>`) === true);
+const escapeHtml = (value) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#x27;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+check("home title", home?.body.includes(`<title>${escapeHtml(expectedTitle)}</title>`) === true);
 check(
   "canonical production URL",
-  home?.body.includes('rel="canonical" href="https://rahulsinghparmar.site"') === true,
+  home?.body.includes(`rel="canonical" href="${canonical}"`) === true,
 );
 check(
   "home revalidates",
@@ -156,9 +168,13 @@ check(
 hasSecurityHeaders(missingPage, "404");
 
 const routes = [
-  ["/robots.txt", "text/plain", "Sitemap: https://rahulsinghparmar.site/sitemap.xml"],
-  ["/sitemap.xml", "application/xml", "https://rahulsinghparmar.site"],
-  ["/manifest.webmanifest", "application/manifest+json", '"short_name":"RSP Portfolio"'],
+  ["/robots.txt", "text/plain", `Sitemap: ${canonical}/sitemap.xml`],
+  ["/sitemap.xml", "application/xml", canonical],
+  [
+    "/manifest.webmanifest",
+    "application/manifest+json",
+    `"short_name":"${content.profile.initials} Portfolio"`,
+  ],
   ["/opengraph-image.png", "image/png", null],
   ["/twitter-image.png", "image/png", null],
   ["/icon.png", "image/png", null],
@@ -189,11 +205,11 @@ if (cssPath) {
   );
 }
 
-const portrait = await request("/images/rahul-portrait.webp", { accept: "image/webp" });
+const portrait = await request(content.profile.portrait.src, { accept: "image/*" });
 check("portrait status", portrait?.response.status === 200);
 check(
   "portrait MIME",
-  portrait?.response.headers.get("content-type")?.includes("image/webp") === true,
+  portrait?.response.headers.get("content-type")?.startsWith("image/") === true,
 );
 check(
   "portrait bounded cache",

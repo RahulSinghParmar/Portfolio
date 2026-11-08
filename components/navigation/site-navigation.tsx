@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { profile } from "@/data/profile";
 import { ThemeControl } from "@/components/theme/theme-control";
 
 const navigationItems = [
@@ -14,7 +13,11 @@ const navigationItems = [
   { label: "Contact", href: "#contact" },
 ] as const;
 
-export function SiteNavigation() {
+export function SiteNavigation({
+  profile,
+}: {
+  profile: { name: string; initials: string; location: string };
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mobileNavigationRef = useRef<HTMLDivElement>(null);
@@ -88,9 +91,9 @@ export function SiteNavigation() {
       <a
         className="site-mark focus-ring"
         href="#index"
-        aria-label={`RSP — ${profile.name}, back to top`}
+        aria-label={`${profile.initials} — ${profile.name}, back to top`}
       >
-        <span aria-hidden="true">RSP</span>
+        <span aria-hidden="true">{profile.initials}</span>
         <span className="site-mark__status" aria-hidden="true" />
       </a>
 

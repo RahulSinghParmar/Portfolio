@@ -3,8 +3,8 @@
 Production portfolio for Rahul Singh Parmar, a DCO Tech 3 at Amazon Web Services (AWS) working across data-center operations, network reliability, systems, security, homelab engineering and practical automation.
 
 - Public site: [rahulsinghparmar.site](https://rahulsinghparmar.site)
-- Stable source version: `v1.1.0` — [release history](https://github.com/RahulSinghParmar/Portfolio/releases)
-- Migration target: Cloudflare Workers Static Assets with an API Worker
+- Candidate: `v1.2.0`; published stable release: `v1.1.0` — [release history](https://github.com/RahulSinghParmar/Portfolio/releases)
+- Hosting: Cloudflare Workers Static Assets with an API Worker
 - Runtime requirement: Node.js 22+
 
 <picture>
@@ -36,22 +36,24 @@ GitHub Actions is the intended deployment owner. Cloudflare Workers Builds must 
 
 ## Technology stack
 
-| Layer           | Technology                                                 | Purpose                                                   |
-| --------------- | ---------------------------------------------------------- | --------------------------------------------------------- |
-| Application     | Next.js 16, React 19, TypeScript                           | Static App Router output and typed UI                     |
-| Styling         | CSS custom properties, Geist Sans and Mono                 | Responsive editorial system without a component framework |
-| Motion          | GSAP, ScrollTrigger, Lenis, Canvas 2D                      | Capability-gated progressive enhancement                  |
-| Data            | Typed modules under `data/`                                | One source for profile, work, skills and credentials      |
-| Edge runtime    | Cloudflare Workers Static Assets                           | Global static delivery and selective `/api/*` execution   |
-| Quality         | ESLint, Prettier, TypeScript, Node tests, custom contracts | Build, API, performance, SEO and deployment validation    |
-| Release control | GitHub Actions environments                                | Manual preview and protected production promotion         |
+| Layer           | Technology                                                 | Purpose                                                       |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------------------- |
+| Application     | Next.js 16, React 19, TypeScript                           | Static App Router output and typed UI                         |
+| Styling         | CSS custom properties, Geist Sans and Mono                 | Responsive editorial system without a component framework     |
+| Motion          | GSAP, ScrollTrigger, Lenis, Canvas 2D                      | Capability-gated progressive enhancement                      |
+| Data            | Schema-backed `content/portfolio.json` and typed adapters  | One editable source for profile, work, skills and credentials |
+| Edge runtime    | Cloudflare Workers Static Assets                           | Global static delivery and selective `/api/*` execution       |
+| Quality         | ESLint, Prettier, TypeScript, Node tests, custom contracts | Build, API, performance, SEO and deployment validation        |
+| Release control | GitHub Actions environments                                | Manual preview and protected production promotion             |
 
 ## Features
 
 - Architecture-led project case studies with verified source and live links.
 - Interactive capability map for networks, security, systems, cloud, automation, observability and self-hosting.
 - Static professional record, education, certifications and contact channels.
-- Read-only status boundary with disconnected, live and unavailable states.
+- Portfolio health checks by default, with an optional read-only service monitor.
+- Persistent Auto/On/Off motion control and shared animation preferences.
+- Schema validation, generated identity/SEO and project numbering for easy forks.
 - Generated Open Graph, Twitter/X, browser and Apple assets with deterministic `.png` names.
 - Person, WebSite, ProfilePage and selected-work structured data.
 - Real HTML 404s, crawl directives, sitemap, manifest and an honest edge health endpoint.
@@ -74,7 +76,8 @@ Three implementation rules:
 ```text
 app/                    Static App Router pages, metadata routes and global CSS
 components/             UI grouped by portfolio section
-data/                   Typed public content and topology definitions
+content/                Editable portfolio JSON and editor/validation schema
+data/                   Rendering adapters and TypeScript interfaces
 lib/                    Browser-safe contracts and SEO utilities
 worker/                 Cloudflare API entrypoint, security policy and tests
 public/                 Optimized assets and Cloudflare _headers policy
@@ -89,17 +92,17 @@ Source portraits under `myphotos/` are intentionally ignored. The release portra
 
 ## Changing portfolio content
 
-Public content is intentionally separated from layout code. Most updates require editing one typed file under `data/`:
+Edit **`content/portfolio.json`** for routine updates. VS Code completion and `npm run content:check` help catch mistakes. Name, employer, social cards, search metadata and counts update from the configured content:
 
-| Change                                                   | File                     |
-| -------------------------------------------------------- | ------------------------ |
-| Name, role, employer, biography, email or social profile | `data/profile.ts`        |
-| Work history                                             | `data/experience.ts`     |
-| Education, working modes or career direction             | `data/professional.ts`   |
-| Featured projects and links                              | `data/projects.ts`       |
-| Skills and capability map                                | `data/skills.ts`         |
-| Certifications                                           | `data/certifications.ts` |
-| Contact directory                                        | `data/contact.ts`        |
+| Change                                 | File                                   |
+| -------------------------------------- | -------------------------------------- |
+| Name, role, employer, biography, email | `profile`                              |
+| Work history                           | `experience`                           |
+| Education and career direction         | `educationHistory`, `careerDirections` |
+| Featured projects                      | `projects`                             |
+| Skills                                 | `skillLayers`                          |
+| Certifications                         | `certifications`                       |
+| Social/contact links                   | `contactChannels`                      |
 
 The complete editing and publishing walkthrough is in [docs/CONTENT_EDITING.md](./docs/CONTENT_EDITING.md). It explains content fields, portrait preparation, local preview, validation and the protected Cloudflare release path.
 
@@ -112,7 +115,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Update public copy in `data/` rather than duplicating it in components. `next dev` is useful for editing, but it is not release evidence.
+Open `http://localhost:3000`. Update public copy in `content/portfolio.json`. `next dev` is useful for editing; use the Cloudflare preview for release/API checks.
 
 Before a pull request:
 
@@ -192,11 +195,11 @@ Deployment is intentionally manual. The `Deploy Cloudflare portfolio` workflow a
 - repository variable `PRODUCTION_DEPLOYMENT_ENABLED=true`;
 - approval through the `cloudflare-production` GitHub environment.
 
-Until production cutover approval, keep that variable absent or `false`, leave the production Worker without a custom-domain route, and do not alter DNS or the maintenance Worker. Follow [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for account setup, preview promotion, production promotion and verification.
+Keep the production gate `false` between approved releases. The public domain is already attached through a dashboard-managed Custom Domain; routine deployments do not require DNS changes. Follow [docs/UPDATE_AND_RELEASE.md](./docs/UPDATE_AND_RELEASE.md) for subsequent releases and [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for account setup.
 
 ## Docker and Coolify rollback
 
-The Dockerfile and existing Coolify v1.0.0 deployment are retained as rollback artifacts during migration. They are not the new build or CI path. Do not resume, rebuild, delete or repoint the old service as part of routine Cloudflare releases. Its operating record remains in [docs/COOLIFY_OPERATIONS.md](./docs/COOLIFY_OPERATIONS.md).
+The Dockerfile is historical standalone v1.0.0 packaging and cannot build the current static-export application. Reproduce an archived Docker release from its matching tag/image, not from current `main`. Cloudflare is the supported build and deployment path. The old service record remains in [docs/COOLIFY_OPERATIONS.md](./docs/COOLIFY_OPERATIONS.md).
 
 ## Release and rollback
 

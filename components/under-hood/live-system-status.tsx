@@ -15,11 +15,14 @@ function valueOrDash(value: string | number | null, suffix = "") {
   return value === null || value === "" ? "—" : `${value}${suffix}`;
 }
 
+type PortfolioHealth = { version: string; checkedAt: string; roundTripMs: number };
+
 export function LiveSystemStatus() {
   const statusRef = useRef<HTMLDivElement>(null);
   const activeRequestRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
   const [status, setStatus] = useState<SystemStatus | null>(null);
+  const [health, setHealth] = useState<PortfolioHealth | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [shouldPoll, setShouldPoll] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
@@ -33,12 +36,43 @@ export function LiveSystemStatus() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/system-status", {
-        cache: "no-store",
-        signal: controller.signal,
-      });
+      const started = performance.now();
+      const healthRequest = fetch("/api/health", { cache: "no-store", signal: controller.signal })
+        .then(async (response) => {
+          if (!response.ok) return null;
+          const payload = await response.json();
+          if (
+            payload.status !== "ok" ||
+            typeof payload.version !== "string" ||
+            typeof payload.timestamp !== "string" ||
+            !Number.isFinite(Date.parse(payload.timestamp))
+          )
+            return null;
+          return {
+            version: payload.version,
+            checkedAt: payload.timestamp,
+            roundTripMs: Math.round(performance.now() - started),
+          };
+        })
+        .catch(() => null);
+      const [response, portfolioHealth] = await Promise.all([
+        fetch("/api/system-status", { cache: "no-store", signal: controller.signal }).catch(
+          () => null,
+        ),
+        healthRequest,
+      ]);
+      if (controller.signal.aborted || !mountedRef.current) return;
+      setHealth(portfolioHealth);
+      if (!response) throw new Error("Status request failed");
       if (!response.ok) throw new Error("Status request failed");
-      setStatus((await response.json()) as SystemStatus);
+      const payload = await response.json();
+      if (
+        !Array.isArray(payload.services) ||
+        !["disconnected", "live", "unavailable"].includes(payload.source) ||
+        !["pending", "unknown", "operational", "degraded", "unavailable"].includes(payload.state)
+      )
+        throw new Error("Invalid status contract");
+      if (!controller.signal.aborted && mountedRef.current) setStatus(payload as SystemStatus);
     } catch {
       if (controller.signal.reason !== "suspended" && mountedRef.current) {
         setStatus({
@@ -120,13 +154,23 @@ export function LiveSystemStatus() {
   }, [isDocumentVisible, refresh, shouldPoll]);
 
   const state = status?.state ?? "pending";
+  const portfolioOnly = status?.source === "disconnected" || (!status && health !== null);
+  const displayedState = portfolioOnly ? (health ? "operational" : "unavailable") : state;
 
   return (
-    <div className="live-status" data-state={state} ref={statusRef}>
+    <div className="live-status" data-state={displayedState} ref={statusRef}>
       <header>
         <div>
-          <p className="mono-meta">Read-only status boundary</p>
-          <h3>{status?.status ?? "Checking system state"}</h3>
+          <p className="mono-meta">
+            {portfolioOnly ? "Portfolio health check" : "Read-only service monitor"}
+          </p>
+          <h3>
+            {portfolioOnly
+              ? health
+                ? "Portfolio responding"
+                : "Portfolio check unavailable"
+              : (status?.status ?? "Checking system state")}
+          </h3>
         </div>
         <div
           className="live-status__state mono-meta"
@@ -135,26 +179,44 @@ export function LiveSystemStatus() {
           aria-atomic="true"
         >
           <span aria-hidden="true" />
-          {isLoading ? "Checking" : stateLabels[state]}
+          {isLoading
+            ? "Checking"
+            : portfolioOnly && health
+              ? "Responding"
+              : stateLabels[displayedState]}
         </div>
       </header>
 
       <dl className="live-status__metrics mono-meta">
         <div>
           <dt>Version</dt>
-          <dd>{status?.version ?? "—"}</dd>
+          <dd>{portfolioOnly ? (health?.version ?? "—") : (status?.version ?? "—")}</dd>
         </div>
         <div>
-          <dt>Mean response</dt>
-          <dd>{valueOrDash(status?.responseTimeMs ?? null, " ms")}</dd>
+          <dt>{portfolioOnly ? "This request" : "Mean response"}</dt>
+          <dd>
+            {valueOrDash(
+              portfolioOnly ? (health?.roundTripMs ?? null) : (status?.responseTimeMs ?? null),
+              " ms",
+            )}
+          </dd>
         </div>
         <div>
-          <dt>Uptime</dt>
-          <dd>{valueOrDash(status?.uptimePercent ?? null, "%")}</dd>
+          <dt>{portfolioOnly ? "Last checked" : "Uptime"}</dt>
+          <dd>
+            {portfolioOnly
+              ? health
+                ? new Date(health.checkedAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "—"
+              : valueOrDash(status?.uptimePercent ?? null, "%")}
+          </dd>
         </div>
         <div>
-          <dt>Region</dt>
-          <dd>{status?.region ?? "—"}</dd>
+          <dt>{portfolioOnly ? "Check scope" : "Region"}</dt>
+          <dd>{portfolioOnly ? "This browser → portfolio" : (status?.region ?? "—")}</dd>
         </div>
       </dl>
 
@@ -172,15 +234,20 @@ export function LiveSystemStatus() {
         </ul>
       ) : (
         <p className="live-status__empty">
-          {status?.source === "disconnected"
-            ? "The secure adapter is ready. Connect a read-only monitoring endpoint to publish live service state."
+          {portfolioOnly
+            ? "A point-in-time check of this website. Response time includes your network; it is not an uptime history or a check of the homelab services."
             : "No service-level data is currently available."}
         </p>
       )}
 
       <footer className="mono-meta">
         <span>
-          Source / {status?.source === "live" ? "server relay" : (status?.source ?? "pending")}
+          Source /{" "}
+          {portfolioOnly
+            ? "portfolio /api/health"
+            : status?.source === "live"
+              ? "monitoring relay"
+              : (status?.source ?? "pending")}
         </span>
         <button
           className="focus-ring"

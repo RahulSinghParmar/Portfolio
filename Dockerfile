@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1.7
 
+# ARCHIVAL v1.0.0 standalone packaging. Build only from the matching archived tag.
+# Current main exports static assets and is deployed with Cloudflare/GitHub Actions.
+# See docs/DEPLOYMENT.md; .next/standalone is not produced by today's configuration.
+
 FROM node:22-alpine AS base
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1

@@ -1,9 +1,9 @@
 "use client";
 
 import { type KeyboardEvent, useRef, useState } from "react";
-import { skillLayers } from "@/data/skills";
+import type { SkillLayer } from "@/data/types";
 
-export function InfrastructureMap() {
+export function InfrastructureMap({ skillLayers }: { skillLayers: readonly SkillLayer[] }) {
   const [activeId, setActiveId] = useState(skillLayers[0].id);
   const controlRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const activeLayer = skillLayers.find((layer) => layer.id === activeId) ?? skillLayers[0];
@@ -45,12 +45,10 @@ export function InfrastructureMap() {
       <div className="infrastructure-map__visual">
         <div className="infrastructure-map__legend mono-meta">
           <span>Operational topology</span>
-          <span>07 connected layers</span>
+          <span>{String(skillLayers.length).padStart(2, "0")} connected layers</span>
         </div>
         <svg viewBox="0 0 720 420" role="img" aria-labelledby="capability-map-title">
-          <title id="capability-map-title">
-            Rahul&apos;s connected infrastructure engineering capabilities
-          </title>
+          <title id="capability-map-title">Connected infrastructure engineering capabilities</title>
           <g className="infrastructure-map__grid" aria-hidden="true">
             {Array.from({ length: 13 }, (_, index) => (
               <line key={`v-${index}`} x1={index * 60} y1="0" x2={index * 60} y2="420" />

@@ -1,133 +1,178 @@
-# Editing portfolio content
+# Edit your portfolio like a résumé
 
-The portfolio keeps public facts in typed data modules and presentation in React components. Routine biography, career, project and contact updates should not require changing component markup.
+Open **`content/portfolio.json`**. This is the source for public identity, introduction, projects, employment, education, certifications, skills and links. You do not need to edit React components for routine updates.
 
-## Content map
+Keep the first `$schema` line. VS Code uses `content/portfolio.schema.json` for completion and validation; use Ctrl+Space inside an object to see available fields. JSON uses double quotes and does not allow comments or trailing commas. Put explanatory notes in this guide rather than inside the JSON file.
 
-| What you want to change                                                      | Source of truth          | Used by                                                   |
-| ---------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------- |
-| Name, role, employer, headline, biography, location, email and primary links | `data/profile.ts`        | Hero, introduction, metadata, contact and structured data |
-| Employment history                                                           | `data/experience.ts`     | Career record                                             |
-| Education, working modes and career direction                                | `data/professional.ts`   | Professional practice                                     |
-| Case studies, architecture diagrams, metrics and project links               | `data/projects.ts`       | Selected work                                             |
-| Capability groups and tools                                                  | `data/skills.ts`         | Engineering stack                                         |
-| Certifications and verification links                                        | `data/certifications.ts` | Credential archive and structured data                    |
-| Contact directory                                                            | `data/contact.ts`        | Contact section                                           |
-| Search title, description, keywords and updated date                         | `lib/seo.ts`             | Metadata, structured data, sitemap and release checks     |
+## First local run
 
-The interfaces in `data/types.ts` document required fields. TypeScript and the release gate will reject missing or malformed values.
-
-## Common updates
-
-### Change role, employer, biography or email
-
-1. Edit the corresponding value in `data/profile.ts`.
-2. Add or update the matching career entry in `data/experience.ts`.
-3. If public positioning materially changed, revise `siteMetadata.description`, `socialDescription`, `keywords` and `contentUpdated` in `lib/seo.ts`.
-4. Update the expected title or identity assertions in `scripts/check-seo.mjs` and `scripts/check-deployment.mjs` only when the public contract intentionally changed.
-
-Do not duplicate these values directly in components. A value that appears in multiple sections belongs in the data layer.
-
-### Add employment or education
-
-- Add a new object to `experience` in `data/experience.ts`, newest first.
-- Use an empty `responsibilities` array when operational detail should remain private.
-- Edit `education` in `data/professional.ts` for the primary degree.
-- Publish only role details, dates and outcomes that can be verified and safely disclosed.
-
-### Add a project
-
-1. Add one `Project` object in `data/projects.ts`.
-2. Give it a unique `slug`, two-digit `index`, honest metrics and valid public URLs.
-3. Define its architecture nodes and routes in the same object; the project component renders them automatically.
-4. Update the selected-work count in `scripts/check-seo.mjs` if the public list size changes.
-
-Keep the strongest and most relevant work first. Describe the operational problem, the design decision and the outcome rather than listing technologies alone.
-
-### Change skills or certifications
-
-- Edit capability groups in `data/skills.ts`; keep `id` values unique and preserve coordinates inside the diagram's view box.
-- Add credentials in `data/certifications.ts`. Use `null` for a verification URL or date that is not publicly available.
-
-### Change contact links
-
-Update identity links in `data/profile.ts` and the detailed channel row in `data/contact.ts`. If the number of verified public identities changes, update the corresponding assertion in `scripts/check-seo.mjs`.
-
-## Portrait workflow
-
-The visible portrait is `public/images/rahul-portrait.webp`. It has a real alpha channel and no rectangular backdrop.
-
-To replace it:
-
-1. Prepare a PNG with the person on a flat chroma-key green plate. Keep the face, hair and body natural; do not add text, logos or a simulated checkerboard.
-2. Place the source outside `public/`. The ignored `myphotos/` directory is suitable for local source material.
-3. Run:
-
-   ```powershell
-   npm run asset:portrait -- "myphotos/new-portrait-green.png"
-   ```
-
-4. Inspect `public/images/rahul-portrait.webp` in both themes, especially hair, hands and clothing edges.
-5. If the crop dimensions change materially, update the `width` and `height` values in `components/hero/hero-foundation.tsx`.
-6. Run the full release gate.
-
-The conversion script trims transparent space, removes the green plate, reduces edge spill and writes a compressed WebP with alpha. Keep source photographs out of Git unless their publication is intentional.
-
-## Local development
-
-Use Node.js 22 or later:
+Use Node.js 22.23.1 or a newer supported Node 22 release:
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. For the actual hosting runtime, use:
+Open http://localhost:3000 for content work. Validation runs before the development server starts. After editing, run `npm run content:check`; errors include a path such as `/projects/1/slug`. The development page refreshes as you save.
+
+To review APIs, response headers and the real production behavior, stop the development server and run:
 
 ```powershell
 npm run preview:cloudflare
 ```
 
-Then, in a second terminal:
+Open http://127.0.0.1:8788. The preview rebuilds first; restart it after source changes. A clean build must not run while another process holds the output files open on Windows.
+
+## Where each change belongs
+
+| JSON key                                        | What you edit                                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `profile`                                       | Name, title, employer, location, experience, biography, email, portrait, site/repository URLs |
+| `profile.nameLines`                             | One to three short display lines for the hero name                                            |
+| `profile.initials`, `username`, `employerShort` | Navigation/icon initials, account identity and short employer name                            |
+| `profile.statement`, `introduction`, `headline` | Introduction heading, main paragraph and compact professional summary                         |
+| `sections.about`, `sections.work`               | About/work headings and introductory copy                                                     |
+| `experience`                                    | Career history, newest first                                                                  |
+| `educationHistory`                              | One or more degrees; the first appears in the compact snapshot                                |
+| `certifications`                                | Credential name, issuer, issue date and public verification link                              |
+| `projects`                                      | Selected work, ordered by the story you want to tell                                          |
+| `skillLayers`                                   | Capability-map labels, descriptions and tools                                                 |
+| `workingModes`, `careerDirections`              | Current areas of practice and career direction                                                |
+| `contactChannels`                               | Social, blog, homelab, referral and source links                                              |
+| `seo`                                           | Search description, social summary, language, keywords and update date                        |
+
+Name, current role, employer, location and links feed the hero, contact area, metadata and structured data automatically. Social cards, icons and sitemap regenerate during a build. Project/certification numbers and release-check expectations are generated; do not maintain counters yourself.
+
+### Change your current job
+
+Update `profile.role`, `profile.employer` and `profile.employerShort`. The employment object with `"current": true` inherits those values and your location. Update that object's summary and responsibilities. Keep only one current entry that inherits the shared profile.
+
+When moving to another employer, change the previous entry to `"current": false` and give it its own `company`, `role` and `location`; then add the new current entry. Example shape:
+
+```json
+{
+  "current": false,
+  "period": "2024–2026",
+  "company": "Your previous employer",
+  "role": "Your previous role",
+  "location": "Your location",
+  "summary": "A specific description of the work you did.",
+  "responsibilities": ["One factual responsibility or outcome."]
+}
+```
+
+Use actual dates and outcomes. An empty `responsibilities` array is valid. Do not disclose private employer operations.
+
+### Add education
+
+Append to `educationHistory`:
+
+```json
+{
+  "degree": "Your degree",
+  "discipline": "Your field",
+  "institution": "Your institution",
+  "period": "Your actual dates",
+  "note": "Optional context written as a string."
+}
+```
+
+`institution` and `period` may be omitted. Keep `degree`, `discipline` and `note` present. Move the most relevant degree first.
+
+### Add a certification
+
+Append to `certifications`:
+
+```json
+{
+  "name": "Your verified credential",
+  "issuer": "Issuing organization",
+  "issued": "Month Year",
+  "credentialUrl": null
+}
+```
+
+Replace `null` with a public HTTPS verification URL if one exists. Use an empty `issued` string when the date is unknown; do not invent it. Credential numbering updates automatically. An empty certifications array is valid.
+
+### Add a project without drawing a diagram
+
+Append this shape to `projects`, replacing the example values:
+
+```json
+{
+  "slug": "my-automation-project",
+  "title": "My automation project",
+  "summary": "What it does and who it helps.",
+  "role": "Development + automation",
+  "year": "2026",
+  "technologies": ["Python", "PowerShell"],
+  "outcome": "The specific problem solved, without invented metrics.",
+  "repositoryUrl": "https://github.com/YOUR-USER/YOUR-REPO",
+  "liveUrl": null
+}
+```
+
+That is enough for a project card. Optional `challenge`, `approach`, `automation`, `security` and `observability` paragraphs create the expandable deep dive. Optional `metrics` is an array of `{ "value": "...", "label": "..." }`. Include only measured or independently verifiable claims.
+
+An optional `architecture` object adds the SVG diagram; copy an existing diagram only when you need it. Nodes use a 720×320 view box; IDs must be unique. A project slug must be unique and must not duplicate a page section such as `about` or `contact`. Array order determines display order and numbering.
+
+### Update social, contact or referral links
+
+Edit `contactChannels` once. Each entry contains `label`, `value` (display handle), `href` (HTTPS URL), `description` and `identity`.
+
+Set `identity: true` only for a public profile that identifies you, such as GitHub or LinkedIn. It will also appear in search structured data. Set it to `false` for a project, homelab or referral link. Clearly describe a referral's purpose and any commercial relationship.
+
+Email comes from `profile.email`. Contact order and labels are automatic. Review any manually written summary in `seo.description` after changing your role.
+
+### Replace the portrait
+
+Place the optimized public image under `public/images/` and update `profile.portrait.src`, `width` and `height` to its real dimensions. Use a transparent WebP or PNG for a cutout. The current portrait is already compressed and has an alpha channel.
+
+For the existing green-screen conversion workflow:
+
+```powershell
+npm run asset:portrait -- "myphotos/new-portrait-green.png"
+```
+
+Inspect hair, hands, clothes and transparency in both themes. Keep private source photographs in the ignored `myphotos/` directory; anything in `public/` will be published.
+
+## Fork this project for someone else
+
+1. Fork/clone, install dependencies and edit the JSON keys in the table above.
+2. Replace portrait, initials, name lines, social handles, repository URL and site URL. Review every project/certification before representing it as your own.
+3. Set `seo.description`, `socialDescription`, `twitterHandle`, `contentUpdated` and keywords. Set the date to the actual content-update date.
+4. Add or remove array entries as needed. A source fork retains upstream license notices; review the MIT license before redistribution.
+5. Keep the existing infrastructure capability-map structure if it suits your work; changing its number of connected layers or spatial layout is a design change rather than a résumé edit.
+6. For deployment, choose **your own** Worker names in `wrangler.jsonc`, GitHub environments/secrets and domain. Copying source does not grant access to the original owner's Cloudflare account. `NEXT_PUBLIC_SITE_URL`, if present, overrides the JSON domain at build time.
+7. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for hosting, and [UPDATE_AND_RELEASE.md](UPDATE_AND_RELEASE.md) for publishing reviewed changes.
+
+The `data/*.ts` files are rendering adapters. Edit the JSON rather than those adapters. `lib/seo.ts` and the SEO/deployment checks now read the configured identity and list sizes automatically.
+
+## Validation and publishing
+
+```powershell
+npm run content:check
+npm run release:check
+```
+
+With the local Cloudflare preview running in a second terminal:
 
 ```powershell
 npm run deployment:check -- http://127.0.0.1:8788
+npx playwright install chromium
+npm run test:browser -- http://127.0.0.1:8788
 ```
 
-The Cloudflare preview is the authoritative local acceptance environment because it exercises static assets, API routes, cache policy, security headers and 404 behavior together.
+Browser installation is a one-time development step. On Windows with Edge already installed, use `$env:BROWSER_CHANNEL = "msedge"` for the browser command instead.
 
-## Validation before Git
+The browser suite checks motion on a simulated two-core device, persistent motion controls, light/dark layouts at 320/390/820/1440 pixels, runtime health, mobile-menu keyboard behavior and reading without JavaScript. It is also part of the GitHub quality workflow.
 
-Format the repository and run the complete gate:
+Publishing remains a reviewed GitHub Actions operation. Saving JSON, committing or pushing does not change the live site by itself. Do not commit secrets, private monitoring data or unpublished source photos.
 
-```powershell
-npm run format
-npm run release:check
-git status --short
-```
+## Runtime signal and animation
 
-Review the diff before committing. Never commit `.env*`, `.dev.vars`, tokens, private monitoring payloads or unpublished source portraits.
+The footer's **Motion / Auto, On, Off** control persists your choice. Auto respects reduced-motion and data-saving preferences. A low CPU-core count alone no longer disables the design. For diagnosis only, `?motion=full` and `?motion=reduced` still work; a visible control choice clears that override.
 
-## Publishing a change
+Without an external monitor, the Runtime signal checks this portfolio's own `/api/health`. Its timing includes the visitor's network. It does not claim an uptime percentage or verify homelab services.
 
-A push runs repository quality checks; it does not bypass the protected release process or automatically change production.
-
-1. Create a focused branch and commit with your configured Git identity.
-2. Push the branch and open a pull request.
-3. Wait for **Release quality** to pass.
-4. Deploy that exact commit to the preview environment with **Deploy Cloudflare portfolio**.
-5. Review desktop, mobile, light, dark, reduced-motion and full-motion behavior.
-6. Merge the accepted revision to `main`.
-7. During an approved release window, enable the production gate and manually deploy the exact `main` SHA.
-8. Run the public deployment contract, then disable the production gate again.
-
-This deliberate promotion flow prevents an unfinished biography edit or broken visual change from going directly to the public domain. See [DEPLOYMENT.md](./DEPLOYMENT.md) for environment setup, promotion and rollback.
-
-## Code conventions
-
-- Prefer server components. Add `"use client"` only for browser behavior.
-- Keep content in `data/`, layout in `components/`, shared contracts in `lib/` and edge behavior in `worker/`.
-- Comment decisions and constraints, not syntax that the code already explains.
-- Preserve semantic HTML, keyboard behavior, focus visibility and reduced-motion fallbacks.
-- Avoid adding a dependency for a small behavior that CSS or existing utilities can handle.
-- Keep claims factual and keep internal infrastructure details out of public content.
+See [STATUS_INTEGRATION.md](STATUS_INTEGRATION.md) to connect a separate, read-only JSON monitoring source when one is ready.

@@ -19,7 +19,7 @@ export function UnderHoodSection() {
       <PortfolioArchitecture />
       <div className="under-hood__status-heading" data-reveal>
         <p className="mono-meta">Runtime signal</p>
-        <h3>Truthful state, including when no source is connected.</h3>
+        <h3>A check you can inspect, with a clearly defined scope.</h3>
       </div>
       <LiveSystemStatus />
       <DeploymentPipeline />

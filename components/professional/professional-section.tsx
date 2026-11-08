@@ -2,7 +2,13 @@ import { SectionLabel } from "@/components/typography/section-label";
 import { certifications } from "@/data/certifications";
 import { experience } from "@/data/experience";
 import { profile } from "@/data/profile";
-import { careerDirections, education, workingModes } from "@/data/professional";
+import {
+  careerDirections,
+  education,
+  educationHistory,
+  sectionCopy,
+  workingModes,
+} from "@/data/professional";
 
 export function ProfessionalSection() {
   return (
@@ -10,8 +16,8 @@ export function ProfessionalSection() {
       <SectionLabel index="04">Professional practice</SectionLabel>
 
       <div className="professional-section__heading" data-reveal>
-        <p className="mono-meta">Physical infrastructure / software thinking</p>
-        <h2>I operate where cloud becomes physical—and build beyond the shift.</h2>
+        <p className="mono-meta">{sectionCopy.about.eyebrow}</p>
+        <h2>{sectionCopy.about.title}</h2>
       </div>
 
       <dl className="professional-snapshot mono-meta" data-reveal>
@@ -46,7 +52,7 @@ export function ProfessionalSection() {
       <div className="career-record">
         <header className="career-record__heading" data-reveal>
           <p className="mono-meta">Career record</p>
-          <h3>Responsibility at the operational layer.</h3>
+          <h3>{sectionCopy.about.careerTitle}</h3>
         </header>
         <ol>
           {experience.map((item, index) => (
@@ -80,11 +86,17 @@ export function ProfessionalSection() {
         <div className="professional-credentials__education" data-reveal>
           <p className="mono-meta">Education</p>
           <p className="professional-credentials__index" aria-hidden="true">
-            BE
+            {sectionCopy.about.educationMark}
           </p>
-          <h3>{education.degree}</h3>
-          <p>{education.discipline}</p>
-          <p>{education.note}</p>
+          {educationHistory.map((item, index) => (
+            <article key={`${item.degree}-${index}`}>
+              <h3>{item.degree}</h3>
+              <p>{item.discipline}</p>
+              {item.institution ? <p>{item.institution}</p> : null}
+              {item.period ? <p className="mono-meta">{item.period}</p> : null}
+              <p>{item.note}</p>
+            </article>
+          ))}
         </div>
 
         <div className="professional-credentials__certifications" data-reveal>
