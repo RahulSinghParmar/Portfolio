@@ -4,9 +4,9 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
-## [1.2.0] - Candidate
+## [1.2.0] - 2026-11-08
 
-Prepared on 8 November 2026 for protected preview. Public promotion and a release tag remain pending.
+Content and runtime refinement release. Production promotion is a separate, protected action.
 
 ### Added
 

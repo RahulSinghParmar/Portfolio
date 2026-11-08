@@ -3,7 +3,7 @@
 Production portfolio for Rahul Singh Parmar, a DCO Tech 3 at Amazon Web Services (AWS) working across data-center operations, network reliability, systems, security, homelab engineering and practical automation.
 
 - Public site: [rahulsinghparmar.site](https://rahulsinghparmar.site)
-- Candidate: `v1.2.0`; published stable release: `v1.1.0` — [release history](https://github.com/RahulSinghParmar/Portfolio/releases)
+- Source version: `v1.2.0` — [release history](https://github.com/RahulSinghParmar/Portfolio/releases)
 - Hosting: Cloudflare Workers Static Assets with an API Worker
 - Runtime requirement: Node.js 22+
 
